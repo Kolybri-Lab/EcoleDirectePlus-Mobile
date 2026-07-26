@@ -25,6 +25,16 @@ export const getGuestData = (url: string, body?: any): any => {
         return getShiftedTimetable(body?.dateDebut);
     }
 
+    if (url.includes("verbe=put") || url.includes("/cahierdetexte.awp?verbe=put")) {
+        return handleToggleHomework(body);
+    }
+    if (url.includes("/cahierdetexte/") && dateRegex.test(url)) {
+        return mockHomeworksPreciseDay;
+    }
+    if (url.includes("/cahierdetexte.awp")) {
+        return mockHomeworks;
+    }
+
     if (url.includes("/messages.awp")) {
         if (
             url.includes("typeRecuperation=classeur") &&
@@ -51,6 +61,58 @@ export const getGuestData = (url: string, body?: any): any => {
     }
 
     return null;
+};
+
+const handleToggleHomework = (body?: any) => {
+    const doneIds = (body?.idDevoirsEffectues || []).map(Number);
+    const notDoneIds = (body?.idDevoirsNonEffectues || []).map(Number);
+
+    if (doneIds.length > 0 || notDoneIds.length > 0) {
+        // Mettre à jour la liste globale (mockHomeworks)
+        if (mockHomeworks?.data) {
+            Object.values(mockHomeworks.data).forEach((dayHomeworks: any) => {
+                if (Array.isArray(dayHomeworks)) {
+                    dayHomeworks.forEach((hk: any) => {
+                        const ids = [hk.id, hk.idDevoir]
+                            .filter((x) => x != null)
+                            .map(Number);
+                        if (ids.some((id) => doneIds.includes(id))) {
+                            hk.effectue = true;
+                        }
+                        if (ids.some((id) => notDoneIds.includes(id))) {
+                            hk.effectue = false;
+                        }
+                    });
+                }
+            });
+        }
+
+        // Mettre à jour le détail du jour (mockHomeworksPreciseDay)
+        if (mockHomeworksPreciseDay?.data?.matieres) {
+            mockHomeworksPreciseDay.data.matieres.forEach((item: any) => {
+                const ids = [item.id, item.idDevoir, item.aFaire?.idDevoir]
+                    .filter((x) => x != null)
+                    .map(Number);
+
+                if (ids.some((id) => doneIds.includes(id))) {
+                    if (item.aFaire) item.aFaire.effectue = true;
+                    item.effectue = true;
+                }
+                if (ids.some((id) => notDoneIds.includes(id))) {
+                    if (item.aFaire) item.aFaire.effectue = false;
+                    item.effectue = false;
+                }
+            });
+        }
+    }
+
+    return {
+        code: 200,
+        token: "guest_token",
+        host: "HTTP200",
+        message: "",
+        data: {},
+    };
 };
 
 const getGenericMessageDetail = (messageId: string | number) => {
