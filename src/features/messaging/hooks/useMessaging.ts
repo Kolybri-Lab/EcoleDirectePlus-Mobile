@@ -1,37 +1,33 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import messagingResolver, {
     messageContentResolver,
 } from "@/features/messaging/resolver/messaging";
-import { ResolvedMessaging, MessageContent } from "../types";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { MessageContent, ResolvedMessaging } from "../types";
 
 export interface UseMessagingOptions {
-    typeRecuperation?: "received" | "sent" | "draft" | "archived";
-    idClasseur?: number;
+    typeOfRecovery?: "received" | "sent" | "draft" | "archived";
+    binderId?: number;
     itemsPerPage?: number;
 }
 
 export function useMessaging(token: string, options: UseMessagingOptions = {}) {
-    const {
-        typeRecuperation = "received",
-        idClasseur = 0,
-        itemsPerPage = 20,
-    } = options;
+    const { typeOfRecovery = "received", binderId = 0, itemsPerPage = 20 } = options;
 
     return useInfiniteQuery<ResolvedMessaging>({
-        queryKey: ["messaging", typeRecuperation, idClasseur],
+        queryKey: ["messaging", typeOfRecovery, binderId],
         queryFn: ({ pageParam = 0 }) =>
             messagingResolver({
                 token,
                 page: pageParam as number,
                 itemsPerPage,
-                typeRecuperation,
-                idClasseur,
+                typeOfRecovery,
+                binderId,
             }) as Promise<ResolvedMessaging>,
         initialPageParam: 0,
         getNextPageParam: (lastPage, allPages) => {
             if (!lastPage) return undefined;
 
-            const lastPageMessages = lastPage[typeRecuperation] || [];
+            const lastPageMessages = lastPage[typeOfRecovery] || [];
 
             if (lastPageMessages.length < itemsPerPage) {
                 return undefined;
@@ -59,4 +55,3 @@ export function useMessageContent(
         enabled: Boolean(token) && messageId !== undefined,
     });
 }
-

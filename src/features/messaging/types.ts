@@ -72,12 +72,10 @@ export interface FormattedMessage {
     transferred: boolean;
     canAnswer: boolean;
     type: string;
-    folderId: number | null;
-    folderName: string | null;
-    hasAttachments: boolean;
+    folder: { id: number | null; name: string | null };
     files: MessageAttachment[];
     recipientType: string | null;
-    sender: MessageSender;
+    sender: string;
 }
 
 export interface MessageFolder {
@@ -123,11 +121,9 @@ export interface MessagingResolverParams {
     token: string;
     page?: number;
     itemsPerPage?: number;
-    typeRecuperation?: "received" | "sent" | "draft" | "archived";
-    idClasseur?: number;
+    typeOfRecovery?: "received" | "sent" | "draft" | "archived";
+    binderId?: number;
 }
-
-
 
 export interface MessageContentResolverParams {
     token: string;

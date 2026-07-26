@@ -1,17 +1,15 @@
 import fetchApi from "@/services/fetchApi";
-import base64Handler from "@/utils/handleBase64";
 import { FetchApiResponse } from "@/types";
+import base64Handler from "@/utils/handleBase64";
 import {
     ApiMessage,
-    ApiMessageSender,
     ApiMessagingResponseData,
     FormattedMessage,
     MessageAttachment,
     MessageContent,
-    MessageSender,
-    ResolvedMessaging,
-    MessagingResolverParams,
     MessageContentResolverParams,
+    MessagingResolverParams,
+    ResolvedMessaging,
 } from "../types";
 
 const DEFAULT_MESSAGING: ResolvedMessaging = {
@@ -41,14 +39,14 @@ export default async function messagingResolver({
     token,
     page = 0,
     itemsPerPage = 20,
-    typeRecuperation = "received",
-    idClasseur = 0,
+    typeOfRecovery = "received",
+    binderId = 0,
 }: MessagingResolverParams): Promise<ResolvedMessaging> {
     try {
         const messagingResponse = await fetchApi<
             FetchApiResponse<ApiMessagingResponseData>
         >(
-            `https://api.ecoledirecte.com/v3/eleves/{USER_ID}/messages.awp?force=false&typeRecuperation=${typeRecuperation}&idClasseur=${idClasseur}&orderBy=date&order=desc&query=&onlyRead=&page=${page}&itemsPerPage=${itemsPerPage}&getAll=0&verbe=get&{API_VERSION}`,
+            `https://api.ecoledirecte.com/v3/eleves/{USER_ID}/messages.awp?force=false&typeRecuperation=${typeOfRecovery}&idClasseur=${binderId}&orderBy=date&order=desc&query=&onlyRead=&page=${page}&itemsPerPage=${itemsPerPage}&getAll=0&verbe=get&{API_VERSION}`,
             {
                 headers: { "X-Token": token },
                 method: "POST",
@@ -90,7 +88,7 @@ export default async function messagingResolver({
             folders: (classeurs || []).map(({ id, libelle }) => ({
                 id,
                 name: libelle,
-                messages: received.filter((m) => m.folderId === id),
+                messages: received.filter((m) => m.folder.id === id),
             })),
             pagination: {
                 receivedCount: pagination?.messagesRecusCount || 0,
@@ -118,18 +116,24 @@ function formatMessage(
     msg: ApiMessage,
     foldersById: Record<number, string> = {}
 ): FormattedMessage {
+    const fullSenderName =
+        [msg.from.civilite, msg.from.prenom, msg.from.particule, msg.from.nom]
+            .filter(Boolean)
+            .join(" ")
+            .trim() || "Inconnu";
     return {
         id: msg.id,
         subject: msg.subject || "(Sans objet)",
-        date: msg.date,
+        date: msg.date.replace(" ", "T"),
         read: msg.read,
         answered: msg.answered,
         transferred: msg.transferred,
         canAnswer: msg.canAnswer,
         type: msg.mtype,
-        folderId: msg.idClasseur || null,
-        folderName: foldersById[msg.idClasseur] || null,
-        hasAttachments: Array.isArray(msg.files) && msg.files.length > 0,
+        folder: {
+            id: msg.idClasseur || null,
+            name: foldersById[msg.idClasseur] || null,
+        },
         files: (msg.files || []).map((f) => ({
             id: f.id,
             libelle: f.libelle || "",
@@ -137,45 +141,9 @@ function formatMessage(
             ...f,
         })) as MessageAttachment[],
         recipientType: msg.to_cc_cci || null,
-        sender: formatSender(msg.from),
+        sender: fullSenderName,
     };
 }
-
-function formatSender(from?: ApiMessageSender): MessageSender {
-    if (!from) {
-        return {
-            id: null,
-            fullName: "Inconnu",
-            firstName: "",
-            lastName: "",
-            initials: "?",
-            role: null,
-        };
-    }
-
-    const fullName =
-        [from.civilite, from.prenom, from.particule, from.nom]
-            .filter(Boolean)
-            .join(" ")
-            .trim() || "Inconnu";
-
-    return {
-        id: from.id || null,
-        fullName,
-        firstName: from.prenom || "",
-        lastName: from.nom || "",
-        initials: getInitials(from),
-        role: from.role || null,
-    };
-}
-
-function getInitials(from?: ApiMessageSender): string {
-    if (!from) return "?";
-    const first = from.prenom?.[0] || "";
-    const last = from.nom?.[0] || "";
-    return `${first}${last}`.toUpperCase() || "?";
-}
-
 
 export async function messageContentResolver({
     token,
@@ -211,4 +179,3 @@ export async function messageContentResolver({
         throw e;
     }
 }
-
