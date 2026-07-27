@@ -3,11 +3,13 @@ import { FetchApiResponse } from "@/types";
 import base64Handler from "@/utils/handleBase64";
 import {
     ApiMessage,
+    ApiMessageSender,
     ApiMessagingResponseData,
     FormattedMessage,
     MessageAttachment,
     MessageContent,
     MessageContentResolverParams,
+    MessageSender,
     MessagingResolverParams,
     ResolvedMessaging,
 } from "../types";
@@ -112,6 +114,41 @@ export default async function messagingResolver({
     }
 }
 
+function formatSender(from?: ApiMessageSender): MessageSender {
+    if (!from) {
+        return {
+            id: null,
+            fullName: "Inconnu",
+            firstName: "",
+            lastName: "",
+            initials: "?",
+            role: null,
+        };
+    }
+
+    const fullName =
+        [from.civilite, from.prenom, from.particule, from.nom]
+            .filter(Boolean)
+            .join(" ")
+            .trim() || "Inconnu";
+
+    return {
+        id: from.id || null,
+        fullName,
+        firstName: from.prenom || "",
+        lastName: from.nom || "",
+        initials: getInitials(from),
+        role: from.role || null,
+    };
+}
+
+function getInitials(from?: ApiMessageSender): string {
+    if (!from) return "?";
+    const first = from.prenom?.[0] || "";
+    const last = from.nom?.[0] || "";
+    return `${first}${last}`.toUpperCase() || "?";
+}
+
 function formatMessage(
     msg: ApiMessage,
     foldersById: Record<number, string> = {}
@@ -141,7 +178,7 @@ function formatMessage(
             ...f,
         })) as MessageAttachment[],
         recipientType: msg.to_cc_cci || null,
-        sender: fullSenderName,
+        sender: formatSender(msg.from),
     };
 }
 

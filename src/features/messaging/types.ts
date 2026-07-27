@@ -75,7 +75,7 @@ export interface FormattedMessage {
     folder: { id: number | null; name: string | null };
     files: MessageAttachment[];
     recipientType: string | null;
-    sender: string;
+    sender: MessageSender;
 }
 
 export interface MessageFolder {
