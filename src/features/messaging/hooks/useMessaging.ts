@@ -10,6 +10,13 @@ export interface UseMessagingOptions {
     itemsPerPage?: number;
 }
 
+const PAGINATION_KEY_MAP = {
+    received: "receivedCount",
+    sent: "sentCount",
+    draft: "draftCount",
+    archived: "archivedCount",
+} as const;
+
 export function useMessaging(token: string, options: UseMessagingOptions = {}) {
     const { typeOfRecovery = "received", binderId = 0, itemsPerPage = 20 } = options;
 
@@ -28,9 +35,29 @@ export function useMessaging(token: string, options: UseMessagingOptions = {}) {
             if (!lastPage) return undefined;
 
             const lastPageMessages = lastPage[typeOfRecovery] || [];
+            if (lastPageMessages.length === 0) return undefined;
 
-            if (lastPageMessages.length < itemsPerPage) {
+            const paginationKey = PAGINATION_KEY_MAP[typeOfRecovery];
+            const totalAvailable = lastPage.pagination?.[paginationKey] ?? Infinity;
+            const totalFetchedIds = new Set(
+                allPages.flatMap((page) =>
+                    (page[typeOfRecovery] || []).map((m) => m.id)
+                )
+            );
+            if (totalFetchedIds.size >= totalAvailable) {
                 return undefined;
+            }
+            if (allPages.length > 1) {
+                const previousPage = allPages[allPages.length - 2];
+                const previousIds = new Set(
+                    (previousPage[typeOfRecovery] || []).map((m) => m.id)
+                );
+                const hasAnyNewId = lastPageMessages.some(
+                    (m) => !previousIds.has(m.id)
+                );
+                if (!hasAnyNewId) {
+                    return undefined;
+                }
             }
 
             return allPages.length;
