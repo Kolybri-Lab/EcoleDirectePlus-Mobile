@@ -16,6 +16,8 @@ import { objectsEqual } from "@/utils/json";
 import {
     convertTimeHoursMinToMinutes,
     getTimeInterval,
+    isAfter,
+    isBefore,
     isInInterval,
 } from "@/utils/time";
 import { useNavigation } from "@react-navigation/native";
@@ -66,56 +68,111 @@ export default function HomeScreen() {
         );
     }, [activeCourse, currentTime.time]);
 
-    const { nextCourse, nextDate, isLastCourseOfTheDay } = useMemo(() => {
-        if (!activeDate)
-            return { nextCourse: {}, nextDate: null, isLastCourseOfTheDay: null };
-
-        const activeCourseIndex = !objectsEqual(activeCourse, {})
-            ? activeDate.courses.indexOf(activeCourse)
-            : -1;
-        const isLastCourseOfTheDay =
-            activeCourseIndex === -1 ||
-            activeCourseIndex === activeDate.courses.length - 1;
-
-        if (isLastCourseOfTheDay) {
-            const activeDateIndex = timetableData.indexOf(activeDate);
-            const hasNoNextDate =
-                activeDateIndex === -1 ||
-                activeDateIndex === timetableData.length - 1;
-
-            if (hasNoNextDate) {
-                return {
-                    nextCourse: {},
-                    nextDate: null,
-                    isLastCourseOfTheDay,
-                };
-            }
-            const followingDate = timetableData[activeDateIndex + 1];
-            return {
-                nextCourse: {
-                    course: followingDate.courses[0] ?? {},
-                    timeRemaining: getTimeInterval(
-                        `${currentTime.date}T${currentTime.time}`,
-                        `${followingDate.courses[0].startCourse.date}T${followingDate.courses[0].startCourse.time}`
-                    ),
-                },
-                nextDate: followingDate,
-                isLastCourseOfTheDay,
-            };
-        }
-        const nextCourse = activeDate.courses[activeCourseIndex + 1];
-
+    function buildNextCourseResult(course, nextDate, isLastCourseOfTheDay) {
         return {
             nextCourse: {
-                course: nextCourse,
+                course,
                 timeRemaining: getTimeInterval(
                     `${currentTime.date}T${currentTime.time}`,
-                    `${nextCourse.startCourse.date}T${nextCourse.startCourse.time}`
+                    `${course.startCourse.date}T${course.startCourse.time}`
                 ),
             },
-            nextDate: activeDate,
+            nextDate,
             isLastCourseOfTheDay,
         };
+    }
+
+    const { nextCourse, nextDate, isLastCourseOfTheDay } = useMemo(() => {
+        const EMPTY_RESULT = {
+            nextCourse: {},
+            nextDate: null,
+            isLastCourseOfTheDay: null,
+        };
+
+        if (!activeDate) {
+            return EMPTY_RESULT;
+        }
+
+        const courses = activeDate.courses;
+        const firstCourse = courses[0];
+        const lastCourse = courses[courses.length - 1];
+
+        const activeCourseIndex = !objectsEqual(activeCourse, {})
+            ? courses.findIndex((c) => objectsEqual(c, activeCourse))
+            : -1;
+
+        const isLastCourseOfTheDay = activeCourseIndex === courses.length - 1;
+
+        // --- Détermine dans quelle phase de la journée on se trouve ---
+        const isBeforeSchoolDay = isBefore(
+            currentTime.time,
+            firstCourse.startCourse.time
+        );
+        const isDuringCourseHours = isInInterval(
+            currentTime.time,
+            firstCourse.startCourse.time,
+            lastCourse.endCourse.time
+        );
+        const isAfterSchoolDay = !isBeforeSchoolDay && !isDuringCourseHours;
+        const isOnBreakBetweenCourses =
+            isDuringCourseHours && activeCourseIndex === -1;
+        const isInsideACourse = activeCourseIndex !== -1;
+        // before the start of th day, next course is the first
+        if (isBeforeSchoolDay) {
+            return buildNextCourseResult(
+                firstCourse,
+                activeDate,
+                isLastCourseOfTheDay
+            );
+        }
+        // break between 2 courses, find the next that's about to start
+        if (isOnBreakBetweenCourses) {
+            const nextCourseIndex = courses.findIndex(({ startCourse }) =>
+                isAfter(startCourse.time, currentTime.time)
+            );
+
+            if (nextCourseIndex === -1) {
+                console.error("Big error: no next course found during course hours");
+                return { ...EMPTY_RESULT, isLastCourseOfTheDay };
+            }
+
+            return buildNextCourseResult(
+                courses[nextCourseIndex],
+                activeDate,
+                isLastCourseOfTheDay
+            );
+        }
+
+        // normal case
+        if (isInsideACourse && !isLastCourseOfTheDay) {
+            return buildNextCourseResult(
+                courses[activeCourseIndex + 1],
+                activeDate,
+                isLastCourseOfTheDay
+            );
+        }
+
+        // day ended or last course, next course is the first of the next day
+        if (isLastCourseOfTheDay || isAfterSchoolDay) {
+            const activeDateIndex = timetableData.findIndex((d) =>
+                objectsEqual(d, activeDate)
+            );
+            const followingDate = timetableData[activeDateIndex + 1];
+
+            if (!followingDate) {
+                return { nextCourse: {}, nextDate: null, isLastCourseOfTheDay };
+            }
+
+            return buildNextCourseResult(
+                followingDate.courses[0],
+                followingDate,
+                isLastCourseOfTheDay
+            );
+        }
+
+        // bruh
+        console.error("Big error: unhandled next-course state");
+        return EMPTY_RESULT;
     }, [activeDate, activeCourse, timetableData, currentTime]);
 
     const activeStatus = useMemo(() => {
@@ -152,7 +209,7 @@ export default function HomeScreen() {
                         isLast={isLastCourseOfTheDay}
                     />
                     <GeneralAveragePreview gradesData={gradesData} />
-                    <LastGrades lastGradesObject={gradesData.lastGrades} />
+                    <LastGrades lastGradesObject={gradesData?.lastGrades ?? {}} />
                     <HomeworksPreview
                         customHomeworks={customDataStore?.customHomeworks ?? {}}
                         homeworksDatas={homeworksData}
@@ -162,4 +219,3 @@ export default function HomeScreen() {
         </LinearGradient>
     );
 }
-
