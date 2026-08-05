@@ -55,7 +55,7 @@ export default function TimetableContent() {
     const activeDate = timetableData?.[currentIndex]?.iSODate || "";
 
     useEffect(() => {
-        if (!timetableCoreSuccessLoaded || !timetableData) return;
+        if (!timetableCoreSuccessLoaded || !Array.isArray(timetableData)) return;
 
         const todayIndex = timetableData.findIndex(
             (day) => day.date === CONFIG.dateNow
@@ -68,7 +68,7 @@ export default function TimetableContent() {
         dynamicOpacity.value = withSpring(1, { duration: 1500 });
     }, [timetableCoreSuccessLoaded, timetableData]);
 
-    if (isError) return null;
+
 
     return (
         <View
@@ -110,6 +110,7 @@ export default function TimetableContent() {
                             bottom: 0,
                         }}
                         onLongPress={() => {
+                            if (!Array.isArray(timetableData)) return;
                             const todayIndex = timetableData.findIndex(
                                 (day) => day.date === CONFIG.dateNow
                             );
