@@ -3,9 +3,14 @@ import gradesResolver from "@/features/grades/resolver/grades";
 import { ResolvedGrades } from "../types";
 
 export function useGrades(token: string) {
-    return useQuery<ResolvedGrades>({
+    const query = useQuery<ResolvedGrades>({
         queryKey: ["grades"],
         queryFn: () => gradesResolver(token) as Promise<ResolvedGrades>,
         enabled: Boolean(token),
     });
+
+    return {
+        ...query,
+        data: query.data ?? ({} as ResolvedGrades),
+    };
 }

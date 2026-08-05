@@ -26,103 +26,98 @@ const skillColorsCodes: Record<string, string> = {
 export default async function gradesResolver(
     token: string
 ): Promise<ResolvedGrades | Record<string, never>> {
-    try {
-        const gradesResponse = await fetchApi<FetchApiResponse<ApiGradesResponse>>(
-            "https://api.ecoledirecte.com/v3/eleves/{USER_ID}/notes.awp?verbe=get&{API_VERSION}",
-            {
-                headers: { "X-Token": token },
-                method: "POST",
-                body: {
-                    anneeScolaire: "",
-                },
-            }
-        );
-        if (!gradesResponse || gradesResponse.isDataEmpty) {
-            return {};
+    const gradesResponse = await fetchApi<FetchApiResponse<ApiGradesResponse>>(
+        "https://api.ecoledirecte.com/v3/eleves/{USER_ID}/notes.awp?verbe=get&{API_VERSION}",
+        {
+            headers: { "X-Token": token },
+            method: "POST",
+            body: {
+                anneeScolaire: "",
+            },
         }
-        const grades = gradesResponse.data;
-        const activePeriod = extractActivePeriod(grades.periodes);
-        const periodsObj = (grades.periodes || []).reduce<
-            Record<string, FormattedPeriod>
-        >((acc, period) => {
-            if (period.annuel) return acc;
+    );
+    if (!gradesResponse || gradesResponse.isDataEmpty) {
+        return {};
+    }
+    const grades = gradesResponse.data;
+    const activePeriod = extractActivePeriod(grades.periodes);
+    const periodsObj = (grades.periodes || []).reduce<
+        Record<string, FormattedPeriod>
+    >((acc, period) => {
+        if (period.annuel) return acc;
 
-            const groups: Array<any> = [];
-            let currentGroup: any = null;
+        const groups: Array<any> = [];
+        let currentGroup: any = null;
 
-            for (const disciplineRaw of period.ensembleMatieres.disciplines) {
-                const discipline = parseDiscipline(disciplineRaw);
+        for (const disciplineRaw of period.ensembleMatieres.disciplines) {
+            const discipline = parseDiscipline(disciplineRaw);
 
-                if (discipline.isDisciplineGroup) {
-                    delete (discipline as any).code;
-                    currentGroup = {
-                        disciplines: [],
-                        isDisciplineGroup: true,
-                        name: discipline.libelle,
-                    };
-                    groups.push(currentGroup);
-                    continue;
-                }
-
-                if (disciplineRaw.sousMatiere) {
-                    if (currentGroup) {
-                        currentGroup.disciplines.push(discipline);
-                    }
-                    continue;
-                }
-
-                currentGroup = null;
-                groups.push(discipline);
+            if (discipline.isDisciplineGroup) {
+                delete (discipline as any).code;
+                currentGroup = {
+                    disciplines: [],
+                    isDisciplineGroup: true,
+                    name: discipline.libelle,
+                };
+                groups.push(currentGroup);
+                continue;
             }
 
-            acc[period.codePeriode] = {
-                globalStreakScore: undefined,
-                groups,
-                periodName: period.periode,
-            };
-            return acc;
-        }, {});
-
-        const rawNotes = grades.notes || [];
-
-        Object.entries(periodsObj).forEach(([periodCode, periodData]) => {
-            periodData.groups.forEach((group: any, indexGroup: number) => {
-                if (group.isDisciplineGroup) {
-                    group.disciplines.forEach(
-                        (discipline: any, indexDiscipline: number) => {
-                            const enriched = enrichDiscipline(
-                                discipline,
-                                periodCode,
-                                rawNotes
-                            );
-                            (
-                                periodsObj[periodCode].groups[indexGroup] as any
-                            ).disciplines[indexDiscipline] = enriched;
-                        }
-                    );
-                } else {
-                    const enriched = enrichDiscipline(group, periodCode, rawNotes);
-                    periodsObj[periodCode].groups[indexGroup] = enriched;
+            if (disciplineRaw.sousMatiere) {
+                if (currentGroup) {
+                    currentGroup.disciplines.push(discipline);
                 }
-            });
+                continue;
+            }
+
+            currentGroup = null;
+            groups.push(discipline);
+        }
+
+        acc[period.codePeriode] = {
+            globalStreakScore: undefined,
+            groups,
+            periodName: period.periode,
+        };
+        return acc;
+    }, {});
+
+    const rawNotes = grades.notes || [];
+
+    Object.entries(periodsObj).forEach(([periodCode, periodData]) => {
+        periodData.groups.forEach((group: any, indexGroup: number) => {
+            if (group.isDisciplineGroup) {
+                group.disciplines.forEach(
+                    (discipline: any, indexDiscipline: number) => {
+                        const enriched = enrichDiscipline(
+                            discipline,
+                            periodCode,
+                            rawNotes
+                        );
+                        (
+                            periodsObj[periodCode].groups[indexGroup] as any
+                        ).disciplines[indexDiscipline] = enriched;
+                    }
+                );
+            } else {
+                const enriched = enrichDiscipline(group, periodCode, rawNotes);
+                periodsObj[periodCode].groups[indexGroup] = enriched;
+            }
         });
+    });
 
-        const result = streakDataInjectedIntoGrades(periodsObj) as any;
+    const result = streakDataInjectedIntoGrades(periodsObj) as any;
 
-        const lastGrades = getLatestGrades(grades.notes || [], 10);
+    const lastGrades = getLatestGrades(grades.notes || [], 10);
 
-        Object.defineProperty(result, "lastGrades", {
-            value: lastGrades,
-            enumerable: true,
-            writable: true,
-            configurable: true,
-        });
+    Object.defineProperty(result, "lastGrades", {
+        value: lastGrades,
+        enumerable: true,
+        writable: true,
+        configurable: true,
+    });
 
-        return { ...result, activePeriod } as ResolvedGrades;
-    } catch (e) {
-        console.log("Error inside grades resolver : ", e);
-        throw e;
-    }
+    return { ...result, activePeriod } as ResolvedGrades;
 }
 const extractActivePeriod = (periods: ApiPeriod[]) => {
     const date = new Date();
