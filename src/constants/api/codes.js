@@ -59,6 +59,5 @@ export const getApiMessage = (code) => {
             return category[code];
         }
     }
-    return "Erreur inconnue";
 };
 
