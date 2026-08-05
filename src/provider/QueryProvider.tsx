@@ -1,15 +1,30 @@
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createMMKV } from "react-native-mmkv";
+import { useErrorStore } from "@/hooks/useErrorStore";
 
 export const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+        onError: (error) => {
+            useErrorStore.getState().pushError(error as any);
+        },
+    }),
+    mutationCache: new MutationCache({
+        onError: (error) => {
+            useErrorStore.getState().pushError(error as any);
+        },
+    }),
     defaultOptions: {
         queries: {
             staleTime: 1000 * 60 * 5, // 5 min
             gcTime: 1000 * 60 * 60 * 14, // 14 h
             refetchOnWindowFocus: false,
-            retry: 2,
+            placeholderData: (previousData) => previousData,
+            retry: (failureCount, error: any) => {
+                if (error?.type === "auth" || error?.type === "api-business") return false;
+                return failureCount < 2;
+            },
         },
     },
 });

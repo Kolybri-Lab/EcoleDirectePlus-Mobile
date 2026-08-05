@@ -35,10 +35,11 @@ export const convertApiResponse = async (response: Response): Promise<any> => {
                 "Échec du parsing JSON (panne ou maintenance d'EcoleDirecte ?) :",
                 error
             );
-            return {
+            throw {
                 code: 502,
                 message: "Serveur EcoleDirecte indisponible ou en maintenance.",
                 data: {},
+                originalError: error,
             };
         }
     } else {
