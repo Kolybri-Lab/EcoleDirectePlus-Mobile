@@ -169,7 +169,7 @@ export default function GradesContent() {
         []
     );
 
-    if (isError) return null;
+
 
     return (
         <View style={{ flex: 1 }}>

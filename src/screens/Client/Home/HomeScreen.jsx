@@ -21,14 +21,15 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useMemo, useState } from "react";
-import { ScrollView, View } from "react-native";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 
 export default function HomeScreen() {
     const { signOut } = useSignIn();
     const navigation = useNavigation();
 
     const token = useUserStore((state) => state.token);
-    const { name } = useUserStore((state) => state.profile);
+    const profile = useUserStore((state) => state.profile);
+    const name = profile?.name ?? "";
     const { data: timetableData } = useTimetable(token);
     const { data: gradesData } = useGrades(token);
 
@@ -38,7 +39,7 @@ export default function HomeScreen() {
     const [greetingMessage] = useState(getGreetingMessage);
 
     const activeDate = useMemo(() => {
-        if (!timetableData) return null;
+        if (!Array.isArray(timetableData)) return null;
         return (
             timetableData.find(({ date }) => date === getTodayDateString()) ?? null
         );
@@ -137,11 +138,37 @@ export default function HomeScreen() {
                 scrollEventThrottle={16}
                 overScrollMode="never"
             >
-                <View style={{ marginTop: "25%", marginBottom: 28 }}>
-                    <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
-                        {greetingMessage}
-                    </Text>
-                    <Text size={38}>{name}</Text>
+                <View
+                    style={{
+                        marginTop: "20%",
+                        marginBottom: 28,
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "flex-start",
+                    }}
+                >
+                    <View>
+                        <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
+                            {greetingMessage}
+                        </Text>
+                        <Text size={38}>{name}</Text>
+                    </View>
+                    <TouchableOpacity
+                        onPress={signOut}
+                        style={{
+                            paddingVertical: 8,
+                            paddingHorizontal: 14,
+                            borderRadius: 10,
+                            backgroundColor: "hsla(0, 70%, 50%, 0.2)",
+                            borderWidth: 1,
+                            borderColor: "hsla(0, 70%, 50%, 0.4)",
+                            marginTop: 8,
+                        }}
+                    >
+                        <Text size={14} color="hsla(0, 100%, 80%, 1)">
+                            Déconnexion
+                        </Text>
+                    </TouchableOpacity>
                 </View>
                 <View style={{ alignItems: "center", gap: 20 }}>
                     <ActiveCourseCard
@@ -152,7 +179,9 @@ export default function HomeScreen() {
                         isLast={isLastCourseOfTheDay}
                     />
                     <GeneralAveragePreview gradesData={gradesData} />
-                    <LastGrades lastGradesObject={gradesData.lastGrades} />
+                    {gradesData?.lastGrades ? (
+                        <LastGrades lastGradesObject={gradesData.lastGrades} />
+                    ) : null}
                     <HomeworksPreview
                         customHomeworks={customDataStore?.customHomeworks ?? {}}
                         homeworksDatas={homeworksData}
