@@ -1,4 +1,5 @@
 import { useAuthStore } from "@/hooks/useAuthStore";
+import { useErrorStore } from "@/hooks/useErrorStore";
 import authService from "@/services/login/authService";
 import storeDatas from "@/services/login/tools/storeLoginDatas";
 import dayjs from "dayjs";
@@ -192,6 +193,7 @@ const getShiftedTimetable = (requestedMonday?: string) => {
 };
 
 export const loginAsGuest = async (keepConnected: boolean = true) => {
+    useErrorStore.getState().clearAll();
     const accountData = mockLogin?.data?.accounts?.[0] || {
         id: 7875,
         typeCompte: "E",
