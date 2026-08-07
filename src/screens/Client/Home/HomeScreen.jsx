@@ -11,6 +11,7 @@ import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 import { useSignIn } from "@/hooks/useSignIn";
 import { useUserStore } from "@/hooks/useUserStore";
+import { useErrorStore } from "@/hooks/useErrorStore";
 import { getTodayDateString } from "@/utils/date";
 import { objectsEqual } from "@/utils/json";
 import {
@@ -68,7 +69,7 @@ export default function HomeScreen() {
     }, [activeCourse, currentTime.time]);
 
     const { nextCourse, nextDate, isLastCourseOfTheDay } = useMemo(() => {
-        if (!activeDate)
+        if (!activeDate || !Array.isArray(timetableData) || !Array.isArray(activeDate?.courses))
             return { nextCourse: {}, nextDate: null, isLastCourseOfTheDay: null };
 
         const activeCourseIndex = !objectsEqual(activeCourse, {})
@@ -92,12 +93,21 @@ export default function HomeScreen() {
                 };
             }
             const followingDate = timetableData[activeDateIndex + 1];
+            const firstCourse = followingDate?.courses?.[0];
+            if (!firstCourse || !firstCourse.startCourse) {
+                return {
+                    nextCourse: {},
+                    nextDate: null,
+                    isLastCourseOfTheDay,
+                };
+            }
+
             return {
                 nextCourse: {
-                    course: followingDate.courses[0] ?? {},
+                    course: firstCourse,
                     timeRemaining: getTimeInterval(
                         `${currentTime.date}T${currentTime.time}`,
-                        `${followingDate.courses[0].startCourse.date}T${followingDate.courses[0].startCourse.time}`
+                        `${firstCourse.startCourse.date}T${firstCourse.startCourse.time}`
                     ),
                 },
                 nextDate: followingDate,
@@ -105,6 +115,13 @@ export default function HomeScreen() {
             };
         }
         const nextCourse = activeDate.courses[activeCourseIndex + 1];
+        if (!nextCourse || !nextCourse.startCourse) {
+            return {
+                nextCourse: {},
+                nextDate: null,
+                isLastCourseOfTheDay,
+            };
+        }
 
         return {
             nextCourse: {
@@ -147,7 +164,7 @@ export default function HomeScreen() {
                         alignItems: "flex-start",
                     }}
                 >
-                    <View>
+                    <View style={{ flex: 1, marginRight: 10 }}>
                         <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
                             {greetingMessage}
                         </Text>
@@ -186,6 +203,88 @@ export default function HomeScreen() {
                         customHomeworks={customDataStore?.customHomeworks ?? {}}
                         homeworksDatas={homeworksData}
                     />
+                    {/* Panel de Test Développeur Erreurs */}
+                    <View
+                        style={{
+                            marginTop: 24,
+                            marginBottom: 40,
+                            padding: 16,
+                            borderRadius: 16,
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            borderWidth: 1,
+                            borderColor: "rgba(255, 255, 255, 0.1)",
+                            width: "100%",
+                            gap: 10,
+                        }}
+                    >
+                        <Text size={16} color="hsla(1, 0%, 100%, 0.8)">
+                            🧪 Zone de Test Erreurs & Bandeau
+                        </Text>
+                        <TouchableOpacity
+                            onPress={() =>
+                                useErrorStore.getState().pushError({
+                                    type: "network",
+                                    message: "Connexion Internet interrompue",
+                                    isRetryable: true,
+                                })
+                            }
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(239, 68, 68, 0.2)",
+                            }}
+                        >
+                            <Text size={13} color="#EF4444">
+                                🔴 Simuler Panne Réseau
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => useErrorStore.getState().setHasStaleData(true)}
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(245, 158, 11, 0.2)",
+                            }}
+                        >
+                            <Text size={13} color="#F59E0B">
+                                🟡 Simuler Données Obsolètes
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() =>
+                                useErrorStore.getState().pushError({
+                                    type: "api-business",
+                                    code: 403,
+                                    message:
+                                        "Nous avons enregistré votre adresse IP...",
+                                })
+                            }
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(249, 115, 22, 0.2)",
+                            }}
+                        >
+                            <Text size={13} color="#F97316">
+                                🟠 Simuler Erreur ED (Code 403)
+                            </Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={() => {
+                                useErrorStore.getState().clearNetworkErrors();
+                                useErrorStore.getState().setHasStaleData(false);
+                            }}
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(16, 185, 129, 0.2)",
+                            }}
+                        >
+                            <Text size={13} color="#10B981">
+                                🟢 Résoudre les Erreurs
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
             </ScrollView>
         </LinearGradient>

@@ -13,6 +13,7 @@ import SplashScreen from "@/screens/Splash/SplashScreen";
 import { THEMES_ASSOCIATIONS } from "@/themes/themes";
 import Auth from "./display/auth/Auth";
 import Client from "./display/client/Client";
+import NetworkBanner from "@/components/error/NetworkBanner";
 
 export default function AuthNavigator() {
     const activeMode = useActiveThemeMode();
@@ -105,6 +106,7 @@ export default function AuthNavigator() {
                     <Auth />
                 )}
             </NavigationContainer>
+            <NetworkBanner />
         </GestureHandlerRootView>
     );
 }

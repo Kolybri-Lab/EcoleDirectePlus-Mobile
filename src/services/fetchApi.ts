@@ -11,7 +11,7 @@ export default async function fetchApi<T>(
         const token =
             requestPayload?.headers?.["X-Token"] || useUserStore.getState().token;
 
-        if (token === "guest_token") {
+        if (token === "guest_token" && !url.includes("/login.awp")) {
             const { getGuestData } = require("@/mock/guest/guestData");
             const response = getGuestData(url, requestPayload?.body);
             return {

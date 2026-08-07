@@ -94,6 +94,8 @@ export const useCustomDataStore = create<CustomDataState>()(
                 set({
                     customHomeworks: [],
                     simulatedGrades: [],
+                    selectedGradePeriodInfos: null,
+                    selectedGradePeriod: null,
                 }),
         }),
         {
