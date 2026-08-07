@@ -30,21 +30,6 @@ export default function MessagingScreen() {
         return dedupeById(flat);
     }, [data]);
 
-    const handleLoadMore = () => {
-        if (hasNextPage && !isFetchingNextPage && !isLoading) {
-            fetchNextPage();
-        }
-    };
-
-    if (isLoading) return <ActivityIndicator size="large" />;
-
-    if (isError) {
-        return (
-            <View style={{ padding: 16 }}>
-                <Text>Une erreur est survenue lors du chargement des messages.</Text>
-            </View>
-        );
-    }
     const renderItem = useCallback(
         ({ item, index }) => {
             let borderRadiusStyle = {};
@@ -144,8 +129,24 @@ export default function MessagingScreen() {
                 </View>
             );
         },
-        [data]
+        [messages]
     );
+
+    const handleLoadMore = () => {
+        if (hasNextPage && !isFetchingNextPage && !isLoading) {
+            fetchNextPage();
+        }
+    };
+
+    if (isLoading) return <ActivityIndicator size="large" />;
+
+    if (isError) {
+        return (
+            <View style={{ padding: 16 }}>
+                <Text>Une erreur est survenue lors du chargement des messages.</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={{ flex: 1, marginHorizontal: 16 }}>
@@ -153,7 +154,6 @@ export default function MessagingScreen() {
                 data={messages}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={{ paddingBottom: tabPadding, gap: 4 }}
-                stickyHeaderIndices={[0]}
                 renderItem={renderItem}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.5}
