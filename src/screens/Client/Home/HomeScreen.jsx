@@ -38,6 +38,13 @@ export default function HomeScreen() {
     const customDataStore = useCustomDataStore();
     const currentTime = useCurrentTime();
     const [greetingMessage] = useState(getGreetingMessage);
+    const [shouldCrashRender, setShouldCrashRender] = useState(false);
+
+    if (shouldCrashRender) {
+        throw new Error(
+            "Simulated React Component Render Crash for ErrorBoundary Testing!"
+        );
+    }
 
     const activeDate = useMemo(() => {
         if (!Array.isArray(timetableData)) return null;
@@ -69,7 +76,11 @@ export default function HomeScreen() {
     }, [activeCourse, currentTime.time]);
 
     const { nextCourse, nextDate, isLastCourseOfTheDay } = useMemo(() => {
-        if (!activeDate || !Array.isArray(timetableData) || !Array.isArray(activeDate?.courses))
+        if (
+            !activeDate ||
+            !Array.isArray(timetableData) ||
+            !Array.isArray(activeDate?.courses)
+        )
             return { nextCourse: {}, nextDate: null, isLastCourseOfTheDay: null };
 
         const activeCourseIndex = !objectsEqual(activeCourse, {})
@@ -203,11 +214,11 @@ export default function HomeScreen() {
                         customHomeworks={customDataStore?.customHomeworks ?? {}}
                         homeworksDatas={homeworksData}
                     />
-                    {/* Panel de Test Développeur Erreurs */}
+                    {/* Panel de Test Développeur Erreurs & Toasts */}
                     <View
                         style={{
                             marginTop: 24,
-                            marginBottom: 40,
+                            marginBottom: 140,
                             padding: 16,
                             borderRadius: 16,
                             backgroundColor: "rgba(255, 255, 255, 0.05)",
@@ -218,8 +229,10 @@ export default function HomeScreen() {
                         }}
                     >
                         <Text size={16} color="hsla(1, 0%, 100%, 0.8)">
-                            🧪 Zone de Test Erreurs & Bandeau
+                            🧪 Zone de Test Erreurs, Bandeau & Toasts
                         </Text>
+
+                        {/* BANDEAUX */}
                         <TouchableOpacity
                             onPress={() =>
                                 useErrorStore.getState().pushError({
@@ -235,11 +248,14 @@ export default function HomeScreen() {
                             }}
                         >
                             <Text size={13} color="#EF4444">
-                                🔴 Simuler Panne Réseau
+                                🔴 Bandeau : Panne Réseau
                             </Text>
                         </TouchableOpacity>
+
                         <TouchableOpacity
-                            onPress={() => useErrorStore.getState().setHasStaleData(true)}
+                            onPress={() =>
+                                useErrorStore.getState().setHasStaleData(true)
+                            }
                             style={{
                                 padding: 10,
                                 borderRadius: 8,
@@ -247,16 +263,17 @@ export default function HomeScreen() {
                             }}
                         >
                             <Text size={13} color="#F59E0B">
-                                🟡 Simuler Données Obsolètes
+                                🟡 Bandeau : Données Obsolètes
                             </Text>
                         </TouchableOpacity>
+
+                        {/* TOASTS API ED & UNKNOWN */}
                         <TouchableOpacity
                             onPress={() =>
                                 useErrorStore.getState().pushError({
                                     type: "api-business",
                                     code: 403,
-                                    message:
-                                        "Nous avons enregistré votre adresse IP...",
+                                    message: "ED 403 : Adresse IP enregistrée / WAF",
                                 })
                             }
                             style={{
@@ -266,13 +283,129 @@ export default function HomeScreen() {
                             }}
                         >
                             <Text size={13} color="#F97316">
-                                🟠 Simuler Erreur ED (Code 403)
+                                🟠 Toast : ED Code 403 (WAF Rate-limit)
                             </Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() =>
+                                useErrorStore.getState().pushError({
+                                    type: "api-business",
+                                    code: 535,
+                                    message: "ED 535 : Établissement indisponible",
+                                })
+                            }
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(236, 72, 153, 0.2)",
+                            }}
+                        >
+                            <Text size={13} color="#EC4899">
+                                🏢 Toast : ED Code 535 (Établissement fermé)
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() =>
+                                useErrorStore.getState().pushError({
+                                    type: "api-business",
+                                    code: 517,
+                                    message: "ED 517 : Version d'API obsolète",
+                                })
+                            }
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(168, 85, 247, 0.2)",
+                            }}
+                        >
+                            <Text size={13} color="#A855F7">
+                                ⚠️ Toast : ED Code 517 (API périmée)
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() =>
+                                useErrorStore.getState().pushError({
+                                    type: "unknown",
+                                    message:
+                                        "Erreur inattendue au traitement des données",
+                                    endpoint: "/v3/eleves/notes.awp",
+                                })
+                            }
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(99, 102, 241, 0.2)",
+                            }}
+                        >
+                            <Text size={13} color="#6366F1">
+                                ❓ Toast : Erreur Inconnue / Mapping
+                            </Text>
+                        </TouchableOpacity>
+
+                        {/* CRASHS BLOQUANTS & ERROR BOUNDARY */}
+                        <TouchableOpacity
+                            onPress={() => setShouldCrashRender(true)}
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(220, 38, 38, 0.3)",
+                                borderWidth: 1,
+                                borderColor: "#DC2626",
+                            }}
+                        >
+                            <Text size={13} color="#FCA5A5">
+                                💥 Crash : Rendu Component React (ErrorBoundary)
+                            </Text>
+                        </TouchableOpacity>
+
                         <TouchableOpacity
                             onPress={() => {
-                                useErrorStore.getState().clearNetworkErrors();
-                                useErrorStore.getState().setHasStaleData(false);
+                                const invalidObject = null;
+                                invalidObject.triggerNullPointerMethod();
+                            }}
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(185, 28, 28, 0.3)",
+                                borderWidth: 1,
+                                borderColor: "#B91C1C",
+                            }}
+                        >
+                            <Text size={13} color="#FCA5A5">
+                                💣 Crash : Exception JS Null Pointer / TypeError
+                            </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                            onPress={() => {
+                                useErrorStore.getState().pushError({
+                                    type: "auth",
+                                    reason: "session_expired",
+                                    message:
+                                        "Session expirée, veuillez vous reconnecter",
+                                });
+                                signOut();
+                            }}
+                            style={{
+                                padding: 10,
+                                borderRadius: 8,
+                                backgroundColor: "rgba(217, 119, 6, 0.3)",
+                                borderWidth: 1,
+                                borderColor: "#D97706",
+                            }}
+                        >
+                            <Text size={13} color="#FDE68A">
+                                🔑 Crash : Session Expirée ED (Auto-Logout)
+                            </Text>
+                        </TouchableOpacity>
+
+                        {/* RÉSOLUTION & EFFACEMENT */}
+                        <TouchableOpacity
+                            onPress={() => {
+                                useErrorStore.getState().clearAll();
                             }}
                             style={{
                                 padding: 10,
@@ -281,7 +414,7 @@ export default function HomeScreen() {
                             }}
                         >
                             <Text size={13} color="#10B981">
-                                🟢 Résoudre les Erreurs
+                                🟢 Résoudre / Effacer Toutes les Erreurs
                             </Text>
                         </TouchableOpacity>
                     </View>
