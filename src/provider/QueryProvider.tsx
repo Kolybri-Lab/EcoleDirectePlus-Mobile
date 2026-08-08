@@ -6,11 +6,17 @@ import { useErrorStore } from "@/hooks/useErrorStore";
 
 export const queryClient = new QueryClient({
     queryCache: new QueryCache({
+        onSuccess: () => {
+            useErrorStore.getState().clearNetworkErrors();
+        },
         onError: (error) => {
             useErrorStore.getState().pushError(error as any);
         },
     }),
     mutationCache: new MutationCache({
+        onSuccess: () => {
+            useErrorStore.getState().clearNetworkErrors();
+        },
         onError: (error) => {
             useErrorStore.getState().pushError(error as any);
         },
