@@ -38,7 +38,7 @@ export const useErrorStore = create<ErrorStoreState>((set, get) => ({
                 errors: state.errors.map((e) =>
                     e.id === existingDuplicate.id ? { ...e, timestamp: now } : e
                 ),
-                hasStaleData: options?.hasStaleData ?? state.hasStaleData ?? true,
+                hasStaleData: options?.hasStaleData ?? true,
             }));
             return existingDuplicate.id;
         }
@@ -69,13 +69,11 @@ export const useErrorStore = create<ErrorStoreState>((set, get) => ({
     },
 
     dismissError: (id) => {
-        set((state) => {
-            const remainingErrors = state.errors.filter((e) => e.id !== id);
-            return {
-                errors: remainingErrors,
-                hasStaleData: remainingErrors.length > 0 ? state.hasStaleData : false,
-            };
-        });
+        set((state) => ({
+            errors: state.errors.filter((e) => e.id !== id),
+            // On ne réinitialise PAS hasStaleData à la fermeture du Toast.
+            // Les données restent obsolètes jusqu'à confirmation d'un refresh réussi.
+        }));
     },
 
     clearAuthErrors: () => {
