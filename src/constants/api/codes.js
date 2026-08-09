@@ -51,6 +51,12 @@ export const API_CODES = {
     programGeneratedCodes: {
         1005: "Choix et/ou propositions inéxistantes dans le process A2F",
     },
+    api: {
+        403: "Limites d'appel atteintes",
+        517: "API périmée",
+        535: "Établissement fermé",
+        40129: "Format JSON invalide",
+    },
 };
 
 export const getApiMessage = (code) => {
