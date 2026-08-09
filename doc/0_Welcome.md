@@ -8,6 +8,8 @@ sidebar_label: 01. Welcome
 
 Ce document définit la façon dont vous pouvez contribuer au projet. Il est important de le lire attentivement avant de commencer à contribuer.
 
+PS : Dans un éditeur de code comme VSCode pensez à faire Ctrl+Maj+V pour visionner le rendu de la doc.
+
 ---
 
 ## 🚀 Installation rapide
