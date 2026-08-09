@@ -1,12 +1,14 @@
 import { splitCookiesString } from "set-cookie-parser";
 
-export const getCookiesFromResponse = (response: Response): string | string[] => {
+export const getCookiesFromResponse = (response: Response): string => {
     const setCookieHeader = getHeaderFromResponse({ response, item: "set-cookie" });
-    if (setCookieHeader === null) return [];
+    if (!setCookieHeader) return "";
 
-    return splitCookiesString(setCookieHeader).map(
-        (cookie) => cookie.split(";")[0]
-    )[0];
+    return (
+        splitCookiesString(setCookieHeader).map(
+            (cookie) => cookie.split(";")[0]
+        )[0] ?? ""
+    );
 };
 
 export const getHeaderFromResponse = ({
