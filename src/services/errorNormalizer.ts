@@ -1,5 +1,4 @@
 import { AppError } from "@/types";
-import { getApiMessage } from "@/constants/api/codes";
 
 function normalizeApiError(rawError: any): AppError | null {
     const code = rawError.code;
@@ -29,10 +28,7 @@ function normalizeApiError(rawError: any): AppError | null {
     return {
         type: "api-business",
         code,
-        message:
-            getApiMessage(code) ||
-            rawError.message ||
-            "Erreur du serveur École Directe",
+        message: rawError.message || "Erreur du serveur École Directe",
     };
 }
 
