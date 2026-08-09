@@ -71,8 +71,6 @@ export const useErrorStore = create<ErrorStoreState>((set, get) => ({
     dismissError: (id) => {
         set((state) => ({
             errors: state.errors.filter((e) => e.id !== id),
-            // On ne réinitialise PAS hasStaleData à la fermeture du Toast.
-            // Les données restent obsolètes jusqu'à confirmation d'un refresh réussi.
         }));
     },
 
@@ -83,10 +81,16 @@ export const useErrorStore = create<ErrorStoreState>((set, get) => ({
     },
 
     clearNetworkErrors: () => {
-        set((state) => ({
-            errors: state.errors.filter((e) => e.error.type !== "network"),
-            hasStaleData: false,
-        }));
+        set((state) => {
+            const hasNetworkErrors = state.errors.some((e) => e.error.type === "network");
+            if (!hasNetworkErrors && !state.hasStaleData) {
+                return state;
+            }
+            return {
+                errors: state.errors.filter((e) => e.error.type !== "network"),
+                hasStaleData: false,
+            };
+        });
     },
 
     setHasStaleData: (hasStaleData) => {
@@ -97,3 +101,4 @@ export const useErrorStore = create<ErrorStoreState>((set, get) => ({
         set({ errors: [], hasStaleData: false });
     },
 }));
+
