@@ -42,7 +42,36 @@ export default function HomeScreen() {
 
     if (shouldCrashRender) {
         throw new Error(
-            "Simulated React Component Render Crash for ErrorBoundary Testing!"
+            "TypeError: Cannot read property 'courses' of undefined\n" +
+                "    at HomeScreen (HomeScreen.jsx:59:24)\n" +
+                "    at renderWithHooks (react-dom.development.js:16305)\n" +
+                "    at mountIndeterminateComponent (react-dom.development.js:20074)\n" +
+                "    at beginWork (react-dom.development.js:21587)\n" +
+                "    at performUnitOfWork (react-dom.development.js:26560)\n" +
+                "    at workLoopSync (react-dom.development.js:26473)\n" +
+                "    at renderRootSync (react-dom.development.js:26446)\n" +
+                "    at performConcurrentWorkOnRoot (react-dom.development.js:25738)\n" +
+                "    at workLoop (scheduler.development.js:266)\n" +
+                "    at flushWork (scheduler.development.js:239)\n" +
+                "    at performWorkUntilDeadline (scheduler.development.js:533)\n" +
+                "    at dispatchAction (react-dom.development.js:16139)\n" +
+                "    at handlePress (TouchableOpacity.js:112)\n" +
+                "    at invokeGuardedCallback (react-dom.development.js:4158)\n" +
+                "    at executeDispatch (react-dom.development.js:8243)" +
+                "    at renderWithHooks (react-dom.development.js:16305)\n" +
+                "    at mountIndeterminateComponent (react-dom.development.js:20074)\n" +
+                "    at beginWork (react-dom.development.js:21587)\n" +
+                "    at performUnitOfWork (react-dom.development.js:26560)\n" +
+                "    at workLoopSync (react-dom.development.js:26473)\n" +
+                "    at renderRootSync (react-dom.development.js:26446)\n" +
+                "    at performConcurrentWorkOnRoot (react-dom.development.js:25738)\n" +
+                "    at workLoop (scheduler.development.js:266)\n" +
+                "    at flushWork (scheduler.development.js:239)\n" +
+                "    at performWorkUntilDeadline (scheduler.development.js:533)\n" +
+                "    at dispatchAction (react-dom.development.js:16139)\n" +
+                "    at handlePress (TouchableOpacity.js:112)\n" +
+                "    at invokeGuardedCallback (react-dom.development.js:4158)\n" +
+                "    at executeDispatch (react-dom.development.js:8243)"
         );
     }
 
