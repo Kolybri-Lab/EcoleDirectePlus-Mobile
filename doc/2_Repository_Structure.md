@@ -1,6 +1,6 @@
 ---
 id: 02_repository_structure
-title: Repository Structure
+title: Structure du repo
 sidebar_label: 02. Repository Structure
 ---
 
@@ -71,18 +71,23 @@ Chaque grande fonctionnalité d'Ecole Directe (Notes, Devoirs, Emploi du temps, 
 L'application utilise une architecture orientée fonctionnalités (**Feature-Driven Architecture**). Ce choix implique plusieurs principes fondamentaux à respecter :
 
 ### 1. Haute Cohésion et Localité du Code
-Tous les fichiers concourant à une même fonctionnalité métier (ex: les notes scolaires) sont stockés physiquement dans le même dossier (`src/features/grades/`). 
-*   **Maintenance facilitée** : Un développeur travaillant sur les notes n'a pas à naviguer dans l'arborescence globale ; tout le contexte (UI locale, hooks, modèles, resolvers) est regroupé.
-*   **Cycle de vie clair** : Si une fonctionnalité doit être supprimée ou réécrite, il suffit de supprimer son répertoire de feature.
+
+Tous les fichiers concourant à une même fonctionnalité métier (ex: les notes scolaires) sont stockés physiquement dans le même dossier (`src/features/grades/`).
+
+- **Maintenance facilitée** : Un développeur travaillant sur les notes n'a pas à naviguer dans l'arborescence globale ; tout le contexte (UI locale, hooks, modèles, resolvers) est regroupé.
+- **Cycle de vie clair** : Si une fonctionnalité doit être supprimée ou réécrite, il suffit de supprimer son répertoire de feature.
 
 ### 2. Gestion de la Duplication (DRY vs Cohesion)
+
 Pour éviter de réinventer la roue tout en conservant le cloisonnement des features :
-*   **`src/components/` (Kit UI global)** : Contient les composants génériques, sans logique métier (ex: boutons, structures d'alignement, entrées de formulaire, icônes vectorielles). Ils forment le *Design System* de l'application.
-*   **`src/features/[feature]/components/`** : Contient des composants spécifiques à la fonctionnalité qui ne seront jamais réutilisés ailleurs (ex: `HomeworkCard`).
+
+- **`src/components/` (Kit UI global)** : Contient les composants génériques, sans logique métier (ex: boutons, structures d'alignement, entrées de formulaire, icônes vectorielles). Ils forment le _Design System_ de l'application.
+- **`src/features/[feature]/components/`** : Contient des composants spécifiques à la fonctionnalité qui ne seront jamais réutilisés ailleurs (ex: `HomeworkCard`).
 
 ### 3. Isolation de l'API Externe (Resolvers vs Utils)
-*   **La couche `resolver/`** (couplage fort) : Traduit et nettoie les clés d'API brutes d'EcoleDirecte pour les adapter sous forme de modèles métier propres à l'application. C'est le seul endroit de la feature qui connaît les structures de données externes.
-*   **La couche `utils/` ou `models/`** (calculs purs) : Contient la logique algorithmique et métier pure (ex: calcul des streaks de notes). Ce code ne manipule que nos modèles formatés et est totalement déconnecté de la structure brute de l'API.
+
+- **La couche `resolver/`** (couplage fort) : Traduit et nettoie les clés d'API brutes d'EcoleDirecte pour les adapter sous forme de modèles métier propres à l'application. C'est le seul endroit de la feature qui connaît les structures de données externes.
+- **La couche `utils/` ou `models/`** (calculs purs) : Contient la logique algorithmique et métier pure (ex: calcul des streaks de notes). Ce code ne manipule que nos modèles formatés et est totalement déconnecté de la structure brute de l'API.
 
 ---
 
