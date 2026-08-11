@@ -69,7 +69,7 @@ export function useMessaging(token: string, options: UseMessagingOptions = {}) {
 export function useMessageContent(
     token: string,
     messageId: number | string | undefined,
-    mode: "destinataire" | "expediteur" = "destinataire"
+    mode: "recipient" | "sender" = "recipient"
 ) {
     return useQuery<MessageContent>({
         queryKey: ["message", messageId, mode],

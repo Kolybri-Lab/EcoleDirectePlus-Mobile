@@ -128,5 +128,5 @@ export interface MessagingResolverParams {
 export interface MessageContentResolverParams {
     token: string;
     messageId: number | string;
-    mode?: "destinataire" | "expediteur";
+    mode?: "recipient" | "sender";
 }

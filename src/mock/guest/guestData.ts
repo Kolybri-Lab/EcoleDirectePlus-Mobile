@@ -96,7 +96,7 @@ const getGenericMessageDetail = (messageId: string | number) => {
             subject: foundMsg?.subject || "Message de test",
             // Base64-encoded: "Bonjour,\n\nCeci est un message de test générique pour le mode invité.\n\nCordialement."
             content:
-                "Qm9uan91ciwKCkNlY2kgZXN0IHVuIG1lc3NhZ2UgZGUgdGVzdCBn6W7pcmlxdWUgcG91ciBsZSBtb2RlIGludml06S4KCkNvcmRpYWxlbWVudC4=",
+                "Qm9uam91ciwKCkNlY2kgZXN0IHVuIG1lc3NhZ2UgZGUgdGVzdCBnw6luw6lyaXF1ZSBwb3VyIGxlIG1vZGUgaW52aXTDqS4KCkNvcmRpYWxlbWVudC4=",
             date: foundMsg?.date || "2026-06-22 10:00:00",
             to: [],
             files: [],

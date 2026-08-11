@@ -185,7 +185,7 @@ function formatMessage(
 export async function messageContentResolver({
     token,
     messageId,
-    mode = "destinataire",
+    mode = "recipient",
 }: MessageContentResolverParams): Promise<MessageContent | null> {
     try {
         const response = await fetchApi<FetchApiResponse<any>>(
