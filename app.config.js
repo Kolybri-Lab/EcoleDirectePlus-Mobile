@@ -9,7 +9,12 @@ export default {
             },
         },
         scheme: "ecoledirecteplus",
-        plugins: ["expo-dev-client", "expo-secure-store", "expo-font", "expo-splash-screen"],
+        plugins: [
+            "expo-dev-client",
+            "expo-secure-store",
+            "expo-font",
+            "expo-splash-screen",
+        ],
 
         version: "1.0.0",
         orientation: "portrait",
@@ -20,7 +25,7 @@ export default {
         splash: {
             image: "./assets/icons/splash-icon.png",
             resizeMode: "contain",
-            backgroundColor: "#ffffff",
+            backgroundColor: "#181829",
         },
         ios: {
             supportsTablet: true,
@@ -32,8 +37,10 @@ export default {
         android: {
             package: "com.as2pick.ecoledirecteplus",
             adaptiveIcon: {
-                foregroundImage: "./assets/icons/adaptive-icon.png",
-                backgroundColor: "#ffffff",
+                foregroundImage: "./assets/icons/colored-icon.png",
+                monochromeImage: "./assets/icons/monochromatic-icon.png",
+                backgroundColor: "#181829",
+                predictiveBackGestureEnabled: true,
             },
         },
 
@@ -41,4 +48,3 @@ export default {
         githubUrl: "https://github.com/as2pick/EcoleDirectePlus-Mobile",
     },
 };
-
