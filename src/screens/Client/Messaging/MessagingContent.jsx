@@ -43,7 +43,7 @@ export default function MessagingContent() {
         ({ item, index }) => {
             let borderRadiusStyle = {};
             const BORDER_RADIUS_EXT = 28;
-            const BORDER_RADIUS_INT = 8;
+            const BORDER_RADIUS_INT = 6;
             if (index === 0) {
                 borderRadiusStyle = {
                     borderTopLeftRadius: BORDER_RADIUS_EXT,
@@ -66,7 +66,6 @@ export default function MessagingContent() {
                     borderBottomRightRadius: BORDER_RADIUS_INT,
                 };
             }
-            console.log(item);
             return (
                 <TouchableOpacity
                     onPress={() =>
@@ -124,7 +123,7 @@ export default function MessagingContent() {
                                     preset="label2"
                                     style={{ flexShrink: 0, marginLeft: 20 }}
                                 >
-                                    {formatDate(new Date(item.date))}
+                                    {formatDate(new Date(item.date), "fullDate")}
                                 </Text>
                                 {!item.read && (
                                     <View
@@ -166,10 +165,25 @@ export default function MessagingContent() {
 
     return (
         <SafeAreaView style={{ marginHorizontal: 16 }}>
+            <TouchableOpacity
+                style={{
+                    backgroundColor: "hsl(235, 28%, 15%)",
+                    alignSelf: "center",
+                    paddingVertical: 12,
+                    paddingHorizontal: 18,
+                    borderRadius: 28,
+                    marginVertical: 24,
+                }}
+            >
+                <Text preset="label1">Rechercher dans les messages</Text>
+            </TouchableOpacity>
+            <Text preset="h3" style={{ marginBottom: 18 }}>
+                Boîte de réception
+            </Text>
             <FlatList
                 data={messages}
                 keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={{ paddingBottom: tabPadding, gap: 4 }}
+                contentContainerStyle={{ paddingBottom: tabPadding, gap: 5 }}
                 renderItem={renderItem}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.5}
@@ -189,3 +203,4 @@ export default function MessagingContent() {
         </SafeAreaView>
     );
 }
+
