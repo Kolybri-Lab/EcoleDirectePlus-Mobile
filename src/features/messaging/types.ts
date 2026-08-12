@@ -7,6 +7,12 @@ export interface ApiMessageSender {
     role?: string;
 }
 
+export interface ApiMessageFile {
+    id: number | string;
+    libelle: string;
+    type: string;
+}
+
 export interface ApiMessage {
     id: number;
     subject?: string;
@@ -17,7 +23,7 @@ export interface ApiMessage {
     canAnswer: boolean;
     mtype: string;
     idClasseur: number;
-    files?: any[];
+    files?: ApiMessageFile[];
     to_cc_cci?: string;
     from?: ApiMessageSender;
 }
@@ -51,7 +57,6 @@ export interface MessageAttachment {
     id: number | string;
     libelle: string;
     type: string;
-    [key: string]: any;
 }
 
 export interface MessageSender {

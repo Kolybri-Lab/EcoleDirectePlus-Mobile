@@ -58,10 +58,14 @@ export default async function messagingResolver({
             return DEFAULT_MESSAGING;
         }
 
-        const { messages, pagination, classeurs, parametrage } =
-            messagingResponse.data;
+        const {
+            messages,
+            pagination,
+            classeurs: folders,
+            parametrage: settings,
+        } = messagingResponse.data;
 
-        const foldersById = (classeurs || []).reduce<Record<number, string>>(
+        const foldersById = (folders || []).reduce<Record<number, string>>(
             (acc, { id, libelle }) => {
                 acc[id] = libelle;
                 return acc;
@@ -87,7 +91,7 @@ export default async function messagingResolver({
             sent,
             draft,
             archived,
-            folders: (classeurs || []).map(({ id, libelle }) => ({
+            folders: (folders || []).map(({ id, libelle }) => ({
                 id,
                 name: libelle,
                 messages: received.filter((m) => m.folder.id === id),
@@ -100,12 +104,12 @@ export default async function messagingResolver({
                 unreadCount: pagination?.messagesRecusNotReadCount || 0,
             },
             settings: {
-                isActive: parametrage?.isActif || false,
-                canContactTeachers: parametrage?.destProf || false,
-                canContactAdmin: parametrage?.destAdmin || false,
-                canContactStudents: parametrage?.destEleve || false,
-                canContactFamilies: parametrage?.destFamille || false,
-                canContactCompanies: parametrage?.destEntreprise || false,
+                isActive: settings?.isActif || false,
+                canContactTeachers: settings?.destProf || false,
+                canContactAdmin: settings?.destAdmin || false,
+                canContactStudents: settings?.destEleve || false,
+                canContactFamilies: settings?.destFamille || false,
+                canContactCompanies: settings?.destEntreprise || false,
             },
         };
     } catch (e) {
@@ -175,7 +179,6 @@ function formatMessage(
             id: f.id,
             libelle: f.libelle || "",
             type: f.type || "",
-            ...f,
         })) as MessageAttachment[],
         recipientType: msg.to_cc_cci || null,
         sender: formatSender(msg.from),
