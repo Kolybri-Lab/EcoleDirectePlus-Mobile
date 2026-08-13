@@ -86,8 +86,8 @@ export default function MessagingContent() {
                 >
                     <View
                         style={{
-                            width: 36,
-                            height: 36,
+                            width: 37,
+                            height: 37,
                             borderRadius: 18,
                             backgroundColor: "hsla(217, 91%, 60%, 1)",
                             alignItems: "center",
@@ -95,8 +95,8 @@ export default function MessagingContent() {
                             flexShrink: 0,
                         }}
                     >
-                        <Text preset="h4" style={{ color: "white" }}>
-                            {item.sender.initials[1] ?? "??"}
+                        <Text preset="label1" style={{ color: "white" }}>
+                            {item.sender.initials ?? "??"}
                         </Text>
                     </View>
 
@@ -203,4 +203,3 @@ export default function MessagingContent() {
         </SafeAreaView>
     );
 }
-

@@ -1,9 +1,13 @@
 import { CustomTopHeader, Text } from "@/components";
+import { File as FileIcon } from "@/components/svg";
 import { useMessageContent } from "@/features/messaging/hooks/useMessaging";
+import { downloadDocument, openDocument } from "@/helpers/documents/documentsHelper";
 import { useTheme } from "@/hooks/useThemeStore";
 import { formatDate } from "@/utils/date";
-import { ActivityIndicator, View } from "react-native";
+import { memo, useCallback, useState } from "react";
+import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+File;
 
 const RECOVERY_MODE_BY_TYPE = {
     received: "recipient",
@@ -11,6 +15,69 @@ const RECOVERY_MODE_BY_TYPE = {
     draft: null, // TODO: handle drafts
     archived: null, // TODO: handle achived messages
 };
+
+const File = memo(({ item, progress, colors, onOpen, onDownload }) => {
+    console.log(item);
+    const { id, libelle, type, taille: size } = item;
+    const ext = libelle.slice(libelle.lastIndexOf(".") + 1).toLowerCase();
+
+    return (
+        <TouchableOpacity
+            style={{
+                overflow: "hidden",
+                borderRadius: 9,
+                marginBottom: 4,
+            }}
+            onPress={() => onOpen(item)}
+            onLongPress={() => onDownload(item)}
+            disabled={progress !== null && progress !== undefined}
+        >
+            {progress !== null && progress !== undefined && (
+                <View
+                    style={{
+                        position: "absolute",
+                        left: 0,
+                        top: 0,
+                        bottom: 0,
+                        width: `${progress}%`,
+                        backgroundColor: "hsla(122, 39%, 49%, 0.40)",
+                        borderRadius: 9,
+                    }}
+                />
+            )}
+            <View
+                style={{
+                    backgroundColor:
+                        progress !== null && progress !== undefined
+                            ? "transparent"
+                            : "hsla(235, 28%, 20%, 1)",
+                    padding: 10,
+                    gap: 12,
+                    borderRadius: 9,
+                    flexDirection: "row",
+                    alignItems: "center",
+                }}
+            >
+                <View
+                    style={{
+                        padding: 7,
+                        backgroundColor: "hsla(0, 0%, 100%, 0.2)",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 10,
+                    }}
+                >
+                    <FileIcon fill={colors.contrast} size={23} extention={ext} />
+                </View>
+                <View style={{ flex: 1 }}>
+                    <Text preset="label2" decoration="underline">
+                        {libelle}
+                    </Text>
+                </View>
+            </View>
+        </TouchableOpacity>
+    );
+});
 
 export default function MessagingDetails({ route }) {
     const { token, message } = route.params;
@@ -36,6 +103,28 @@ export default function MessagingDetails({ route }) {
         isError,
     } = useMessageContent(token, messageId, recoveryMode);
     const { colors } = useTheme();
+
+    const [downloadProgress, setDownloadProgress] = useState({});
+
+    const handleOpen = useCallback(
+        (item) =>
+            openDocument(
+                { fileName: item.libelle, fileType: item.type, fileId: item.id },
+                token,
+                setDownloadProgress
+            ),
+        [token]
+    );
+
+    const handleDownload = useCallback(
+        (item) =>
+            downloadDocument(
+                { fileName: item.libelle, fileType: item.type, fileId: item.id },
+                token,
+                setDownloadProgress
+            ),
+        [token]
+    );
 
     if (isLoading) {
         return (
@@ -63,59 +152,56 @@ export default function MessagingDetails({ route }) {
                 height={33}
                 backgroundColor={colors.background.gradient}
             />
-            <>
-                <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{ paddingHorizontal: 14 }}
-                >
-                    <Text preset="h3" style={{ marginTop: 80, marginBottom: 10 }}>
-                        {subject}
-                    </Text>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingHorizontal: 14 }}
+            >
+                <Text preset="h3" style={{ marginBottom: 10, marginTop: 20 }}>
+                    Sujet : {subject}
+                </Text>
 
+                <View
+                    style={{
+                        backgroundColor: "hsl(235, 28%, 15%)",
+                        padding: 14,
+                        borderRadius: 16,
+                    }}
+                >
                     <View
                         style={{
-                            backgroundColor: "hsl(235, 28%, 15%)",
-                            padding: 14,
-                            borderRadius: 16,
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginTop: 12,
+                            gap: 8,
                         }}
                     >
                         <View
                             style={{
                                 flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                marginBottom: 40,
-                                marginTop: 12,
                                 gap: 8,
+                                padding: 6,
+                                borderRadius: 30,
+                                flexShrink: 1,
+                                minWidth: 0,
                             }}
                         >
                             <View
                                 style={{
-                                    flexDirection: "row",
+                                    width: 42,
+                                    height: 42,
+                                    borderRadius: 21,
+                                    backgroundColor: "hsla(217, 91%, 60%, 1)",
                                     alignItems: "center",
-                                    gap: 8,
-                                    backgroundColor: "hsla(219, 100%, 69%, 0.12)",
-                                    padding: 6,
-                                    borderRadius: 30,
-                                    flexShrink: 1,
-                                    minWidth: 0,
+                                    justifyContent: "center",
+                                    flexShrink: 0,
                                 }}
                             >
-                                <View
-                                    style={{
-                                        width: 24,
-                                        height: 24,
-                                        borderRadius: 18,
-                                        backgroundColor: "hsla(217, 91%, 60%, 1)",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        flexShrink: 0,
-                                    }}
-                                >
-                                    <Text preset="label1" style={{ color: "white" }}>
-                                        {sender.initials[1] ?? "??"}
-                                    </Text>
-                                </View>
+                                <Text preset="label1" style={{ color: "white" }}>
+                                    {sender.initials ?? "??"}
+                                </Text>
+                            </View>
+                            <View>
                                 <Text
                                     preset="label2"
                                     numberOfLines={1}
@@ -123,29 +209,45 @@ export default function MessagingDetails({ route }) {
                                 >
                                     {sender.fullName}
                                 </Text>
+                                <Text
+                                    preset="label2"
+                                    numberOfLines={1}
+                                    style={{ flexShrink: 0 }}
+                                >
+                                    {formatDate(new Date(date), "full")}
+                                </Text>
                             </View>
-
-                            <Text
-                                preset="label2"
-                                numberOfLines={1}
-                                style={{ flexShrink: 0 }}
-                            >
-                                {formatDate(new Date(date), "full")}
-                            </Text>
                         </View>
-
-                        <Text preset="body1">{messageContent.content}</Text>
-                        <Text preset="body1">{messageContent.content}</Text>
-                        <Text preset="body1">{messageContent.content}</Text>
-                        <Text preset="body1">{messageContent.content}</Text>
-                        <Text preset="body1">{messageContent.content}</Text>
-                        <Text preset="body1">{messageContent.content}</Text>
-                        <Text preset="body1">{messageContent.content}</Text>
-                        <Text preset="body1">{messageContent.content}</Text>
+                        <Text>{read ? "Lu" : "Non lu"}</Text>
                     </View>
-                </ScrollView>
-            </>
+
+                    <View
+                        style={{
+                            height: 1.5,
+                            borderRadius: 4,
+                            backgroundColor: "hsla(0, 0%, 100%, 0.15)",
+                            marginTop: 14,
+                            marginBottom: 24,
+                        }}
+                    />
+
+                    <Text preset="body1">{messageContent.content}</Text>
+                    {files?.length > 0 && (
+                        <View style={{ marginTop: 16, gap: 8 }}>
+                            {files.map((item) => (
+                                <File
+                                    key={item.id}
+                                    item={item}
+                                    progress={downloadProgress[item.id] ?? null}
+                                    colors={colors}
+                                    onOpen={handleOpen}
+                                    onDownload={handleDownload}
+                                />
+                            ))}
+                        </View>
+                    )}
+                </View>
+            </ScrollView>
         </>
     );
 }
-
