@@ -239,7 +239,8 @@ export default function HomeworksContent() {
                             backgroundColor: "hsl(240, 29%, 11%)",
                             borderTopLeftRadius: 30,
                             borderTopRightRadius: 30,
-                            padding: 24,
+                            paddingTop: 24,
+                            paddingHorizontal: 24,
                         }}
                     >
                         {objectsEqual({}, homeworksData) && (
