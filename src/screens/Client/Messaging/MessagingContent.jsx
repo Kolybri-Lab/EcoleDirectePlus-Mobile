@@ -1,6 +1,5 @@
-import { Text } from "@/components";
+import { ScreenStack, Text } from "@/components";
 import { useMessaging } from "@/features/messaging";
-import { useTabPadding } from "@/hooks/useTabPadding";
 import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
 import { formatDate } from "@/utils/date";
@@ -18,7 +17,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MessagingContent() {
     const token = useUserStore((state) => state.token);
-    const tabPadding = useTabPadding();
     const navigation = useNavigation();
     const {
         data,
@@ -164,29 +162,32 @@ export default function MessagingContent() {
     }
 
     return (
-        <SafeAreaView style={{ marginHorizontal: 16 }}>
-            <TouchableOpacity
-                style={{
-                    backgroundColor: "hsl(235, 28%, 15%)",
-                    alignSelf: "center",
-                    paddingVertical: 12,
-                    paddingHorizontal: 18,
-                    borderRadius: 28,
-                    marginVertical: 24,
-                }}
-            >
-                <Text preset="label1">Rechercher dans les messages</Text>
-            </TouchableOpacity>
+        <ScreenStack horizontalSpacing={16}>
+            <SafeAreaView>
+                <TouchableOpacity
+                    style={{
+                        backgroundColor: "hsl(235, 28%, 15%)",
+                        alignSelf: "center",
+                        paddingVertical: 12,
+                        paddingHorizontal: 18,
+                        borderRadius: 28,
+                        marginVertical: 20,
+                    }}
+                >
+                    <Text preset="label1">Rechercher dans les messages</Text>
+                </TouchableOpacity>
+            </SafeAreaView>
             <Text preset="h3" style={{ marginBottom: 18 }}>
                 Boîte de réception
             </Text>
             <FlatList
                 data={messages}
                 keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={{ paddingBottom: tabPadding, gap: 5 }}
+                contentContainerStyle={{ gap: 5 }}
                 renderItem={renderItem}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.5}
+                style={{ flex: 1 }}
                 refreshControl={
                     <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
                 }
@@ -200,6 +201,6 @@ export default function MessagingContent() {
                     isFetchingNextPage ? <ActivityIndicator size="small" /> : null
                 }
             />
-        </SafeAreaView>
+        </ScreenStack>
     );
 }

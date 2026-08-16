@@ -3,13 +3,16 @@ import * as Network from "expo-network";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
-import { MainLayout } from "../components";
+import StyleMask from "@/components/display/StyleMask";
 import { useAuthStore } from "@/hooks/useAuthStore";
-import { useActiveThemeMode } from "@/hooks/useThemeStore";
 import { useNetworkStore } from "@/hooks/useNetworkStore";
-import authService from "@/services/login/authService";
-import { tryLoginWithStoredCreds, tryRestoreToken } from "@/services/login/tools/bootstrapAsync";
+import { useActiveThemeMode } from "@/hooks/useThemeStore";
 import SplashScreen from "@/screens/Splash/SplashScreen";
+import authService from "@/services/login/authService";
+import {
+    tryLoginWithStoredCreds,
+    tryRestoreToken,
+} from "@/services/login/tools/bootstrapAsync";
 import { THEMES_ASSOCIATIONS } from "@/themes/themes";
 import Auth from "./display/auth/Auth";
 import Client from "./display/client/Client";
@@ -18,7 +21,9 @@ export default function AuthNavigator() {
     const activeMode = useActiveThemeMode();
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const isBooting = useAuthStore((state) => state.isBooting);
-    const setActiveNetworkStatus = useNetworkStore((state) => state.setActiveNetworkStatus);
+    const setActiveNetworkStatus = useNetworkStore(
+        (state) => state.setActiveNetworkStatus
+    );
 
     useEffect(() => {
         const bootstrapAsync = async () => {
@@ -98,9 +103,9 @@ export default function AuthNavigator() {
                 {isBooting ? (
                     <SplashScreen />
                 ) : isAuthenticated ? (
-                    <MainLayout>
+                    <StyleMask>
                         <Client />
-                    </MainLayout>
+                    </StyleMask>
                 ) : (
                     <Auth />
                 )}
@@ -108,4 +113,3 @@ export default function AuthNavigator() {
         </GestureHandlerRootView>
     );
 }
-

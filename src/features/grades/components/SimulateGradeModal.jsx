@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
 import { ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 
+import { Text } from "@/components/core";
+import { getTodayDateString } from "@/utils/date";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withTiming,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-import { Text } from "@/components/core";
-import { getTodayDateString } from "@/utils/date";
-import { parseNumber } from "../utils/averages";
-import Grade from "../models/Grade";
 import { useGrade } from "../context/GradeContext";
-import { useTabPadding } from "@/hooks/useTabPadding";
+import Grade from "../models/Grade";
+import { parseNumber } from "../utils/averages";
 
 const PLACEHOLDERS = { coef: 1, grade: 15, outOf: 20 };
 
 export default function AddGradeModal({ visible, disciplineCodes }) {
     const { state, dispatch } = useGrade();
-    const tabPadding = useTabPadding();
 
     const [simulatedGrade, setSimulatedGrade] = useState(PLACEHOLDERS);
     const [simulationCount, setSimulationCount] = useState(1);
@@ -98,7 +96,7 @@ export default function AddGradeModal({ visible, disciplineCodes }) {
                         borderTopRightRadius: 42,
                         paddingHorizontal: 24,
                         paddingTop: 16,
-                        paddingBottom: 40 + tabPadding,
+                        paddingBottom: 40,
                         minHeight: 400,
                         maxHeight: "85%",
                     },
@@ -294,4 +292,3 @@ export default function AddGradeModal({ visible, disciplineCodes }) {
         </View>
     );
 }
-

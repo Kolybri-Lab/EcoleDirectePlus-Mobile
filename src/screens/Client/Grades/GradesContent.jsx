@@ -1,25 +1,28 @@
+import BottomSheet from "@/components/layout/BottomSheet";
+import { GradeArrow } from "@/components/svg";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useEffect, useState } from "react";
 import { Dimensions, View } from "react-native";
-import { GradeArrow } from "@/components/svg";
-import BottomSheet from "@/components/layout/BottomSheet";
 
-import { FlatList } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
 import { DropDown, ScrollableStack } from "@/components";
 import { API } from "@/constants/api/api";
-import { cssHslaToHsla } from "@/utils/colorGenerator";
-import { parseNumber } from "@/features/grades/utils/averages";
+import DisciplineGroupItem from "@/features/grades/components/DisciplineGroupItem";
+import DisciplineItem from "@/features/grades/components/DisciplineItem";
+import AddGradeModal from "@/features/grades/components/SimulateGradeModal";
 import Discipline from "@/features/grades/models/Discipline";
 import Period from "@/features/grades/models/Period";
-import AddGradeModal from "@/features/grades/components/SimulateGradeModal";
-import DisciplineItem from "@/features/grades/components/DisciplineItem";
-import DisciplineGroupItem from "@/features/grades/components/DisciplineGroupItem";
+import { parseNumber } from "@/features/grades/utils/averages";
+import { cssHslaToHsla } from "@/utils/colorGenerator";
+import { FlatList } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Text } from "@/components/core";
 import { useGrade } from "@/features/grades/context/GradeContext";
-import { calculateStrengthsWeaknesses, formatGradeText } from "@/features/grades/utils/helpers";
 import { useSimulation } from "@/features/grades/hooks/useSimulation";
+import {
+    calculateStrengthsWeaknesses,
+    formatGradeText,
+} from "@/features/grades/utils/helpers";
 
 import { useGrades } from "@/features/grades";
 import { useUserStore } from "@/hooks/useUserStore";
@@ -150,13 +153,10 @@ export default function GradesContent() {
                     index={index}
                     dataLength={renderDisciplinesArray.length}
                     isExpanded={
-                        expandedChain ===
-                        `${discipline.code}-${discipline.libelle}`
+                        expandedChain === `${discipline.code}-${discipline.libelle}`
                     }
                     onPress={() =>
-                        handleItemPress(
-                            `${discipline.code}-${discipline.libelle}`
-                        )
+                        handleItemPress(`${discipline.code}-${discipline.libelle}`)
                     }
                     dispatch={dispatch}
                 />
@@ -303,7 +303,8 @@ export default function GradesContent() {
                     <View
                         style={{
                             flex: 1,
-                            margin: 14,
+                            marginHorizontal: 14,
+                            marginTop: 14,
                         }}
                     >
                         <FlatList

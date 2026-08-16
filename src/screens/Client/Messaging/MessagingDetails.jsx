@@ -1,4 +1,4 @@
-import { CustomTopHeader, Text } from "@/components";
+import { GoBackHeader, ScreenStack, Text } from "@/components";
 import { File as FileIcon } from "@/components/svg";
 import { useMessageContent } from "@/features/messaging/hooks/useMessaging";
 import { downloadDocument, openDocument } from "@/helpers/documents/documentsHelper";
@@ -7,7 +7,6 @@ import { formatDate } from "@/utils/date";
 import { memo, useCallback, useState } from "react";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-File;
 
 const RECOVERY_MODE_BY_TYPE = {
     received: "recipient",
@@ -145,17 +144,14 @@ export default function MessagingDetails({ route }) {
     }
 
     return (
-        <>
-            <CustomTopHeader
+        <ScreenStack horizontalSpacing={14}>
+            <GoBackHeader
                 headerTitle={"Retour aux messages"}
                 backArrow={{ color: colors.contrast, size: 24 }}
                 height={33}
                 backgroundColor={colors.background.gradient}
             />
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ paddingHorizontal: 14 }}
-            >
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <Text preset="h3" style={{ marginBottom: 10, marginTop: 20 }}>
                     Sujet : {subject}
                 </Text>
@@ -248,6 +244,6 @@ export default function MessagingDetails({ route }) {
                     )}
                 </View>
             </ScrollView>
-        </>
+        </ScreenStack>
     );
 }

@@ -14,16 +14,15 @@ import { useHomeworksHandler } from "@/features/homeworks/hooks/useHomeworksHand
 import { adjustLightness } from "@/utils/colorGenerator";
 import { formatFrenchDate } from "@/utils/date";
 
+import { ScreenStack } from "@/components";
 import { ProgressBar } from "@/components/progression/ProgressBar";
 import { useHomeworks } from "@/features/homeworks";
 import { useCustomDataStore } from "@/hooks/useCustomDataStore";
-import { useTabPadding } from "@/hooks/useTabPadding";
 import { useUserStore } from "@/hooks/useUserStore";
 import { objectsEqual } from "@/utils/json";
 
 export default function HomeworksContent() {
     const token = useUserStore((state) => state.token);
-    const tabPadding = useTabPadding();
     const {
         data: homeworksData,
         isLoading,
@@ -163,7 +162,7 @@ export default function HomeworksContent() {
     return (
         <>
             <NewHomeworkModal visible={modalOpen} />
-            <View style={{ flex: 1 }}>
+            <ScreenStack>
                 <View
                     style={{
                         position: "absolute",
@@ -273,12 +272,11 @@ export default function HomeworksContent() {
                             showsVerticalScrollIndicator={false}
                             contentContainerStyle={{
                                 gap: 10,
-                                paddingBottom: tabPadding,
                             }}
                         />
                     </View>
                 </View>
-            </View>
+            </ScreenStack>
         </>
     );
 }
@@ -335,4 +333,3 @@ const DateItem = memo(
         );
     }
 );
-

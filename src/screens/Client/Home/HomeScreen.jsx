@@ -1,4 +1,4 @@
-import { Text } from "@/components";
+import { ScreenStack, Text } from "@/components";
 import { useGrades } from "@/features/grades";
 import ActiveCourseCard from "@/features/home/components/ActiveCourseCard";
 import GeneralAveragePreview from "@/features/home/components/GeneralAveragePreview";
@@ -182,40 +182,44 @@ export default function HomeScreen() {
         };
     }, [activeCourse, nextCourse]);
     return (
-        <LinearGradient
-            colors={["hsla(228, 70%, 18%, 1)", "hsla(228, 30%, 8%, 0.85)"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 0.3 }}
-            style={{ flex: 1, paddingHorizontal: 20 }}
-        >
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-                bounces={false}
-                scrollEventThrottle={16}
-                overScrollMode="never"
+        <ScreenStack>
+            <LinearGradient
+                colors={["hsla(228, 70%, 18%, 1)", "hsla(228, 30%, 8%, 0.85)"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 0.3 }}
+                style={{ paddingHorizontal: 20 }}
             >
-                <View style={{ marginTop: "25%", marginBottom: 28 }}>
-                    <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
-                        {greetingMessage}
-                    </Text>
-                    <Text size={38}>{name}</Text>
-                </View>
-                <View style={{ alignItems: "center", gap: 20 }}>
-                    <ActiveCourseCard
-                        progression={progression}
-                        activeCourse={activeCourse}
-                        nextCourse={nextCourse}
-                        activeStatus={activeStatus}
-                        isLast={isLastCourseOfTheDay}
-                    />
-                    <GeneralAveragePreview gradesData={gradesData} />
-                    <LastGrades lastGradesObject={gradesData?.lastGrades ?? {}} />
-                    <HomeworksPreview
-                        customHomeworks={customDataStore?.customHomeworks ?? {}}
-                        homeworksDatas={homeworksData}
-                    />
-                </View>
-            </ScrollView>
-        </LinearGradient>
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    bounces={false}
+                    scrollEventThrottle={16}
+                    overScrollMode="never"
+                >
+                    <View style={{ marginTop: "25%", marginBottom: 28 }}>
+                        <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
+                            {greetingMessage}
+                        </Text>
+                        <Text size={38}>{name}</Text>
+                    </View>
+                    <View style={{ alignItems: "center", gap: 20 }}>
+                        <ActiveCourseCard
+                            progression={progression}
+                            activeCourse={activeCourse}
+                            nextCourse={nextCourse}
+                            activeStatus={activeStatus}
+                            isLast={isLastCourseOfTheDay}
+                        />
+                        <GeneralAveragePreview gradesData={gradesData} />
+                        <LastGrades
+                            lastGradesObject={gradesData?.lastGrades ?? {}}
+                        />
+                        <HomeworksPreview
+                            customHomeworks={customDataStore?.customHomeworks ?? {}}
+                            homeworksDatas={homeworksData}
+                        />
+                    </View>
+                </ScrollView>
+            </LinearGradient>
+        </ScreenStack>
     );
 }
