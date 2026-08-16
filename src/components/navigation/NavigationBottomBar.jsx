@@ -1,4 +1,6 @@
 // components/CustomNavbar.js
+import { useHaptic } from "@/hooks/useHaptics";
+import { useTheme } from "@/hooks/useThemeStore";
 import { useEffect, useRef, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import Animated, {
@@ -7,8 +9,7 @@ import Animated, {
     withSpring,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Text } from "../core";
-
+import { MorphingText } from "../core";
 const ROUTES_NAMES = {
     client_grades: "Notes",
     client_homeworks: "Tâches",
@@ -23,13 +24,14 @@ const SPRING_CONFIG = {
     mass: 1,
     overshootClamping: false,
 };
+
 const NavigationBottomBar = ({ state, descriptors, navigation }) => {
     const [isPressedIn, setIsPressedIn] = useState();
     const [isLongPressed, setIsLongPressed] = useState();
 
     const tabLayouts = useRef({});
     const hasMeasuredActive = useRef(false);
-
+    const theme = useTheme();
     const indicatorX = useSharedValue(0);
 
     const animatedIndicatorStyle = useAnimatedStyle(() => ({
@@ -65,62 +67,63 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
     return (
         <SafeAreaView
             edges={["bottom"]}
-            style={{ backgroundColor: "hsla(240, 19%, 27%, 0.92)" }}
+            style={{ backgroundColor: theme.colors.background.gradient }}
         >
-            <View>
-                <Animated.View
-                    style={[
-                        {
-                            position: "absolute",
-                            top: 0,
-                            width: BAR_WIDTH,
-                            height: 3,
-                            borderRadius: 6,
-                            backgroundColor: "#C7CCFD",
-                        },
-                        animatedIndicatorStyle,
-                    ]}
-                />
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-evenly",
-                    }}
-                >
-                    {state.routes.map((route, index) => {
-                        const { options } = descriptors[route.key];
-                        if (!options.inNavbar) return null;
-                        const isFocused = state.index === index;
+            <View
+                style={{
+                    width: "100%",
+                    height: 2,
+                    backgroundColor: "hsla(240, 19%, 27%, 0.57)",
+                }}
+            />
+            <Animated.View
+                style={[
+                    {
+                        position: "absolute",
+                        width: BAR_WIDTH,
+                        height: 2,
+                        borderRadius: 6,
+                        backgroundColor: "#C7CCFD",
+                    },
+                    animatedIndicatorStyle,
+                ]}
+            />
+            <View style={{ flexDirection: "row" }}>
+                <View style={{ flex: 0.25 }} />
+                {state.routes.map((route, index) => {
+                    const { options } = descriptors[route.key];
+                    if (!options.inNavbar) return null;
+                    const isFocused = state.index === index;
 
-                        const onPress = () => {
-                            const event = navigation.emit({
-                                type: "tabPress",
-                                target: route.key,
-                                canPreventDefault: true,
-                            });
+                    const onPress = () => {
+                        const event = navigation.emit({
+                            type: "tabPress",
+                            target: route.key,
+                            canPreventDefault: true,
+                        });
 
-                            if (!isFocused && !event.defaultPrevented) {
-                                navigation.navigate(route.name);
-                            }
-                        };
-                        const IconComponent = options.icon;
+                        if (!isFocused && !event.defaultPrevented) {
+                            navigation.navigate(route.name);
+                        }
+                    };
+                    const IconComponent = options.icon;
 
-                        return (
-                            <TabButton
-                                key={index}
-                                index={index}
-                                route={route}
-                                options={options}
-                                isFocused={isFocused}
-                                onPress={onPress}
-                                onLayout={(e) => onTabLayout(index, e)}
-                                setIsPressedIn={setIsPressedIn}
-                                setIsLongPressed={setIsLongPressed}
-                                IconComponent={IconComponent}
-                            />
-                        );
-                    })}
-                </View>
+                    return (
+                        <TabButton
+                            key={index}
+                            index={index}
+                            route={route}
+                            options={options}
+                            isFocused={isFocused}
+                            onPress={onPress}
+                            onLayout={(e) => onTabLayout(index, e)}
+                            setIsPressedIn={setIsPressedIn}
+                            setIsLongPressed={setIsLongPressed}
+                            IconComponent={IconComponent}
+                        />
+                    );
+                })}
+                <View style={{ flex: 0.25 }} />
             </View>
         </SafeAreaView>
     );
@@ -136,18 +139,25 @@ const TabButton = ({
     setIsLongPressed,
     IconComponent,
 }) => {
-    const scale = useSharedValue(1);
+    const BASE_ICON_SIZE = 26;
+    const FOCUSED_SCALE = 1;
+    const UNFOCUSED_SCALE = 1.3;
+
+    const iconScale = useSharedValue(isFocused ? FOCUSED_SCALE : UNFOCUSED_SCALE);
+    const pressScale = useSharedValue(1);
+
+    const haptics = useHaptic("warning");
 
     useEffect(() => {
-        scale.value = withSpring(isFocused ? 1.2 : 1, {
-            damping: 10,
-            mass: 0.6,
-            stiffness: 200,
+        iconScale.value = withSpring(isFocused ? FOCUSED_SCALE : UNFOCUSED_SCALE, {
+            damping: 100,
+            mass: 1,
+            stiffness: 145,
         });
     }, [isFocused]);
 
     const animatedIconStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: scale.value }],
+        transform: [{ scale: iconScale.value * pressScale.value }],
     }));
 
     return (
@@ -159,42 +169,45 @@ const TabButton = ({
             onPress={onPress}
             onPressIn={() => {
                 setIsPressedIn(true);
-                scale.value = withSpring(0.9, { damping: 12, stiffness: 250 });
+                pressScale.value = withSpring(0.9, {
+                    damping: 10,
+                    stiffness: 350,
+                });
             }}
             onPressOut={() => {
                 setIsPressedIn(false);
                 setIsLongPressed(false);
-                scale.value = withSpring(isFocused ? 1.2 : 1, {
-                    damping: 10,
-                    mass: 0.6,
-                    stiffness: 200,
-                });
+                pressScale.value = withSpring(1, { damping: 100, stiffness: 250 });
             }}
-            onLongPress={() => setIsLongPressed(true)}
+            onLongPress={() => {
+                setIsLongPressed(true);
+                haptics();
+            }}
             onLayout={onLayout}
-            style={{}}
+            style={{ flex: 1, alignItems: "center" }}
         >
             <View
                 style={{
                     padding: 14,
                     alignItems: "center",
                     justifyContent: "center",
+                    overflow: "visible",
                 }}
             >
                 <Animated.View style={animatedIconStyle}>
                     <IconComponent
-                        width={26}
-                        height={26}
+                        width={BASE_ICON_SIZE}
+                        height={BASE_ICON_SIZE}
                         color={isFocused ? "#C7CCFD" : "#838CEB"}
                     />
                 </Animated.View>
-                <Text
-                    preset="label2"
+                <MorphingText
+                    preset="label3"
                     weight={isFocused ? "bold" : "medium"}
                     color={isFocused ? "#C7CCFD" : "#838CEB"}
-                >
-                    {ROUTES_NAMES[route.name] ?? "N/A"}
-                </Text>
+                    value={isFocused ? (ROUTES_NAMES[route.name] ?? "N/A") : ""}
+                    style={{ letterSpacing: 0.8, width: "100%" }}
+                />
             </View>
         </TouchableOpacity>
     );
