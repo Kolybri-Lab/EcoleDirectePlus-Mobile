@@ -13,11 +13,16 @@ export default function Tabs() {
     return (
         <Tab.Navigator
             tabBar={(props) => <NavigationBottomBar {...props} />}
+
             initialRouteName={routesNames.client.home}
-            screenOptions={{ headerShown: false, animation: "fade", lazy: false }}
+            screenOptions={{
+                headerShown: false,
+                animation: "fade",
+                lazy: false,
+                tabBarStyle: { backgroundColor: "transparent" },
+            }}
         >
             {screens}
         </Tab.Navigator>
     );
 }
-
