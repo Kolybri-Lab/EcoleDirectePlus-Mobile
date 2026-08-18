@@ -5,14 +5,23 @@ import { routesNames } from "@/router/config/routesNames";
 import { formatDate } from "@/utils/date";
 import { dedupeById } from "@/utils/dedupe";
 import { useNavigation } from "@react-navigation/native";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
     RefreshControl,
+    StyleSheet,
+    TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
+import Animated, {
+    interpolate,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function MessagingContent() {
@@ -32,10 +41,23 @@ export default function MessagingContent() {
         itemsPerPage: 20,
     });
 
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const inputRef = useRef(null);
+
     const messages = useMemo(() => {
         const flat = data?.pages.flatMap((page) => page.received) ?? [];
-        return dedupeById(flat);
-    }, [data]);
+        const deduped = dedupeById(flat);
+
+        const query = searchQuery.trim().toLowerCase();
+        if (!query) return deduped;
+
+        return deduped.filter((item) => {
+            const senderName = item.sender?.fullName?.toLowerCase() ?? "";
+            const subject = item.subject?.toLowerCase() ?? "";
+            return senderName.includes(query) || subject.includes(query);
+        });
+    }, [data, searchQuery]);
 
     const renderItem = useCallback(
         ({ item, index }) => {
@@ -160,22 +182,129 @@ export default function MessagingContent() {
             </View>
         );
     }
+    const transitionProgress = useSharedValue(0); // 0: button ; 1: input
+
+    const containerStyle = useAnimatedStyle(() => ({
+        width: interpolate(transitionProgress.value, [0, 1], [80, 90]) + "%",
+        borderRadius: interpolate(transitionProgress.value, [0, 1], [30, 10]),
+    }));
+
+    const inputStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(transitionProgress.value, [0.7, 1], [0, 1]),
+    }));
+    const buttonTextStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(transitionProgress.value, [1, 0.03], [0, 1]),
+    }));
+
+    const openSearch = () => {
+        setIsSearchOpen(true);
+        inputRef.current?.focus();
+        transitionProgress.value = withTiming(1, { duration: 250 });
+    };
+    const closeSearch = useCallback(() => {
+        setIsSearchOpen(false);
+        inputRef.current?.blur();
+        transitionProgress.value = withTiming(0, { duration: 250 });
+    }, []);
 
     return (
         <ScreenStack horizontalSpacing={16}>
             <SafeAreaView>
-                <TouchableOpacity
-                    style={{
-                        backgroundColor: "hsl(235, 28%, 15%)",
-                        alignSelf: "center",
-                        paddingVertical: 12,
-                        paddingHorizontal: 18,
-                        borderRadius: 28,
-                        marginVertical: 20,
-                    }}
+                {/* {isSearchOpen ? (
+                    <View
+                        style={{
+                            backgroundColor: "hsl(235, 28%, 15%)",
+                            alignSelf: "center",
+                            paddingVertical: 12,
+                            paddingHorizontal: 18,
+                            borderRadius: 28,
+                            marginVertical: 20,
+                            flexDirection: "row",
+                            alignItems: "center",
+                        }}
+                    >
+                        <TextInput
+                            placeholder="Rechercher"
+                            onChangeText={setSearchQuery}
+                            value={searchQuery}
+                            ref={inputRef}
+                            placeholderTextColor="hsla(0, 0%, 100%, 0.5)"
+                            style={{
+                                flex: 1,
+                                color: "white",
+                                paddingVertical: 0,
+                            }}
+                            returnKeyType="search"
+                        />
+                        <Pressable onPress={closeSearch} hitSlop={10}>
+                            <Text preset="label3">Annuler</Text>
+                        </Pressable>
+                    </View>
+                ) : (
+                )} */}
+                <Animated.View
+                    style={[
+                        {
+                            backgroundColor: "hsl(235, 28%, 15%)",
+                            alignSelf: "center",
+                            paddingVertical: 12,
+                            paddingHorizontal: 18,
+                            marginVertical: 20,
+                        },
+                        containerStyle,
+                    ]}
                 >
-                    <Text preset="label1">Rechercher dans les messages</Text>
-                </TouchableOpacity>
+                    <Animated.View
+                        style={buttonTextStyle}
+                        pointerEvents={isSearchOpen ? "none" : "auto"}
+                    >
+                        <Pressable
+                            style={{
+                                width: "100%",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                            onPress={openSearch}
+                            disabled={isSearchOpen}
+                        >
+                            <Text preset="label1">Rechercher dans les messages</Text>
+                        </Pressable>
+                    </Animated.View>
+                    {isSearchOpen && (
+                        <Animated.View
+                            style={[
+                                StyleSheet.absoluteFill,
+                                inputStyle,
+                                {
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                },
+                            ]}
+                        >
+                            <TextInput
+                                autoFocus
+                                style={{
+                                    height: "100%",
+                                    paddingLeft: 16,
+                                    flex: 1,
+                                    color: "white",
+                                }}
+                                placeholder="Recherche..."
+                                onBlur={() => inputRef.current?.blur()}
+                                onChangeText={setSearchQuery}
+                                value={searchQuery}
+                            />
+                            <Pressable
+                                style={{ paddingRight: 24 }}
+                                onPress={closeSearch}
+                                hitSlop={10}
+                            >
+                                <Text>Annuler</Text>
+                            </Pressable>
+                        </Animated.View>
+                    )}
+                </Animated.View>
             </SafeAreaView>
             <Text preset="h3" style={{ marginBottom: 18 }}>
                 Boîte de réception
