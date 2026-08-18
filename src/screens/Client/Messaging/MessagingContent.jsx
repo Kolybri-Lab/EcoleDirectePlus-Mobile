@@ -5,7 +5,7 @@ import { routesNames } from "@/router/config/routesNames";
 import { formatDate } from "@/utils/date";
 import { dedupeById } from "@/utils/dedupe";
 import { useNavigation } from "@react-navigation/native";
-import { useCallback, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useMemo, useRef, useState } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -20,6 +20,7 @@ import Animated, {
     interpolate,
     useAnimatedStyle,
     useSharedValue,
+    withSpring,
     withTiming,
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -60,133 +61,25 @@ export default function MessagingContent() {
     }, [data, searchQuery]);
 
     const renderItem = useCallback(
-        ({ item, index }) => {
-            let borderRadiusStyle = {};
-            const BORDER_RADIUS_EXT = 28;
-            const BORDER_RADIUS_INT = 6;
-            if (index === 0) {
-                borderRadiusStyle = {
-                    borderTopLeftRadius: BORDER_RADIUS_EXT,
-                    borderTopRightRadius: BORDER_RADIUS_EXT,
-                    borderBottomLeftRadius: BORDER_RADIUS_INT,
-                    borderBottomRightRadius: BORDER_RADIUS_INT,
-                };
-            } else if (index === messages.length - 1) {
-                borderRadiusStyle = {
-                    borderTopLeftRadius: BORDER_RADIUS_INT,
-                    borderTopRightRadius: BORDER_RADIUS_INT,
-                    borderBottomLeftRadius: BORDER_RADIUS_EXT,
-                    borderBottomRightRadius: BORDER_RADIUS_EXT,
-                };
-            } else {
-                borderRadiusStyle = {
-                    borderTopLeftRadius: BORDER_RADIUS_INT,
-                    borderTopRightRadius: BORDER_RADIUS_INT,
-                    borderBottomLeftRadius: BORDER_RADIUS_INT,
-                    borderBottomRightRadius: BORDER_RADIUS_INT,
-                };
-            }
-            return (
-                <TouchableOpacity
-                    onPress={() =>
-                        navigation.navigate(routesNames.client.messaging.details, {
-                            token: token,
-                            message: item,
-                        })
-                    }
-                    style={{
-                        backgroundColor: "hsla(235, 28%, 15%, 1)",
-                        paddingVertical: 16,
-                        paddingHorizontal: 18,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 12,
-                        ...borderRadiusStyle,
-                    }}
-                >
-                    <View
-                        style={{
-                            width: 37,
-                            height: 37,
-                            borderRadius: 18,
-                            backgroundColor: "hsla(217, 91%, 60%, 1)",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                        }}
-                    >
-                        <Text preset="label1" style={{ color: "white" }}>
-                            {item.sender.initials ?? "??"}
-                        </Text>
-                    </View>
-
-                    <View style={{ flex: 1 }}>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            }}
-                        >
-                            <Text preset="title2" oneLine style={{ flexShrink: 1 }}>
-                                {item.sender.fullName}
-                            </Text>
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                    gap: 6,
-                                }}
-                            >
-                                <Text
-                                    oneLine
-                                    preset="label2"
-                                    style={{ flexShrink: 0, marginLeft: 20 }}
-                                >
-                                    {formatDate(new Date(item.date), "fullDate")}
-                                </Text>
-                                {!item.read && (
-                                    <View
-                                        style={{
-                                            width: 10,
-                                            height: 10,
-                                            backgroundColor: "hsla(0, 0%, 100%, 1)",
-                                            borderRadius: 5,
-                                        }}
-                                    />
-                                )}
-                            </View>
-                        </View>
-                        <Text preset="body2" oneLine>
-                            {item.subject}
-                        </Text>
-                    </View>
-                </TouchableOpacity>
-            );
-        },
-        [messages]
+        ({ item, index }) => (
+            <MessageItem
+                item={item}
+                index={index}
+                messages={messages}
+                navigation={navigation}
+                token={token}
+            />
+        ),
+        [messages, navigation, token]
     );
 
-    const handleLoadMore = () => {
-        if (hasNextPage && !isFetchingNextPage && !isLoading) {
-            fetchNextPage();
-        }
-    };
-
-    if (isLoading) return <ActivityIndicator size="large" />;
-
-    if (isError) {
-        return (
-            <View style={{ padding: 16 }}>
-                <Text>Une erreur est survenue lors du chargement des messages.</Text>
-            </View>
-        );
-    }
     const transitionProgress = useSharedValue(0); // 0: button ; 1: input
+    const pressScale = useSharedValue(1);
 
     const containerStyle = useAnimatedStyle(() => ({
         width: interpolate(transitionProgress.value, [0, 1], [80, 90]) + "%",
         borderRadius: interpolate(transitionProgress.value, [0, 1], [30, 10]),
+        transform: [{ scale: pressScale.value }],
     }));
 
     const inputStyle = useAnimatedStyle(() => ({
@@ -203,45 +96,30 @@ export default function MessagingContent() {
     };
     const closeSearch = useCallback(() => {
         setIsSearchOpen(false);
+        setSearchQuery("");
         inputRef.current?.blur();
         transitionProgress.value = withTiming(0, { duration: 250 });
     }, []);
 
+    const handleLoadMore = () => {
+        if (hasNextPage && !isFetchingNextPage && !isLoading) {
+            fetchNextPage();
+        }
+    };
+
+    if (isLoading) return <ActivityIndicator size="large" />;
+
+    if (isError) {
+        return (
+            <View style={{ padding: 16 }}>
+                <Text>Une erreur est survenue lors du chargement des messages.</Text>
+            </View>
+        );
+    }
+
     return (
         <ScreenStack horizontalSpacing={16}>
             <SafeAreaView>
-                {/* {isSearchOpen ? (
-                    <View
-                        style={{
-                            backgroundColor: "hsl(235, 28%, 15%)",
-                            alignSelf: "center",
-                            paddingVertical: 12,
-                            paddingHorizontal: 18,
-                            borderRadius: 28,
-                            marginVertical: 20,
-                            flexDirection: "row",
-                            alignItems: "center",
-                        }}
-                    >
-                        <TextInput
-                            placeholder="Rechercher"
-                            onChangeText={setSearchQuery}
-                            value={searchQuery}
-                            ref={inputRef}
-                            placeholderTextColor="hsla(0, 0%, 100%, 0.5)"
-                            style={{
-                                flex: 1,
-                                color: "white",
-                                paddingVertical: 0,
-                            }}
-                            returnKeyType="search"
-                        />
-                        <Pressable onPress={closeSearch} hitSlop={10}>
-                            <Text preset="label3">Annuler</Text>
-                        </Pressable>
-                    </View>
-                ) : (
-                )} */}
                 <Animated.View
                     style={[
                         {
@@ -266,6 +144,20 @@ export default function MessagingContent() {
                             }}
                             onPress={openSearch}
                             disabled={isSearchOpen}
+                            onPressIn={() => {
+                                pressScale.value = withSpring(0.9, {
+                                    damping: 10,
+                                    stiffness: 140,
+                                    mass: 0.7,
+                                });
+                            }}
+                            onPressOut={() => {
+                                pressScale.value = withSpring(1, {
+                                    damping: 12,
+                                    stiffness: 170,
+                                    mass: 1.1,
+                                });
+                            }}
                         >
                             <Text preset="label1">Rechercher dans les messages</Text>
                         </Pressable>
@@ -333,3 +225,108 @@ export default function MessagingContent() {
         </ScreenStack>
     );
 }
+
+const MessageItem = memo(({ item, index, navigation, messages, token }) => {
+    let borderRadiusStyle = {};
+    const BORDER_RADIUS_EXT = 28;
+    const BORDER_RADIUS_INT = 6;
+    if (index === 0) {
+        borderRadiusStyle = {
+            borderTopLeftRadius: BORDER_RADIUS_EXT,
+            borderTopRightRadius: BORDER_RADIUS_EXT,
+            borderBottomLeftRadius: BORDER_RADIUS_INT,
+            borderBottomRightRadius: BORDER_RADIUS_INT,
+        };
+    } else if (index === messages.length - 1) {
+        borderRadiusStyle = {
+            borderTopLeftRadius: BORDER_RADIUS_INT,
+            borderTopRightRadius: BORDER_RADIUS_INT,
+            borderBottomLeftRadius: BORDER_RADIUS_EXT,
+            borderBottomRightRadius: BORDER_RADIUS_EXT,
+        };
+    } else {
+        borderRadiusStyle = {
+            borderTopLeftRadius: BORDER_RADIUS_INT,
+            borderTopRightRadius: BORDER_RADIUS_INT,
+            borderBottomLeftRadius: BORDER_RADIUS_INT,
+            borderBottomRightRadius: BORDER_RADIUS_INT,
+        };
+    }
+    return (
+        <TouchableOpacity
+            onPress={() =>
+                navigation.navigate(routesNames.client.messaging.details, {
+                    token: token,
+                    message: item,
+                })
+            }
+            style={{
+                backgroundColor: "hsla(235, 28%, 15%, 1)",
+                paddingVertical: 16,
+                paddingHorizontal: 18,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 12,
+                ...borderRadiusStyle,
+            }}
+        >
+            <View
+                style={{
+                    width: 37,
+                    height: 37,
+                    borderRadius: 18,
+                    backgroundColor: "hsla(217, 91%, 60%, 1)",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    flexShrink: 0,
+                }}
+            >
+                <Text preset="label1" style={{ color: "white" }}>
+                    {item.sender.initials ?? "??"}
+                </Text>
+            </View>
+
+            <View style={{ flex: 1 }}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Text preset="title2" oneLine style={{ flexShrink: 1 }}>
+                        {item.sender.fullName}
+                    </Text>
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 6,
+                        }}
+                    >
+                        <Text
+                            oneLine
+                            preset="label2"
+                            style={{ flexShrink: 0, marginLeft: 20 }}
+                        >
+                            {formatDate(new Date(item.date), "fullDate")}
+                        </Text>
+                        {!item.read && (
+                            <View
+                                style={{
+                                    width: 10,
+                                    height: 10,
+                                    backgroundColor: "hsla(0, 0%, 100%, 1)",
+                                    borderRadius: 5,
+                                }}
+                            />
+                        )}
+                    </View>
+                </View>
+                <Text preset="body2" oneLine>
+                    {item.subject}
+                </Text>
+            </View>
+        </TouchableOpacity>
+    );
+});
