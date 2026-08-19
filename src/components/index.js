@@ -5,6 +5,7 @@ export { Text } from "./core";
 // layout
 export { default as BottomSheet } from "./layout/BottomSheet";
 export { default as DropDown } from "./layout/DropDown";
+export { default as DropDownMenu } from "./layout/DropDownMenu";
 export { default as MainLayout } from "./layout/MainLayout";
 export { default as Onboarding } from "./layout/Onboarding";
 export { default as ScrollableStack } from "./layout/ScrollableStack";
@@ -32,3 +33,4 @@ export { default as LinkText } from "./display/LinkText";
 export { default as Separation } from "./display/Separation";
 export { default as Subtitle } from "./display/Subtitle";
 export { default as Title } from "./display/Title";
+
