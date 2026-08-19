@@ -159,16 +159,21 @@ function parseDiscipline(discipline: ApiDiscipline) {
 
     const obj = {
         code: discipline.codeMatiere,
+        codeSousMatiere: (discipline as any).codeSousMatiere || "",
         libelle: discipline.discipline,
         color: useColorStore.getState().getOrAssignColor(discipline.codeMatiere),
         averageDatas: {
             classAverage: parseNumber(discipline.moyenneClasse),
             minAverage: parseNumber(discipline.moyenneMin),
             maxAverage: parseNumber(discipline.moyenneMax),
-            userAverage: null as number | null,
+            userAverage: parseNumber((discipline as any).moyenne),
         },
-        coef: discipline.coef,
+        coef:
+            typeof discipline.coef === "number"
+                ? discipline.coef
+                : parseNumber((discipline as any).coef) ?? 1,
         isDisciplineGroup: discipline.groupeMatiere,
+        isSubDisciplines: Boolean(discipline.sousMatiere),
         workforce: discipline.effectif,
         rank: discipline.rang,
         teachers: teachersWithoutId,
@@ -180,6 +185,7 @@ function parseDiscipline(discipline: ApiDiscipline) {
 function formatGrade(grade: ApiGrade, periodCode: string): FormattedGrade {
     const {
         codeMatiere,
+        codeSousMatiere,
         codePeriode,
         devoir,
         libelleMatiere,
@@ -193,7 +199,7 @@ function formatGrade(grade: ApiGrade, periodCode: string): FormattedGrade {
         maxClasse,
         elementsProgramme,
         typeDevoir,
-    } = grade;
+    } = grade as any;
 
     const formatted: any = {
         libelle: devoir,
@@ -205,9 +211,10 @@ function formatGrade(grade: ApiGrade, periodCode: string): FormattedGrade {
         codes: {
             period: codePeriode,
             discipline: codeMatiere,
+            subDiscipline: codeSousMatiere || "",
         },
         data: {
-            coef: parseFloat(coef),
+            coef: parseNumber(coef) ?? 1,
             classAverage: parseNumber(moyenneClasse),
             outOf: parseNumber(noteSur),
             classMax: parseNumber(maxClasse),
@@ -215,7 +222,7 @@ function formatGrade(grade: ApiGrade, periodCode: string): FormattedGrade {
             grade: parseNumber(valeur),
         },
         skills: (elementsProgramme || []).map(
-            ({ descriptif, valeur, libelleCompetence }) => ({
+            ({ descriptif, valeur, libelleCompetence }: any) => ({
                 name: libelleCompetence,
                 description: descriptif,
                 value: skillColorsCodes[String(valeur)] || null,
@@ -233,13 +240,29 @@ function formatGrade(grade: ApiGrade, periodCode: string): FormattedGrade {
 }
 
 function getGradesForDiscipline(
-    { periodCode, disciplineCode }: { periodCode: string; disciplineCode: string },
+    {
+        periodCode,
+        disciplineCode,
+        subDisciplineCode,
+        isSubDiscipline,
+    }: {
+        periodCode: string;
+        disciplineCode: string;
+        subDisciplineCode?: string;
+        isSubDiscipline?: boolean;
+    },
     rawGrades: ApiGrade[]
 ): ApiGrade[] {
-    return rawGrades.filter(
-        ({ codePeriode, codeMatiere }) =>
-            codePeriode.includes(periodCode) && codeMatiere === disciplineCode
-    );
+    return rawGrades.filter((note) => {
+        if (!note.codePeriode?.includes(periodCode)) return false;
+        if (note.codeMatiere !== disciplineCode) return false;
+
+        if (isSubDiscipline && subDisciplineCode) {
+            return (note as any).codeSousMatiere === subDisciplineCode;
+        }
+
+        return true;
+    });
 }
 
 function enrichDiscipline(
@@ -248,7 +271,12 @@ function enrichDiscipline(
     rawGrades: ApiGrade[]
 ) {
     const gradesList = getGradesForDiscipline(
-        { disciplineCode: discipline.code, periodCode },
+        {
+            disciplineCode: discipline.code,
+            periodCode,
+            subDisciplineCode: discipline.codeSousMatiere,
+            isSubDiscipline: discipline.isSubDisciplines,
+        },
         rawGrades
     );
 
@@ -264,9 +292,15 @@ function enrichDiscipline(
         },
     };
 
-    enrichedDiscipline.averageDatas.userAverage = new Discipline(
+    const calculatedAverage = new Discipline(
         enrichedDiscipline
     ).getWeightedAverage();
+
+    enrichedDiscipline.averageDatas.userAverage =
+        calculatedAverage !== null
+            ? calculatedAverage
+            : discipline.averageDatas?.userAverage;
+
     return enrichedDiscipline;
 }
 
@@ -290,7 +324,7 @@ export function getLatestGrades(rawNotes: ApiGrade[], limit = 5): any[] {
                     discipline: note.codeMatiere,
                 },
                 data: {
-                    coef: parseFloat(note.coef),
+                    coef: parseNumber(note.coef) ?? 1,
                     grade: parseNumber(note.valeur),
                     outOf: parseNumber(note.noteSur),
                 },

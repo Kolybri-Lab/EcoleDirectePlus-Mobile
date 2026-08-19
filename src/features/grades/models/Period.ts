@@ -27,30 +27,43 @@ export default class Period {
                 : [group as FormattedDiscipline]
         );
 
-        const { total, totalCoef } = disciplines.reduce(
-            (acc, discipline) => {
-                const disciplineObj = new Discipline(discipline);
-                const average =
-                    discipline.averageDatas?.userAverage ??
-                    disciplineObj.getWeightedAverage();
+        let totalWeighted = 0;
+        let totalCoef = 0;
+        let sumSimpleAverage = 0;
+        let countValidDisciplines = 0;
+
+        disciplines.forEach((discipline) => {
+            const disciplineObj = new Discipline(discipline);
+            const average =
+                discipline.averageDatas?.userAverage ??
+                disciplineObj.getWeightedAverage();
+
+            if (average !== null && average !== undefined && !isNaN(average)) {
+                const rawCoef = discipline.coef;
                 const coef =
-                    typeof discipline.coef === "number" && !isNaN(discipline.coef)
-                        ? discipline.coef
+                    typeof rawCoef === "number" && !isNaN(rawCoef)
+                        ? rawCoef
                         : 1;
 
-                if (average !== null && !isNaN(average) && coef > 0) {
-                    acc.total += average * coef;
-                    acc.totalCoef += coef;
+                if (coef > 0) {
+                    totalWeighted += average * coef;
+                    totalCoef += coef;
                 }
 
-                return acc;
-            },
-            { total: 0, totalCoef: 0 }
-        );
+                sumSimpleAverage += average;
+                countValidDisciplines += 1;
+            }
+        });
 
-        const average = totalCoef === 0 ? null : total / totalCoef;
+        if (totalCoef > 0) {
+            return parseNumber(totalWeighted / totalCoef);
+        }
 
-        return parseNumber(average);
+        if (countValidDisciplines > 0) {
+            return parseNumber(sumSimpleAverage / countValidDisciplines);
+        }
+
+        return null;
     }
 
     makeDisciplineAverage(disciplineCode: string): number | null {
