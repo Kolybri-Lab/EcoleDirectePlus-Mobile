@@ -1,4 +1,5 @@
-import { ScreenStack, Text } from "@/components";
+import { DropDownMenu, ScreenStack, Text } from "@/components";
+import { Search } from "@/components/svg";
 import { useMessaging } from "@/features/messaging";
 import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
@@ -28,6 +29,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function MessagingContent() {
     const token = useUserStore((state) => state.token);
     const navigation = useNavigation();
+    const [displayGroup, setDisplayGroup] = useState({
+        id: "received",
+        name: "Reçus",
+    });
     const {
         data,
         isLoading,
@@ -38,12 +43,13 @@ export default function MessagingContent() {
         refetch,
         isRefetching,
     } = useMessaging(token, {
-        typeOfRecovery: "received",
+        typeOfRecovery: displayGroup.id,
         itemsPerPage: 20,
     });
 
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+
     const inputRef = useRef(null);
 
     const messages = useMemo(() => {
@@ -60,7 +66,7 @@ export default function MessagingContent() {
         });
     }, [data, searchQuery]);
 
-    const renderItem = useCallback(
+    const renderMessageItem = useCallback(
         ({ item, index }) => (
             <MessageItem
                 item={item}
@@ -94,12 +100,12 @@ export default function MessagingContent() {
         inputRef.current?.focus();
         transitionProgress.value = withTiming(1, { duration: 250 });
     };
-    const closeSearch = useCallback(() => {
+    const closeSearch = () => {
         setIsSearchOpen(false);
         setSearchQuery("");
         inputRef.current?.blur();
         transitionProgress.value = withTiming(0, { duration: 250 });
-    }, []);
+    };
 
     const handleLoadMore = () => {
         if (hasNextPage && !isFetchingNextPage && !isLoading) {
@@ -141,6 +147,8 @@ export default function MessagingContent() {
                                 width: "100%",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                flexDirection: "row",
+                                gap: 8,
                             }}
                             onPress={openSearch}
                             disabled={isSearchOpen}
@@ -159,6 +167,7 @@ export default function MessagingContent() {
                                 });
                             }}
                         >
+                            <Search size={18} />
                             <Text preset="label1">Rechercher dans les messages</Text>
                         </Pressable>
                     </Animated.View>
@@ -182,7 +191,7 @@ export default function MessagingContent() {
                                     flex: 1,
                                     color: "white",
                                 }}
-                                placeholder="Recherche..."
+                                placeholder="Nom de prof. ou sujet..."
                                 onBlur={() => inputRef.current?.blur()}
                                 onChangeText={setSearchQuery}
                                 value={searchQuery}
@@ -198,14 +207,49 @@ export default function MessagingContent() {
                     )}
                 </Animated.View>
             </SafeAreaView>
-            <Text preset="h3" style={{ marginBottom: 18 }}>
-                Boîte de réception
-            </Text>
+
+            <View
+                style={{
+                    alignItems: "baseline",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    gap: 10,
+                }}
+            >
+                <Text
+                    preset="h3"
+                    oneLine
+                    style={{ marginBottom: 18, flexShrink: 0 }}
+                >
+                    Boîte de réception
+                </Text>
+                <View
+                    style={{
+                        zIndex: 100,
+                        minWidth: 0,
+                        flexShrink: 1,
+                    }}
+                >
+                    <DropDownMenu
+                        options={[
+                            { id: "received", name: "Reçus" },
+                            { id: "sent", name: "Envoyés" },
+                            { id: "draft", name: "Brouillons" },
+                            { id: "archived", name: "Archivés" },
+                        ]}
+
+                        value={displayGroup}
+                        onSelect={(item) => setDisplayGroup(item)}
+                        minWidth="180"
+                        selectorPosition={"right"}
+                    />
+                </View>
+            </View>
             <FlatList
                 data={messages}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={{ gap: 5 }}
-                renderItem={renderItem}
+                renderItem={renderMessageItem}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.5}
                 style={{ flex: 1 }}
