@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useIsFocused } from "@react-navigation/native";
+import { useCallback, useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
 import Animated, {
     interpolate,
@@ -102,6 +103,14 @@ export default function DropDownMenu({
             },
         ],
     }));
+
+    const isFocused = useIsFocused();
+
+    useEffect(() => {
+        if (!isFocused) {
+            closeDropdown();
+        }
+    }, [isFocused, closeDropdown]);
     return (
         <View style={{ width: "100%" }}>
             <Animated.View style={buttonSyle}>
