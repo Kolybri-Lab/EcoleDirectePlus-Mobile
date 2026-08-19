@@ -18,7 +18,10 @@ import DisciplineGroupItem from "@/features/grades/components/DisciplineGroupIte
 
 import { Text } from "@/components/core";
 import { useGrade } from "@/features/grades/context/GradeContext";
-import { calculateStrengthsWeaknesses, formatGradeText } from "@/features/grades/utils/helpers";
+import {
+    calculateStrengthsWeaknesses,
+    formatGradeText,
+} from "@/features/grades/utils/helpers";
 import { useSimulation } from "@/features/grades/hooks/useSimulation";
 
 import { useGrades } from "@/features/grades";
@@ -150,13 +153,10 @@ export default function GradesContent() {
                     index={index}
                     dataLength={renderDisciplinesArray.length}
                     isExpanded={
-                        expandedChain ===
-                        `${discipline.code}-${discipline.libelle}`
+                        expandedChain === `${discipline.code}-${discipline.libelle}`
                     }
                     onPress={() =>
-                        handleItemPress(
-                            `${discipline.code}-${discipline.libelle}`
-                        )
+                        handleItemPress(`${discipline.code}-${discipline.libelle}`)
                     }
                     dispatch={dispatch}
                 />
@@ -168,8 +168,6 @@ export default function GradesContent() {
         (item, index) => item.id?.toString() || `${item.libelle}-${index}`,
         []
     );
-
-
 
     return (
         <View style={{ flex: 1 }}>
@@ -203,39 +201,6 @@ export default function GradesContent() {
                         />
                     )}
                 </SafeAreaView>
-                <ScrollableStack
-                    horizontal
-                    paging
-                    contentContainerStyle={{ alignItems: "center" }}
-                    gap={0}
-                >
-                    <HeaderStatsCarousel
-                        item={{
-                            key: "streak",
-                            text: "Ta streak",
-                            value: globalStreakScore,
-                            gradient: {
-                                colors: ["rgb(255, 15, 0)", "rgba(255, 150, 0, .7)"],
-                                locations: [0.24, 0.68],
-                                start: { x: 0, y: 0 },
-                                end: { x: 0, y: 1 },
-                            },
-                        }}
-                    />
-                    <HeaderStatsCarousel
-                        item={{
-                            key: "average",
-                            text: "Moyenne Générale",
-                            value: formatGradeText(generalAverage),
-                            gradient: {
-                                colors: ["rgb(68, 55, 149)", "rgb(119, 29, 124)"],
-                                locations: [0.21, 0.66],
-                                start: { x: 0, y: 0 },
-                                end: { x: 0, y: 1 },
-                            },
-                        }}
-                    />
-                </ScrollableStack>
             </View>
             <View
                 style={{
@@ -244,77 +209,20 @@ export default function GradesContent() {
                     height: "100%",
                 }}
             >
-                <BottomSheet
+                <View
                     style={{
-                        backgroundColor: "hsl(240, 35%, 11%)",
-                        borderTopLeftRadius: 42,
-                        borderTopRightRadius: 42,
-                        zIndex: 1000,
+                        flex: 1,
+                        margin: 14,
                     }}
-                    displayLine
-                    opened={(state) => setBottomSheetOpened(state)}
                 >
-                    <View
-                        style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            marginHorizontal: 14,
-                            backgroundColor: "hsl(240, 28%, 26%)",
-                            borderRadius: 18,
-                            padding: 16,
-                            marginTop: 24,
-                        }}
-                    >
-                        <ScrollableStack
-                            horizontal
-                            paging
-                            contentContainerStyle={{
-                                width: "200%",
-                            }}
-                        >
-                            <View
-                                style={{
-                                    flexDirection: "column",
-                                    flex: 1,
-                                    gap: 8,
-                                    width: "100%",
-                                }}
-                            >
-                                <StrengthsAndWeakness
-                                    firstColor={"hsla(115, 79%, 41%, 0.8)"}
-                                    data={strengths}
-                                />
-                            </View>
-                            <View
-                                style={{
-                                    flexDirection: "column",
-                                    flex: 1,
-                                    gap: 8,
-                                    width: "100%",
-                                }}
-                            >
-                                <StrengthsAndWeakness
-                                    firstColor={"hsla(5, 79%, 41%, 0.8)"}
-                                    data={weaknesses}
-                                />
-                            </View>
-                        </ScrollableStack>
-                    </View>
-                    <View
-                        style={{
-                            flex: 1,
-                            margin: 14,
-                        }}
-                    >
-                        <FlatList
-                            data={renderDisciplinesArray}
-                            renderItem={renderItem}
-                            keyExtractor={keyExtractor}
-                            contentContainerStyle={{ gap: 3 }}
-                            showsVerticalScrollIndicator={false}
-                        />
-                    </View>
-                </BottomSheet>
+                    <FlatList
+                        data={renderDisciplinesArray}
+                        renderItem={renderItem}
+                        keyExtractor={keyExtractor}
+                        contentContainerStyle={{ gap: 3 }}
+                        showsVerticalScrollIndicator={false}
+                    />
+                </View>
             </View>
             <AddGradeModal
                 visible={state.simulation.modalOpen}
@@ -432,3 +340,4 @@ function flattenDisciplines(groups) {
 
     return result;
 }
+

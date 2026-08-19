@@ -2,6 +2,7 @@ export { default as Account } from "./Account";
 export { default as BackArrow } from "./BackArrow";
 export { default as BellOff } from "./BellOff";
 export { default as Check } from "./Check";
+export { default as Chevron } from "./SimpleArrow";
 export { default as Clock } from "./Clock";
 export { default as CopyLeft } from "./CopyLeft";
 export { default as DoorOpen } from "./DoorOpen";

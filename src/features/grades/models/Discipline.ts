@@ -125,10 +125,19 @@ export default class Discipline {
         let totalCoef = 0;
 
         this.disciplines.forEach((item) => {
-            const userAverage = item.averageDatas.userAverage;
-            if (userAverage !== null) {
-                total += userAverage * item.coef;
-                totalCoef += item.coef;
+            const userAverage = item.averageDatas?.userAverage;
+            const coef =
+                typeof item.coef === "number" && !isNaN(item.coef) && item.coef > 0
+                    ? item.coef
+                    : 1;
+
+            if (
+                userAverage !== null &&
+                userAverage !== undefined &&
+                !isNaN(userAverage)
+            ) {
+                total += userAverage * coef;
+                totalCoef += coef;
             }
         });
 

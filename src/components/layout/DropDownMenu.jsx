@@ -10,7 +10,7 @@ import Animated, {
 import { Text } from "../core";
 import { Chevron } from "../svg";
 
-/* options: [{ id, name }, ...] */
+/* options: [{ id, name }, ...] or [{ value, label }, ...] */
 /* selectorPosition: "left" | "right" | "center" (default: "left") */
 
 const POSITIONS = {
@@ -18,6 +18,12 @@ const POSITIONS = {
     right: "flex-end",
     center: "center",
 };
+
+const getItemId = (item) => item?.id ?? item?.value ?? item;
+const getItemName = (item) =>
+    item?.name ??
+    item?.label ??
+    (item !== undefined && item !== null ? String(item) : undefined);
 
 export default function DropDownMenu({
     options = [],
@@ -39,6 +45,7 @@ export default function DropDownMenu({
 
     const isControlled = value !== undefined;
     const selected = isControlled ? value : internalSelected;
+
     const toggleDeployed = useCallback(() => {
         if (disabled) return;
 
@@ -68,6 +75,7 @@ export default function DropDownMenu({
             duration: 250,
         });
     }, []);
+
     const handleSelected = useCallback(
         (item) => {
             closeDropdown();
@@ -80,31 +88,43 @@ export default function DropDownMenu({
         },
         [closeDropdown, isControlled, onSelect]
     );
+
     const dropDownStyle = useAnimatedStyle(() => ({
         opacity: opacityProgress.value,
         transform: [
             {
-                translateY: interpolate(transitionProgress.value, [0, 1], [-8, 0]),
+                translateY: interpolate(
+                    transitionProgress.value,
+                    [0, 1],
+                    [-8, 0]
+                ),
             },
             {
                 scale: interpolate(transitionProgress.value, [0, 1], [0.98, 1]),
             },
         ],
     }));
+
     const buttonSyle = useAnimatedStyle(() => ({
         transform: [{ scale: pressScale.value }],
     }));
+
     const chevronStyle = useAnimatedStyle(() => ({
         transform: [
             {
                 rotate:
-                    interpolate(transitionProgress.value, [0, 1], [90, 270]) + "deg",
+                    interpolate(transitionProgress.value, [0, 1], [90, 270]) +
+                    "deg",
             },
         ],
     }));
+
+    const selectedName = getItemName(selected);
+    const alignment = POSITIONS[selectorPosition] || "flex-start";
+
     return (
-        <View style={{ width: "100%" }}>
-            <Animated.View style={buttonSyle}>
+        <View style={{ width: "100%", alignItems: alignment }}>
+            <Animated.View style={[buttonSyle, { alignSelf: alignment }]}>
                 <Pressable
                     onPress={toggleDeployed}
                     disabled={disabled}
@@ -131,16 +151,16 @@ export default function DropDownMenu({
                             flexDirection: "row",
                             alignItems: "center",
                             gap: 10,
-                            justifyContent: "space-between",
+                            alignSelf: alignment,
                         },
                         customButtonStyle,
                     ]}
                 >
-                    <Text preset="label1" oneLine style={{ flexShrink: 1 }}>
-                        {selected?.name ?? placeholder}
+                    <Text preset="label1" oneLine>
+                        {selectedName ?? placeholder}
                     </Text>
                     <Animated.View style={chevronStyle}>
-                        <Chevron size={13} />
+                        <Chevron size={13} fill="#FFFFFF" />
                     </Animated.View>
                 </Pressable>
             </Animated.View>
@@ -148,7 +168,6 @@ export default function DropDownMenu({
             {options.length > 0 && (
                 <Animated.View
                     pointerEvents={isDeployed ? "auto" : "none"}
-
                     style={[
                         {
                             position: "absolute",
@@ -157,7 +176,7 @@ export default function DropDownMenu({
                             right: 0,
                             marginTop: 6,
                             flexDirection: "row",
-                            justifyContent: POSITIONS[selectorPosition],
+                            justifyContent: alignment,
                             zIndex: 2,
                         },
                         dropDownStyle,
@@ -171,13 +190,15 @@ export default function DropDownMenu({
                             overflow: "hidden",
                         }}
                     >
-                        {options.map((item) => {
-                            const isSelected = selected?.id === item.id;
+                        {options.map((item, index) => {
+                            const itemId = getItemId(item) ?? index;
+                            const itemName = getItemName(item);
+                            const isSelected = getItemId(selected) === itemId;
 
                             return (
                                 <Pressable
                                     onPress={() => handleSelected(item)}
-                                    key={item.id}
+                                    key={`opt-${itemId}-${index}`}
                                     style={{
                                         backgroundColor: isSelected
                                             ? "hsla(0, 0%, 100%, 0.4)"
@@ -189,7 +210,7 @@ export default function DropDownMenu({
                                         flexDirection: "row",
                                     }}
                                 >
-                                    <Text preset="label2">{item.name}</Text>
+                                    <Text preset="label2">{itemName}</Text>
 
                                     {isSelected && (
                                         <View

@@ -49,29 +49,44 @@ export default async function gradesResolver(
         const groups: Array<any> = [];
         let currentGroup: any = null;
 
-        for (const disciplineRaw of period.ensembleMatieres.disciplines) {
+        const disciplinesList = period.ensembleMatieres?.disciplines || [];
+        const standaloneSubjects: Array<any> = [];
+
+        for (const disciplineRaw of disciplinesList) {
             const discipline = parseDiscipline(disciplineRaw);
 
             if (discipline.isDisciplineGroup) {
                 delete (discipline as any).code;
+                delete (discipline as any).coef;
+
                 currentGroup = {
+                    ...discipline,
                     disciplines: [],
-                    isDisciplineGroup: true,
-                    name: discipline.libelle,
+                    disciplineCodes: [],
                 };
+
                 groups.push(currentGroup);
-                continue;
+            } else if (currentGroup) {
+                currentGroup.disciplines.push(discipline);
+                currentGroup.disciplineCodes.push(discipline.code);
+            } else {
+                standaloneSubjects.push(discipline);
             }
+        }
 
-            if (disciplineRaw.sousMatiere) {
-                if (currentGroup) {
-                    currentGroup.disciplines.push(discipline);
-                }
-                continue;
-            }
-
-            currentGroup = null;
-            groups.push(discipline);
+        if (standaloneSubjects.length > 0) {
+            groups.push({
+                libelle: "Matières",
+                isDisciplineGroup: true,
+                averageDatas: {
+                    classAverage: null,
+                    minAverage: null,
+                    maxAverage: null,
+                    userAverage: null,
+                },
+                disciplines: standaloneSubjects,
+                disciplineCodes: standaloneSubjects.map((s) => s.code),
+            });
         }
 
         acc[period.codePeriode] = {
@@ -85,23 +100,21 @@ export default async function gradesResolver(
     const rawNotes = grades.notes || [];
 
     Object.entries(periodsObj).forEach(([periodCode, periodData]) => {
-        periodData.groups.forEach((group: any, indexGroup: number) => {
+        periodData.groups = periodData.groups.map((group: any) => {
             if (group.isDisciplineGroup) {
-                group.disciplines.forEach(
-                    (discipline: any, indexDiscipline: number) => {
-                        const enriched = enrichDiscipline(
-                            discipline,
-                            periodCode,
-                            rawNotes
-                        );
-                        (
-                            periodsObj[periodCode].groups[indexGroup] as any
-                        ).disciplines[indexDiscipline] = enriched;
-                    }
-                );
+                group.disciplines = group.disciplines.map((discipline: any) => {
+                    return enrichDiscipline(
+                        discipline,
+                        periodCode,
+                        rawNotes
+                    );
+                });
+                group.averageDatas.userAverage = new Discipline(
+                    group
+                ).getDisciplineGroupAverage();
+                return group;
             } else {
-                const enriched = enrichDiscipline(group, periodCode, rawNotes);
-                periodsObj[periodCode].groups[indexGroup] = enriched;
+                return enrichDiscipline(group, periodCode, rawNotes);
             }
         });
     });

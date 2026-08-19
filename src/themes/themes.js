@@ -93,7 +93,7 @@ export const THEMES = {
             error: "rgb(240, 90, 90)",
             fond: "rgb(0, 0, 0)",
             pastel: "rgb(21, 25, 69)",
-            secondary: "rgb(109, 106, 251)",
+            secondary: "rgba(57, 57, 83, 1)",
             main: "rgba(166, 166, 240, 1)",
             accent: "rgb(197, 197, 247)",
             case: "rgb(94, 94, 136)",

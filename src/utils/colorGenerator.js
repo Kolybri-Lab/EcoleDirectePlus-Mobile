@@ -119,6 +119,8 @@ export const addOpacityToCssRgb = (text, a) => {
     return `rgba(${r}, ${g}, ${b}, ${a})`;
 };
 
+export const addOpacity = addOpacityToCssRgb;
+
 export const adjustLightness = (hslString, amount) => {
     if (!hslString) return "hsl(0, 0%, 50%)";
     const match = hslString.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);

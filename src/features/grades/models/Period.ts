@@ -22,16 +22,23 @@ export default class Period {
 
     makeGeneralAverage(): number | null {
         const disciplines = this.groups.flatMap((group) =>
-            (group as FormattedDisciplineGroup).isDisciplineGroup ? (group as FormattedDisciplineGroup).disciplines : [group as FormattedDiscipline]
+            (group as FormattedDisciplineGroup).isDisciplineGroup
+                ? (group as FormattedDisciplineGroup).disciplines || []
+                : [group as FormattedDiscipline]
         );
 
         const { total, totalCoef } = disciplines.reduce(
             (acc, discipline) => {
                 const disciplineObj = new Discipline(discipline);
-                const average = disciplineObj.getWeightedAverage();
-                const coef = disciplineObj.getTotalCoef();
+                const average =
+                    discipline.averageDatas?.userAverage ??
+                    disciplineObj.getWeightedAverage();
+                const coef =
+                    typeof discipline.coef === "number" && !isNaN(discipline.coef)
+                        ? discipline.coef
+                        : 1;
 
-                if (average !== null && !isNaN(average) && !isNaN(coef) && coef > 0) {
+                if (average !== null && !isNaN(average) && coef > 0) {
                     acc.total += average * coef;
                     acc.totalCoef += coef;
                 }
