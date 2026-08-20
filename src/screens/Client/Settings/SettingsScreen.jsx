@@ -1,7 +1,16 @@
 import { ScreenStack, Text } from "@/components";
-import { Chevron, Info, Merge, Person, SafetyShield, Sun } from "@/components/svg";
+import {
+    Chevron,
+    Cross,
+    Info,
+    Merge,
+    Person,
+    SafetyShield,
+    Sun,
+} from "@/components/svg";
 import { useThemeStore } from "@/hooks/useThemeStore";
 import dynamicBorderRadius from "@/utils/borderRadius";
+import { useNavigation } from "@react-navigation/native";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,20 +25,21 @@ function SettingsSection({ options }) {
                 <Pressable
                     key={opt.label}
                     onPress={opt.onPress}
-                    style={{
+                    style={({ pressed }) => ({
                         backgroundColor: "hsla(0, 0%, 100%, .1)",
                         paddingVertical: 16,
                         paddingHorizontal: 14,
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "space-between",
+                        opacity: pressed ? 0.6 : 1,
                         ...dynamicBorderRadius(
                             index,
                             options.length,
                             RADIUS_INT,
                             RADIUS_EXT
                         ),
-                    }}
+                    })}
                 >
                     <View
                         style={{
@@ -53,6 +63,7 @@ function SettingsSection({ options }) {
 export default function SettingsScreen({}) {
     const themeMode = useThemeStore((state) => state.themeMode);
     const setThemeMode = useThemeStore((state) => state.setThemeMode);
+    const navigation = useNavigation();
 
     const accountOptions = [
         {
@@ -91,8 +102,18 @@ export default function SettingsScreen({}) {
             horizontalSpacing={40}
             style={{ backgroundColor: "hsl(230, 30%, 8%)" }}
         >
-            <SafeAreaView>
-                <Text>Paramètres</Text>
+            <SafeAreaView
+                style={{
+                    marginTop: 8,
+                }}
+            >
+                <Pressable
+                    style={{ flexDirection: "row", gap: 16, alignItems: "center" }}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Cross size={ICON_SIZE} />
+                    <Text preset="h4">Paramètres</Text>
+                </Pressable>
             </SafeAreaView>
             <View style={{ flex: 1, gap: 2 }}>
                 <Text
@@ -120,6 +141,22 @@ export default function SettingsScreen({}) {
                 </Text>
                 <SettingsSection options={aboutOptions} />
             </View>
+            <SafeAreaView edges={["bottom"]} style={{ marginBottom: 20 }}>
+                <View
+                    style={{
+                        backgroundColor: "hsla(0, 0%, 35%, .3)",
+                        paddingVertical: 12,
+                        paddingHorizontal: 14,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 20,
+                    }}
+                >
+                    <Text preset="label3" color="hsla(0, 0%, 100%, .6)">
+                        Le meilleur reste à venir...
+                    </Text>
+                </View>
+            </SafeAreaView>
         </ScreenStack>
     );
 }
