@@ -18,9 +18,7 @@ export default function GradientBackground({ children }) {
         gradientColors = rawGradient.colors;
         locations = rawGradient.locations;
     } else if (Array.isArray(rawGradient)) {
-        const colorStrings = rawGradient.filter(
-            (item) => typeof item === "string"
-        );
+        const colorStrings = rawGradient.filter((item) => typeof item === "string");
         const numbers = rawGradient.filter((item) => typeof item === "number");
 
         gradientColors = colorStrings;
@@ -52,5 +50,4 @@ const styles = StyleSheet.create({
         flex: 1,
     },
 });
-
 

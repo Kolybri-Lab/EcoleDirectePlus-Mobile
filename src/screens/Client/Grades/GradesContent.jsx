@@ -23,10 +23,6 @@ import {
     formatGradeText,
 } from "@/features/grades/utils/helpers";
 import { useSimulation } from "@/features/grades/hooks/useSimulation";
-import {
-    calculateStrengthsWeaknesses,
-    formatGradeText,
-} from "@/features/grades/utils/helpers";
 
 import { useGrades } from "@/features/grades";
 import { useUserStore } from "@/hooks/useUserStore";
@@ -158,10 +154,8 @@ export default function GradesContent() {
                     dataLength={renderDisciplinesArray.length}
                     isExpanded={
                         expandedChain === `${discipline.code}-${discipline.libelle}`
-                        expandedChain === `${discipline.code}-${discipline.libelle}`
                     }
                     onPress={() =>
-                        handleItemPress(`${discipline.code}-${discipline.libelle}`)
                         handleItemPress(`${discipline.code}-${discipline.libelle}`)
                     }
                     dispatch={dispatch}
