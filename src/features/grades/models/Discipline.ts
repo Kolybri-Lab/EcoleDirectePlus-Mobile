@@ -17,7 +17,7 @@ export default class Discipline {
     disciplines?: FormattedDiscipline[];
     disciplineCodes?: string[];
     simulatedGrades: FormattedGrade[];
-    color?: string;
+    color: string;
 
     constructor(data: any) {
         this.code = data.code || "";
@@ -141,8 +141,7 @@ export default class Discipline {
         this.disciplines.forEach((item) => {
             const disciplineObj = new Discipline(item);
             const userAverage =
-                item.averageDatas?.userAverage ??
-                disciplineObj.getWeightedAverage();
+                item.averageDatas?.userAverage ?? disciplineObj.getWeightedAverage();
 
             if (
                 userAverage !== null &&
@@ -151,9 +150,7 @@ export default class Discipline {
             ) {
                 const rawCoef = item.coef;
                 const coef =
-                    typeof rawCoef === "number" && !isNaN(rawCoef)
-                        ? rawCoef
-                        : 1;
+                    typeof rawCoef === "number" && !isNaN(rawCoef) ? rawCoef : 1;
 
                 if (coef > 0) {
                     totalWeighted += userAverage * coef;
@@ -186,3 +183,4 @@ export default class Discipline {
         );
     }
 }
+

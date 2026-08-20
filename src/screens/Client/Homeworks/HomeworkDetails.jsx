@@ -183,7 +183,9 @@ export default function HomeworkDetails({ route }) {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: colors.background.gradient,
+                    backgroundColor: Array.isArray(colors.background.gradient)
+                        ? colors.background.gradient[0]
+                        : colors.background.gradient,
                     marginHorizontal: 20,
                     marginBottom: 110,
                 }}
@@ -192,7 +194,11 @@ export default function HomeworkDetails({ route }) {
                     headerTitle={"Retour aux tâches"}
                     backArrow={{ color: colors.contrast, size: 24 }}
                     height={33}
-                    backgroundColor={colors.background.gradient}
+                    backgroundColor={
+                        Array.isArray(colors.background.gradient)
+                            ? colors.background.gradient[0]
+                            : colors.background.gradient
+                    }
                 />
                 <View style={{ flex: 1, gap: 18 }}>
                     <TouchableOpacity

@@ -74,17 +74,88 @@ export function rgbToHsl(r, g, b) {
 
     return [Math.round(h), Math.round(s * 100), Math.round(l * 100)];
 }
+const NAMED_COLORS = {
+    transparent: [0, 0, 0, 0],
+    white: [255, 255, 255],
+    black: [0, 0, 0],
+    red: [255, 0, 0],
+    green: [0, 128, 0],
+    blue: [0, 0, 255],
+    yellow: [255, 255, 0],
+    orange: [255, 165, 0],
+    purple: [128, 0, 128],
+    gray: [128, 128, 128],
+    grey: [128, 128, 128],
+    lightgray: [211, 211, 211],
+    lightgrey: [211, 211, 211],
+    darkgray: [169, 169, 169],
+    darkgrey: [169, 169, 169],
+};
+
+export const parseToRgb = (text) => {
+    if (!text || typeof text !== "string") return [0, 0, 0];
+    const str = text.trim().toLowerCase();
+
+    // 1. Named colors
+    if (NAMED_COLORS[str]) {
+        return NAMED_COLORS[str].slice(0, 3);
+    }
+
+    // 2. Hex colors (#rgb, #rgba, #rrggbb, #rrggbbaa)
+    if (str.startsWith("#")) {
+        const hex = str.slice(1);
+        if (hex.length === 3 || hex.length === 4) {
+            const r = parseInt(hex[0] + hex[0], 16);
+            const g = parseInt(hex[1] + hex[1], 16);
+            const b = parseInt(hex[2] + hex[2], 16);
+            return [r, g, b];
+        }
+        if (hex.length === 6 || hex.length === 8) {
+            const r = parseInt(hex.slice(0, 2), 16);
+            const g = parseInt(hex.slice(2, 4), 16);
+            const b = parseInt(hex.slice(4, 6), 16);
+            return [r, g, b];
+        }
+    }
+
+    // 3. HSL / HSLA (hsl(h, s%, l%) or hsla(h, s%, l%, a))
+    if (str.startsWith("hsl")) {
+        const matches = str.match(/[\d.]+/g);
+        if (matches && matches.length >= 3) {
+            const h = parseFloat(matches[0]);
+            const s = parseFloat(matches[1]) / 100;
+            const l = parseFloat(matches[2]) / 100;
+            return hslToRgb(h, s, l);
+        }
+    }
+
+    // 4. RGB / RGBA (rgb(r, g, b) or rgba(r, g, b, a))
+    if (str.startsWith("rgb")) {
+        const matches = str.match(/[\d.]+/g);
+        if (matches && matches.length >= 3) {
+            return [
+                Math.round(parseFloat(matches[0])),
+                Math.round(parseFloat(matches[1])),
+                Math.round(parseFloat(matches[2])),
+            ];
+        }
+    }
+
+    // Fallback: match any 3 numbers if available
+    const matches = str.match(/\d+/g);
+    if (matches && matches.length >= 3) {
+        return [parseInt(matches[0]), parseInt(matches[1]), parseInt(matches[2])];
+    }
+
+    return [0, 0, 0];
+};
+
 export const cssRgbToRgb = (text) => {
-    if (!text) return [0, 0, 0];
-    let match = text.match(/\d+/g);
-    if (!match) return [0, 0, 0];
-    let [x, y, z] = match;
-    return [x, y, z];
+    return parseToRgb(text);
 };
 
 export const cssRgbToHsl = (text) => {
-    const [r, g, b] = cssRgbToRgb(text);
-
+    const [r, g, b] = parseToRgb(text);
     const [h, s, l] = rgbToHsl(r, g, b);
     return [h, s, l];
 };
@@ -97,7 +168,7 @@ export const cssHslaToHsla = (text) => {
         return [0, 0, 0, 0];
     }
 
-    const [h, s, l, a] = values.map((v, i) =>
+    const [h, s, l, a] = values.map((v) =>
         v.includes("%") ? parseFloat(v) : parseFloat(v)
     );
 
@@ -113,10 +184,10 @@ export const isDarkColor = (hsl) => {
 };
 
 export const addOpacityToCssRgb = (text, a) => {
-    if (a > 1) return "rgb(255, 100, 20)";
-
-    const [r, g, b] = cssRgbToRgb(text);
-    return `rgba(${r}, ${g}, ${b}, ${a})`;
+    if (a === undefined || a === null) a = 1;
+    const opacity = a > 1 ? Math.min(1, a / 100) : Math.max(0, a);
+    const [r, g, b] = parseToRgb(text);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 };
 
 export const addOpacity = addOpacityToCssRgb;

@@ -24,8 +24,7 @@ export default function DisciplineGroupItem({
     const groupObj = new Discipline(group);
     const disciplines = group.disciplines || [];
     const userAverage =
-        groupObj.getDisciplineGroupAverage() ??
-        groupObj.averageDatas?.userAverage;
+        groupObj.getDisciplineGroupAverage() ?? groupObj.averageDatas?.userAverage;
     const title = groupObj.libelle || group.name || "Matières";
 
     return (
@@ -38,12 +37,11 @@ export default function DisciplineGroupItem({
                     alignItems: "flex-end",
                     overflow: "hidden",
                     paddingHorizontal: 4,
-                    marginTop: 10,
                     marginBottom: 2,
                     paddingVertical: 2,
                 }}
             >
-                <Text preset="h4" style={{ fontWeight: "bold" }}>
+                <Text preset="h4" style={{ fontWeight: "semibold", fontSize: 18 }}>
                     {title}
                 </Text>
                 {userAverage !== null && userAverage !== undefined && (
@@ -54,7 +52,7 @@ export default function DisciplineGroupItem({
             </View>
 
             {/* Liste des matières du groupe */}
-            <View style={{ gap: 4 }}>
+            <View style={{ gap: 8 }}>
                 {disciplines.map((item: any, dIndex: number) => {
                     const discipline = new Discipline(item);
                     const chain = `${discipline.code}-${discipline.libelle}`;
@@ -83,3 +81,4 @@ export default function DisciplineGroupItem({
         </View>
     );
 }
+

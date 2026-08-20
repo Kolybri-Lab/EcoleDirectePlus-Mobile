@@ -58,7 +58,7 @@ export default function GradeFlame({
                         styles.flammeText,
                         {
                             fontSize: Math.round(28 * scale),
-                            marginTop: Math.round(96 * scale),
+                            marginTop: Math.round(92 * scale),
                             marginLeft: Math.round(-5 * scale),
                         },
                     ]}
@@ -71,8 +71,8 @@ export default function GradeFlame({
                     style={[
                         styles.flammeSubText,
                         {
-                            fontSize: Math.round(16 * scale),
-                            marginTop: Math.round(20 * scale),
+                            fontSize: Math.round(24 * scale),
+                            marginTop: Math.round(28 * scale),
                         },
                     ]}
                 >
@@ -100,3 +100,4 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
     },
 });
+

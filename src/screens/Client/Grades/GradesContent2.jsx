@@ -93,10 +93,7 @@ export default function GradesContent() {
         try {
             setRenderDisciplineArray(flattenDisciplines(displayPeriode.groups));
             setGeneralAverage(
-                new Period(
-                    displayPeriode,
-                    displayPeriodeName
-                ).makeGeneralAverage()
+                new Period(displayPeriode, displayPeriodeName).makeGeneralAverage()
             );
 
             setGlobalStreakScore(displayPeriode.globalStreakScore);
@@ -122,9 +119,9 @@ export default function GradesContent() {
                 {periodes.length > 0 && (
                     <View
                         style={{
-                            marginTop: 50,
+                            marginTop: 60,
                             zIndex: 10,
-                            paddingHorizontal: 14,
+                            paddingHorizontal: 20,
                         }}
                     >
                         <DropDownMenu
@@ -163,8 +160,8 @@ export default function GradesContent() {
                 <View
                     style={{
                         gap: 16,
-                        paddingHorizontal: 14,
-                        marginTop: 10,
+                        paddingHorizontal: 18,
+                        marginTop: 30,
                     }}
                 >
                     {displayPeriode.groups?.map((group, gIndex) => (

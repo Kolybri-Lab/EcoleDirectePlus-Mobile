@@ -58,7 +58,11 @@ export default function PrivacyPolicyScreen() {
             <CustomTopHeader
                 headerTitle={"Privacy Policy And Terms of Use"}
                 height={38}
-                backgroundColor={colors.background.gradient}
+                backgroundColor={
+                    Array.isArray(colors.background.gradient)
+                        ? colors.background.gradient[0]
+                        : colors.background.gradient
+                }
             />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.scrollview}>

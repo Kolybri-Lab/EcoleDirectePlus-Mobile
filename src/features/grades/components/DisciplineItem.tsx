@@ -17,6 +17,7 @@ import Discipline from "../models/Discipline";
 import Grade from "../models/Grade";
 import GradeItem from "./GradeItem";
 import SimulatedGradeItem from "./SimulatedGradeItem";
+import SimpleFlamme from "./SimpleFlamme";
 
 interface DisciplineItemProps {
     discipline: Discipline;
@@ -58,8 +59,8 @@ export default function DisciplineItem({
         );
     }, [isExpanded]);
 
-    const topRadiusClosed = isFirst ? 16 : 8;
-    const bottomRadiusClosed = isLast ? 16 : 8;
+    const topRadiusClosed = isFirst ? 20 : 12;
+    const bottomRadiusClosed = isLast ? 20 : 12;
 
     const containerAnimatedStyle = useAnimatedStyle(() => ({
         borderTopLeftRadius: interpolate(
@@ -141,7 +142,7 @@ export default function DisciplineItem({
                         backgroundColor: secondaryColor,
                         overflow: "hidden",
                         borderWidth: isExpanded ? 1 : 0,
-                        borderColor: addOpacityToCssRgb(mainColor, 0.4),
+                        borderColor: discipline.color,
                     },
                     containerAnimatedStyle,
                 ]}
@@ -164,43 +165,39 @@ export default function DisciplineItem({
                             flex: 1,
                         }}
                     >
-                        <View
-                            style={{
-                                alignItems: "center",
-                                justifyContent: "center",
-                                borderRadius: 500,
-                                width: 42,
-                                height: 42,
-                                borderWidth: 2,
-                                borderColor: "white",
-                                backgroundColor: secondaryColor,
-                            }}
-                        >
-                            <View
+                        <View style={{ marginLeft: -5 }}>
+                            <SimpleFlamme
+                                color={
+                                    discipline.streakCount != 0 ? "orange" : "gray"
+                                }
+                                size={50}
+                            />
+                            <Text
+                                align="center"
+                                preset="h3"
                                 style={{
-                                    width: 34,
-                                    height: 34,
-                                    borderRadius: 17,
-                                    overflow: "hidden",
-                                    backgroundColor:
-                                        discipline.streakCount === 0
-                                            ? "transparent"
-                                            : "hsl(35, 100%, 50%)",
-                                    alignItems: "center",
-                                    justifyContent: "center",
+                                    marginTop: -43,
+                                    marginLeft: -2,
+                                    fontSize: 22,
                                 }}
                             >
-                                <Text align="center" preset="h3">
-                                    {discipline.streakCount}
-                                </Text>
-                            </View>
+                                {discipline.streakCount}
+                            </Text>
                         </View>
-                        <View style={{ maxWidth: "68%", flexShrink: 1 }}>
+
+                        <View
+                            style={{
+                                maxWidth: "68%",
+                                flexShrink: 1,
+                                marginLeft: -7,
+                            }}
+                        >
                             <Text
                                 oneLine
                                 style={{
-                                    fontFamily: "Lexend-SemiBold",
+                                    fontFamily: "Lexend-Bold",
                                     fontSize: 17,
+                                    color: discipline.color,
                                 }}
                             >
                                 {discipline.libelle}
@@ -216,9 +213,31 @@ export default function DisciplineItem({
                             )}
                         </View>
                     </View>
-                    <Text preset="h3">
-                        {formatGradeText(discipline.averageDatas?.userAverage)}
-                    </Text>
+                    <View
+                        style={{
+                            width: 86,
+                            height: 40,
+                            backgroundColor: addOpacityToCssRgb(
+                                discipline.color,
+                                0.12
+                            ),
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderWidth: 1,
+                            borderColor: addOpacityToCssRgb(discipline.color, 0.2),
+                            borderRadius: 7,
+                        }}
+                    >
+                        <Text
+                            preset="h3"
+                            style={{
+                                color: discipline.color,
+                                fontFamily: "Lexend-Bold",
+                            }}
+                        >
+                            {formatGradeText(discipline.averageDatas?.userAverage)}
+                        </Text>
+                    </View>
                 </View>
 
                 <Animated.View style={[{ gap: 8 }, contentAnimatedStyle]}>
