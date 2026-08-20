@@ -1,6 +1,6 @@
+import mapScreens from "@/router/helpers/mapScreens";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { routesNames } from "../../../config/routesNames";
-import mapScreens from "@/router/helpers/mapScreens";
 import coreClientScreen from "./indexClientCore";
 
 const Stack = createNativeStackNavigator();
@@ -10,11 +10,10 @@ export default function Core() {
 
     return (
         <Stack.Navigator
-            initialRouteName={routesNames.navigators.settings}
+            initialRouteName={routesNames.core.settings}
             screenOptions={{ animation: "slide_from_bottom" }}
         >
             {screens}
         </Stack.Navigator>
     );
 }
-

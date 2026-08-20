@@ -33,8 +33,6 @@ export const routesNames = {
     },
     navigators: {
         core: "navigators_variable_settings",
-        splash: "navigators_splash",
         tabs: "navigators_root",
-        auth: "navigators_authentification",
     },
 };

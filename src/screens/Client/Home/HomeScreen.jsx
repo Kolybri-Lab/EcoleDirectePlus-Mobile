@@ -12,6 +12,7 @@ import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 import { useErrorStore } from "@/hooks/useErrorStore";
 import { useSignIn } from "@/hooks/useSignIn";
 import { useUserStore } from "@/hooks/useUserStore";
+import { routesNames } from "@/router/config/routesNames";
 import { getTodayDateString } from "@/utils/date";
 import { objectsEqual } from "@/utils/json";
 import {
@@ -24,8 +25,9 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useMemo, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
+import { Image, Pressable, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
     const { signOut } = useSignIn();
@@ -220,6 +222,10 @@ export default function HomeScreen() {
             nextCourseKnown: !objectsEqual(nextCourse, {}),
         };
     }, [activeCourse, nextCourse]);
+    const {
+        profile: { localPhotoUri },
+    } = useUserStore();
+    console.log(localPhotoUri);
     return (
         <ScreenStack>
             <LinearGradient
@@ -234,38 +240,77 @@ export default function HomeScreen() {
                     scrollEventThrottle={16}
                     overScrollMode="never"
                 >
-                    <View
+                    <SafeAreaView
                         style={{
-                            marginTop: "20%",
-                            marginBottom: 28,
-                            flexDirection: "row",
-                            justifyContent: "space-between",
+                            // marginTop: "20%",
+                            marginTop: 10,
                             alignItems: "flex-start",
                         }}
                     >
-                        <View style={{ flex: 1, marginRight: 10 }}>
-                            <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
-                                {greetingMessage}
-                            </Text>
-                            <Text size={38}>{name}</Text>
-                        </View>
-                        <TouchableOpacity
-                            onPress={signOut}
+                        <Pressable
                             style={{
-                                paddingVertical: 8,
-                                paddingHorizontal: 14,
-                                borderRadius: 10,
-                                backgroundColor: "hsla(0, 70%, 50%, 0.2)",
-                                borderWidth: 1,
-                                borderColor: "hsla(0, 70%, 50%, 0.4)",
-                                marginTop: 8,
+                                overflow: "hidden",
+                                borderRadius: 16,
+                                marginBottom: 18,
+                                opacity: 0.85,
+                                borderColor: "hsla(0, 0%, 100%, 0.6)",
+                                borderWidth: 1.5,
+                                width: 46,
+                                height: 46,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "hsla(0, 0%, 100%, 0.3)",
+                            }}
+                            onPress={() =>
+                                navigation.navigate(routesNames.navigators.core, {
+                                    screen: routesNames.core.settings,
+                                })
+                            }
+                        >
+                            {localPhotoUri === undefined ? (
+                                <Text preset="h4">{name[0]}</Text>
+                            ) : (
+                                <Image
+                                    source={require("../../../../assets/custom/default-user-picture.png")}
+                                    style={{
+                                        width: 46,
+                                        height: 46,
+                                    }}
+                                />
+                            )}
+                        </Pressable>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                justifyContent: "space-between",
+                                alignItems: "flex-start",
                             }}
                         >
-                            <Text size={14} color="hsla(0, 100%, 80%, 1)">
-                                Déconnexion
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
+                            <View style={{ flex: 1, marginRight: 10 }}>
+                                <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
+                                    {greetingMessage}
+                                </Text>
+                                <Text size={38}>{name}</Text>
+                            </View>
+                            <TouchableOpacity
+                                onPress={signOut}
+                                style={{
+                                    paddingVertical: 8,
+                                    paddingHorizontal: 14,
+                                    borderRadius: 10,
+                                    backgroundColor: "hsla(0, 70%, 50%, 0.2)",
+                                    borderWidth: 1,
+                                    borderColor: "hsla(0, 70%, 50%, 0.4)",
+                                    marginTop: 8,
+                                }}
+                            >
+                                <Text size={14} color="hsla(0, 100%, 80%, 1)">
+                                    Déconnexion
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
                     <View style={{ alignItems: "center", gap: 20 }}>
                         <ActiveCourseCard
                             progression={progression}

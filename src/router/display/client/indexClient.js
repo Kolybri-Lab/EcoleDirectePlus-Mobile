@@ -1,10 +1,10 @@
-import { routesNames } from "../../config/routesNames";
 import createScreen from "@/router/helpers/createScreen";
+import { routesNames } from "../../config/routesNames";
 import Core from "./core/Core";
 import Tabs from "./tabs/Tabs";
 
 const {
-    navigators: { auth, core, tabs },
+    navigators: { core, tabs },
 } = routesNames;
 
 const appNavigatorOrganisation = [
@@ -13,4 +13,3 @@ const appNavigatorOrganisation = [
 ];
 
 export default appNavigatorOrganisation;
-
