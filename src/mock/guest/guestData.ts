@@ -11,12 +11,16 @@ import mockHomeworksPreciseDay from "./homeworks_precise_day.json";
 import mockLogin from "./login.json";
 import mockMessageDetail from "./message_detail.json";
 import mockMessagesFolder from "./messages_folder.json";
-import mockMessagesReceived from "./messages_received.json";
+import mockMessagesReceivedPage1 from "./messages_received_page1.json";
+import mockMessagesReceivedPage2 from "./messages_received_page2.json";
+import mockMessagesReceivedPage3 from "./messages_received_page3.json";
 import mockTimetable from "./timetable.json";
 
 export const getGuestData = (url: string, body?: any): any => {
     const messageDetailMatch = url.match(/\/messages\/(\d+)\.awp/);
     const dateRegex = /\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])/;
+    const pageMatch = url.match(/[?&]page=(\d+)/);
+    const requestedPage = pageMatch ? Number(pageMatch[1]) : 0;
 
     if (url.includes("/notes.awp")) {
         return mockGrades;
@@ -43,7 +47,13 @@ export const getGuestData = (url: string, body?: any): any => {
         ) {
             return mockMessagesFolder;
         }
-        return mockMessagesReceived;
+        if (requestedPage === 1) {
+            return mockMessagesReceivedPage2;
+        }
+        if (requestedPage >= 2) {
+            return mockMessagesReceivedPage3;
+        }
+        return mockMessagesReceivedPage1;
     }
     if (url.includes("/cahierdetexte.awp") && !dateRegex.test(url)) {
         return mockHomeworks;
@@ -118,10 +128,16 @@ const handleToggleHomework = (body?: any) => {
 
 const getGenericMessageDetail = (messageId: string | number) => {
     const foundMsg =
-        mockMessagesReceived?.data?.messages?.received?.find(
+        mockMessagesReceivedPage1?.data?.messages?.received?.find(
             (m: any) => String(m.id) === String(messageId)
         ) ||
         mockMessagesFolder?.data?.messages?.received?.find(
+            (m: any) => String(m.id) === String(messageId)
+        ) ||
+        mockMessagesReceivedPage2?.data?.messages?.received?.find(
+            (m: any) => String(m.id) === String(messageId)
+        ) ||
+        mockMessagesReceivedPage3?.data?.messages?.received?.find(
             (m: any) => String(m.id) === String(messageId)
         );
 
@@ -143,7 +159,7 @@ const getGenericMessageDetail = (messageId: string | number) => {
             subject: foundMsg?.subject || "Message de test",
             // Base64-encoded: "Bonjour,\n\nCeci est un message de test générique pour le mode invité.\n\nCordialement."
             content:
-                "Qm9uan91ciwKCkNlY2kgZXN0IHVuIG1lc3NhZ2UgZGUgdGVzdCBn6W7pcmlxdWUgcG91ciBsZSBtb2RlIGludml06S4KCkNvcmRpYWxlbWVudC4=",
+                "Qm9uam91ciwKCkNlY2kgZXN0IHVuIG1lc3NhZ2UgZGUgdGVzdCBnw6luw6lyaXF1ZSBwb3VyIGxlIG1vZGUgaW52aXTDqS4KCkNvcmRpYWxlbWVudC4=",
             date: foundMsg?.date || "2026-06-22 10:00:00",
             to: [],
             files: [],
@@ -224,4 +240,3 @@ export const loginAsGuest = async (keepConnected: boolean = true) => {
     useAuthStore.getState().setAuthenticated(true);
     useAuthStore.getState().setBooting(false);
 };
-

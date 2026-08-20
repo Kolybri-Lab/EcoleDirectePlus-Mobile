@@ -97,17 +97,24 @@ const Homework = ({ homework, index, countForDate }) => {
     let borderRadiusStyle = {};
     const BORDER_RADIUS_EXT = 28;
     const BORDER_RADIUS_INT = 8;
-    if (index === 0) {
+    if (index === 0 && countForDate > 1) {
         borderRadiusStyle = {
             borderTopLeftRadius: BORDER_RADIUS_EXT,
             borderTopRightRadius: BORDER_RADIUS_EXT,
             borderBottomLeftRadius: BORDER_RADIUS_INT,
             borderBottomRightRadius: BORDER_RADIUS_INT,
         };
-    } else if (index === countForDate - 1) {
+    } else if (index === countForDate - 1 && countForDate > 1) {
         borderRadiusStyle = {
             borderTopLeftRadius: BORDER_RADIUS_INT,
             borderTopRightRadius: BORDER_RADIUS_INT,
+            borderBottomLeftRadius: BORDER_RADIUS_EXT,
+            borderBottomRightRadius: BORDER_RADIUS_EXT,
+        };
+    } else if (countForDate === 1) {
+        borderRadiusStyle = {
+            borderTopLeftRadius: BORDER_RADIUS_EXT,
+            borderTopRightRadius: BORDER_RADIUS_EXT,
             borderBottomLeftRadius: BORDER_RADIUS_EXT,
             borderBottomRightRadius: BORDER_RADIUS_EXT,
         };
@@ -201,4 +208,3 @@ const Homework = ({ homework, index, countForDate }) => {
         </View>
     );
 };
-

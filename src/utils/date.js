@@ -44,6 +44,39 @@ export const formatDate = (date, ab = "display") => {
         return `${year}-${month}-${day}`;
     }
 
+    if (ab === "full") {
+        const days = ["Dim", "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam"];
+        const dayName = days[date.getDay()];
+        const dayNum = date.getDate();
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+
+        return `${dayName} ${dayNum}, ${year}, ${hours}:${minutes}`;
+    }
+
+    if (ab === "fullDate") {
+        const days = ["dim", "lun", "mar", "mer", "jeu", "ven", "sam"];
+        const months = [
+            "jan",
+            "fév",
+            "mar",
+            "avr",
+            "mai",
+            "juin",
+            "juil",
+            "août",
+            "sept",
+            "oct",
+            "nov",
+            "déc",
+        ];
+        const dayName = days[date.getDay()];
+        const dayNum = date.getDate();
+        const monthName = months[date.getMonth()];
+
+        return `${dayName} ${dayNum} ${monthName}, ${year}`;
+    }
+
     return `${day}/${month}/${year}`;
 };
 export const isInDateInterval = (dateToTestInDateRange, startDate, endDate) => {

@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { View } from "react-native";
 
+import { Text } from "@/components/core";
 import {
     BellOff,
     Clock,
@@ -13,9 +14,8 @@ import {
     Person,
     Trash,
 } from "@/components/svg";
-import { CustomTopHeader, SwipeBackWrapper } from "../../../components";
-import { Text } from "@/components/core";
 import { toHoursMinutes, toMilliseconds } from "@/utils/time";
+import { GoBackHeader, SwipeBackWrapper } from "../../../components";
 
 export default function CourseDetails({ route }) {
     const { courseData } = route.params;
@@ -133,12 +133,9 @@ export default function CourseDetails({ route }) {
     return (
         <SwipeBackWrapper>
             <View style={{ flex: 1, backgroundColor: colors.background }}>
-                <CustomTopHeader
-                    headerTitle={"Retour à l'emploi du temps"}
-                    backArrow={{ color: colors.contrast, size: 24 }}
-                    height={33}
-                    backgroundColor={colors.background}
-                />
+                <View style={{ paddingHorizontal: 15 }}>
+                    <GoBackHeader />
+                </View>
                 <View
                     style={{
                         justifyContent: "space-evenly",
@@ -369,4 +366,3 @@ export default function CourseDetails({ route }) {
         </SwipeBackWrapper>
     );
 }
-
