@@ -1,6 +1,7 @@
 import { DropDownMenu, ScreenStack, Text } from "@/components";
 import { Search } from "@/components/svg";
 import { useMessaging } from "@/features/messaging";
+import { useHaptic } from "@/hooks/useHaptics";
 import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
 import { formatDate } from "@/utils/date";
@@ -29,6 +30,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function MessagingContent() {
     const token = useUserStore((state) => state.token);
     const navigation = useNavigation();
+    const haptics = useHaptic("light");
     const [displayGroup, setDisplayGroup] = useState({
         id: "received",
         name: "Reçus",
@@ -96,6 +98,7 @@ export default function MessagingContent() {
     }));
 
     const openSearch = () => {
+        haptics();
         setIsSearchOpen(true);
         inputRef.current?.focus();
         transitionProgress.value = withTiming(1, { duration: 250 });

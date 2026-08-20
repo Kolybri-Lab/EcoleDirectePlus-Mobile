@@ -1,3 +1,4 @@
+import { useHaptic } from "@/hooks/useHaptics";
 import { useIsFocused } from "@react-navigation/native";
 import { useCallback, useEffect, useState } from "react";
 import { Pressable, View } from "react-native";
@@ -33,7 +34,7 @@ export default function DropDownMenu({
 }) {
     const [isDeployed, setIsDeployed] = useState(false);
     const [internalSelected, setInternalSelected] = useState(value);
-
+    const haptics = useHaptic("light");
     const transitionProgress = useSharedValue(0);
     const opacityProgress = useSharedValue(0);
     const pressScale = useSharedValue(1);
@@ -46,7 +47,7 @@ export default function DropDownMenu({
         const next = !isDeployed;
 
         setIsDeployed(next);
-
+        haptics();
         transitionProgress.value = withSpring(next ? 1 : 0, {
             damping: 47,
             stiffness: 600,
@@ -71,6 +72,7 @@ export default function DropDownMenu({
     }, []);
     const handleSelected = useCallback(
         (item) => {
+            haptics();
             closeDropdown();
 
             if (!isControlled) {
