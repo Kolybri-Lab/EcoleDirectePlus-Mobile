@@ -3,7 +3,6 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import Stack from "../core/Stack";
-import { useTabPadding } from "@/hooks/useTabPadding";
 
 export default function ScrollableStack({
     children,
@@ -14,7 +13,6 @@ export default function ScrollableStack({
     ...props
 }) {
     const scrollX = useSharedValue(0);
-    const tabPadding = useTabPadding();
 
     const onScroll = useAnimatedScrollHandler({
         onScroll: (event) => {
@@ -24,12 +22,10 @@ export default function ScrollableStack({
         },
     });
 
-    const paddingStyle = !horizontal ? { paddingBottom: tabPadding } : {};
-
     return (
         <Animated.ScrollView
             horizontal={horizontal}
-            contentContainerStyle={[paddingStyle, contentContainerStyle]}
+            contentContainerStyle={contentContainerStyle}
             showsVerticalScrollIndicator={showsScrollIndicator}
             showsHorizontalScrollIndicator={showsScrollIndicator}
             pagingEnabled={paging}
@@ -43,4 +39,3 @@ export default function ScrollableStack({
         </Animated.ScrollView>
     );
 }
-

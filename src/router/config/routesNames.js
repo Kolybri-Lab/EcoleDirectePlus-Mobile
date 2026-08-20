@@ -22,7 +22,11 @@ export const routesNames = {
             course_details: "client_timetable_course_details",
         },
 
-        messaging: "client_messaging",
+        messaging: {
+            group: "client_messaging",
+            content: "client_messaging_content",
+            details: "client_messaging_details",
+        },
     },
     core: {
         settings: "client_core_settings",
@@ -34,4 +38,3 @@ export const routesNames = {
         auth: "navigators_authentification",
     },
 };
-

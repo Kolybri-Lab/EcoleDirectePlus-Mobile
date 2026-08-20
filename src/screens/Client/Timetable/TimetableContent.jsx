@@ -1,17 +1,24 @@
-import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useFocusEffect, useNavigation, useTheme } from "@react-navigation/native";
+import {
+    memo,
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from "react";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 
+import VerticalScrollView from "@/components/layout/VerticalScrollView";
+import { RoadFinish } from "@/components/svg";
+import { CONFIG } from "@/constants/config";
+import { GLOBALS_DATAS } from "@/constants/device/globals";
+import { timetableConfig } from "@/constants/features/timetableConfig";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withSpring,
 } from "react-native-reanimated";
-import { RoadFinish } from "@/components/svg";
-import VerticalScrollView from "@/components/layout/VerticalScrollView";
-import { CONFIG } from "@/constants/config";
-import { GLOBALS_DATAS } from "@/constants/device/globals";
-import { timetableConfig } from "@/constants/features/timetableConfig";
 
 import { Text } from "@/components/core";
 import { routesNames } from "@/router/config/routesNames";
@@ -19,7 +26,6 @@ import { addOpacityToCssRgb } from "@/utils/colorGenerator";
 
 import { useTimetable } from "@/features/timetable";
 import { useUserStore } from "@/hooks/useUserStore";
-import { useTabPadding } from "@/hooks/useTabPadding";
 
 let {
     screen: { height, width },
@@ -32,7 +38,6 @@ const screenHeight = height;
 export default function TimetableContent() {
     const navigation = useNavigation();
     const theme = useTheme();
-    const tabPadding = useTabPadding();
 
     const scrollViewRef = useRef(null);
 
@@ -208,7 +213,6 @@ export default function TimetableContent() {
                                     setter: setTimetableViewDims,
                                 }}
                                 index={index}
-                                tabPadding={tabPadding}
                                 isVisible={isVisible}
                             />
                         );
@@ -477,58 +481,59 @@ const CourseBox = memo(({ course, navigation, theme, timetableViewDims }) => {
     );
 });
 
-const DayShedule = memo(({
-    currentDay,
-    navigation,
-    theme,
-    timetableViewDims = { getter, setter },
-    index,
-    tabPadding = 0,
-    isVisible = true,
-}) => {
-    if (!isVisible) {
+const DayShedule = memo(
+    ({
+        currentDay,
+        navigation,
+        theme,
+        timetableViewDims = { getter, setter },
+        index,
+        isVisible = true,
+    }) => {
+        if (!isVisible) {
+            return (
+                <View
+                    style={{
+                        width: "100%",
+                        height: screenHeight - 95, // idk why but... works on other devices ?
+                        top: 25,
+                        position: "absolute",
+                        zIndex: 10,
+                    }}
+                />
+            );
+        }
+
         return (
             <View
                 style={{
                     width: "100%",
-                    height: screenHeight - tabPadding,
+                    height: screenHeight - 95, // idk why but... works on other devices ?
                     top: 25,
+
+                    alignItems: "center",
                     position: "absolute",
                     zIndex: 10,
                 }}
-            />
+                onLayout={(event) => {
+                    const { width, height } = event.nativeEvent.layout;
+                    timetableViewDims.setter({ width, height });
+                }}
+            >
+                {currentDay?.courses.map((course, courseIndex) => (
+                    <CourseBox
+                        key={course.webId}
+                        course={course}
+                        navigation={navigation}
+                        theme={theme}
+                        timetableViewDims={timetableViewDims.getter}
+                        courseIndex={courseIndex}
+                    />
+                ))}
+            </View>
         );
     }
-
-    return (
-        <View
-            style={{
-                width: "100%",
-                height: screenHeight - tabPadding, // idk why but... works on other devices ?
-                top: 25,
-
-                alignItems: "center",
-                position: "absolute",
-                zIndex: 10,
-            }}
-            onLayout={(event) => {
-                const { width, height } = event.nativeEvent.layout;
-                timetableViewDims.setter({ width, height });
-            }}
-        >
-            {currentDay?.courses.map((course, courseIndex) => (
-                <CourseBox
-                    key={course.webId}
-                    course={course}
-                    navigation={navigation}
-                    theme={theme}
-                    timetableViewDims={timetableViewDims.getter}
-                    courseIndex={courseIndex}
-                />
-            ))}
-        </View>
-    );
-});
+);
 
 const styles = StyleSheet.create({
     loader: {

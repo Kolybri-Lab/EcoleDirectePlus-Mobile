@@ -1,13 +1,13 @@
 // core
-export { default as Stack } from "./core/Stack";
 export { Text } from "./core";
+export { default as Stack } from "./core/Stack";
 
 // layout
 export { default as BottomSheet } from "./layout/BottomSheet";
 export { default as DropDown } from "./layout/DropDown";
 export { default as DropDownMenu } from "./layout/DropDownMenu";
-export { default as MainLayout } from "./layout/MainLayout";
 export { default as Onboarding } from "./layout/Onboarding";
+export { default as Screen, default as ScreenStack } from "./layout/ScreenStack";
 export { default as ScrollableStack } from "./layout/ScrollableStack";
 
 // feedback
@@ -15,7 +15,7 @@ export { default as LoadingSpinner } from "./feedback/LoadingSpinner";
 export { default as OverLoader } from "./feedback/OverLoader";
 
 // navigation
-export { default as CustomTopHeader } from "./navigation/CustomTopHeader";
+export { default as GoBackHeader } from "./navigation/GoBackHeader";
 export { default as NavigationBottomBar } from "./navigation/NavigationBottomBar";
 export { default as SwipeBackWrapper } from "./navigation/SwipeBackWrapper";
 
@@ -27,7 +27,6 @@ export { default as Modal } from "./modal/Modal";
 export { default as CheckBox } from "./form/CheckBox";
 
 // display
-export { default as GradientBackground } from "./display/GradientBackground";
 export { default as LinkButton } from "./display/LinkButton";
 export { default as LinkText } from "./display/LinkText";
 export { default as Separation } from "./display/Separation";

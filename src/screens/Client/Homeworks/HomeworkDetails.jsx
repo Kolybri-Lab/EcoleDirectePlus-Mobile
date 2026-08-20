@@ -1,3 +1,20 @@
+import { Text } from "@/components/core";
+import { File } from "@/components/svg";
+import { useHomeworks } from "@/features/homeworks";
+import HomeworkCard from "@/features/homeworks/components/HomeworkCard";
+import { useHomework } from "@/features/homeworks/context/HomeworkContext";
+import {
+    downloadDocument,
+    openDocument,
+} from "@/features/homeworks/utils/documents";
+import {
+    assignUnit,
+    createHomework,
+    decodeHomeworkContent,
+    serializeHomework,
+} from "@/features/homeworks/utils/homeworks";
+import { useUserStore } from "@/hooks/useUserStore";
+import { formatFrenchDate } from "@/utils/date";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { useCallback, useMemo, useState } from "react";
 import {
@@ -8,21 +25,7 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import RenderHTML from "react-native-render-html";
-import { File } from "@/components/svg";
-import { CustomTopHeader, Modal } from "../../../components";
-import HomeworkCard from "@/features/homeworks/components/HomeworkCard";
-import { Text } from "@/components/core";
-import { useUserStore } from "@/hooks/useUserStore";
-import { useHomeworks } from "@/features/homeworks";
-import { formatFrenchDate } from "@/utils/date";
-import { useHomework } from "@/features/homeworks/context/HomeworkContext";
-import { downloadDocument, openDocument } from "@/features/homeworks/utils/documents";
-import {
-    assignUnit,
-    createHomework,
-    decodeHomeworkContent,
-    serializeHomework,
-} from "@/features/homeworks/utils/homeworks";
+import { GoBackHeader, Modal } from "../../../components";
 
 export default function HomeworkDetails({ route }) {
     const { homeworksData } = route.params;
@@ -190,16 +193,7 @@ export default function HomeworkDetails({ route }) {
                     marginBottom: 110,
                 }}
             >
-                <CustomTopHeader
-                    headerTitle={"Retour aux tâches"}
-                    backArrow={{ color: colors.contrast, size: 24 }}
-                    height={33}
-                    backgroundColor={
-                        Array.isArray(colors.background.gradient)
-                            ? colors.background.gradient[0]
-                            : colors.background.gradient
-                    }
-                />
+                <GoBackHeader />
                 <View style={{ flex: 1, gap: 18 }}>
                     <TouchableOpacity
                         activeOpacity={1}

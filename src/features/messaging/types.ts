@@ -7,6 +7,12 @@ export interface ApiMessageSender {
     role?: string;
 }
 
+export interface ApiMessageFile {
+    id: number | string;
+    libelle: string;
+    type: string;
+}
+
 export interface ApiMessage {
     id: number;
     subject?: string;
@@ -17,7 +23,7 @@ export interface ApiMessage {
     canAnswer: boolean;
     mtype: string;
     idClasseur: number;
-    files?: any[];
+    files?: ApiMessageFile[];
     to_cc_cci?: string;
     from?: ApiMessageSender;
 }
@@ -51,7 +57,6 @@ export interface MessageAttachment {
     id: number | string;
     libelle: string;
     type: string;
-    [key: string]: any;
 }
 
 export interface MessageSender {
@@ -72,9 +77,7 @@ export interface FormattedMessage {
     transferred: boolean;
     canAnswer: boolean;
     type: string;
-    folderId: number | null;
-    folderName: string | null;
-    hasAttachments: boolean;
+    folder: { id: number | null; name: string | null };
     files: MessageAttachment[];
     recipientType: string | null;
     sender: MessageSender;
@@ -123,14 +126,12 @@ export interface MessagingResolverParams {
     token: string;
     page?: number;
     itemsPerPage?: number;
-    typeRecuperation?: "received" | "sent" | "draft" | "archived";
-    idClasseur?: number;
+    typeOfRecovery?: "received" | "sent" | "draft" | "archived";
+    binderId?: number;
 }
-
-
 
 export interface MessageContentResolverParams {
     token: string;
     messageId: number | string;
-    mode?: "destinataire" | "expediteur";
+    mode?: "recipient" | "sender";
 }

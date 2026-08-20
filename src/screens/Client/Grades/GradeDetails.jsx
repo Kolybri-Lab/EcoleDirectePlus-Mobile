@@ -1,4 +1,4 @@
-import { FlatList, View } from "react-native";
+import { Text } from "@/components/core";
 import {
     BestGrade,
     EqualToDisciplineAverage,
@@ -7,12 +7,12 @@ import {
     UpperThanDisciplineAverage,
     UpTheStreak,
 } from "@/components/svg";
-import { CustomTopHeader } from "../../../components";
-import { Text } from "@/components/core";
-import { formatFrenchDate } from "@/utils/date";
 import Discipline from "@/features/grades/models/Discipline";
 import Grade from "@/features/grades/models/Grade";
 import { formatGradeText } from "@/features/grades/utils/helpers";
+import { formatFrenchDate } from "@/utils/date";
+import { FlatList, View } from "react-native";
+import { GoBackHeader } from "../../../components";
 
 const UI_BADGES = {
     max_grade: MaxGrade,
@@ -77,13 +77,8 @@ export default function GradeDetails({ route }) {
 
     return (
         <View style={{ flex: 1, backgroundColor: "hsl(240, 28%, 10%)" }}>
-            <CustomTopHeader
-                headerTitle={grade.libelle}
-                height={33}
-                maxWidth="85%"
-            />
-
             <View style={{ marginHorizontal: 22, flex: 1 }}>
+                <GoBackHeader />
                 <View
                     style={{
                         backgroundColor: "hsl(240, 27%, 16%)",
@@ -254,4 +249,3 @@ const Cards = ({ datas }) => {
         </>
     );
 };
-

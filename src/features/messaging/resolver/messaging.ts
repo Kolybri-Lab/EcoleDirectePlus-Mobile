@@ -1,6 +1,6 @@
 import fetchApi from "@/services/fetchApi";
-import base64Handler from "@/utils/handleBase64";
 import { FetchApiResponse } from "@/types";
+import base64Handler from "@/utils/handleBase64";
 import {
     ApiMessage,
     ApiMessageSender,
@@ -8,10 +8,10 @@ import {
     FormattedMessage,
     MessageAttachment,
     MessageContent,
-    MessageSender,
-    ResolvedMessaging,
-    MessagingResolverParams,
     MessageContentResolverParams,
+    MessageSender,
+    MessagingResolverParams,
+    ResolvedMessaging,
 } from "../types";
 
 const DEFAULT_MESSAGING: ResolvedMessaging = {
@@ -41,14 +41,14 @@ export default async function messagingResolver({
     token,
     page = 0,
     itemsPerPage = 20,
-    typeRecuperation = "received",
-    idClasseur = 0,
+    typeOfRecovery = "received",
+    binderId = 0,
 }: MessagingResolverParams): Promise<ResolvedMessaging> {
     try {
         const messagingResponse = await fetchApi<
             FetchApiResponse<ApiMessagingResponseData>
         >(
-            `https://api.ecoledirecte.com/v3/eleves/{USER_ID}/messages.awp?force=false&typeRecuperation=${typeRecuperation}&idClasseur=${idClasseur}&orderBy=date&order=desc&query=&onlyRead=&page=${page}&itemsPerPage=${itemsPerPage}&getAll=0&verbe=get&{API_VERSION}`,
+            `https://api.ecoledirecte.com/v3/eleves/{USER_ID}/messages.awp?force=false&typeRecuperation=${typeOfRecovery}&idClasseur=${binderId}&orderBy=date&order=desc&query=&onlyRead=&page=${page}&itemsPerPage=${itemsPerPage}&getAll=0&verbe=get&{API_VERSION}`,
             {
                 headers: { "X-Token": token },
                 method: "POST",
@@ -58,10 +58,14 @@ export default async function messagingResolver({
             return DEFAULT_MESSAGING;
         }
 
-        const { messages, pagination, classeurs, parametrage } =
-            messagingResponse.data;
+        const {
+            messages,
+            pagination,
+            classeurs: folders,
+            parametrage: settings,
+        } = messagingResponse.data;
 
-        const foldersById = (classeurs || []).reduce<Record<number, string>>(
+        const foldersById = (folders || []).reduce<Record<number, string>>(
             (acc, { id, libelle }) => {
                 acc[id] = libelle;
                 return acc;
@@ -87,10 +91,10 @@ export default async function messagingResolver({
             sent,
             draft,
             archived,
-            folders: (classeurs || []).map(({ id, libelle }) => ({
+            folders: (folders || []).map(({ id, libelle }) => ({
                 id,
                 name: libelle,
-                messages: received.filter((m) => m.folderId === id),
+                messages: received.filter((m) => m.folder.id === id),
             })),
             pagination: {
                 receivedCount: pagination?.messagesRecusCount || 0,
@@ -100,45 +104,18 @@ export default async function messagingResolver({
                 unreadCount: pagination?.messagesRecusNotReadCount || 0,
             },
             settings: {
-                isActive: parametrage?.isActif || false,
-                canContactTeachers: parametrage?.destProf || false,
-                canContactAdmin: parametrage?.destAdmin || false,
-                canContactStudents: parametrage?.destEleve || false,
-                canContactFamilies: parametrage?.destFamille || false,
-                canContactCompanies: parametrage?.destEntreprise || false,
+                isActive: settings?.isActif || false,
+                canContactTeachers: settings?.destProf || false,
+                canContactAdmin: settings?.destAdmin || false,
+                canContactStudents: settings?.destEleve || false,
+                canContactFamilies: settings?.destFamille || false,
+                canContactCompanies: settings?.destEntreprise || false,
             },
         };
     } catch (e) {
         console.log("Error inside messaging resolver:", e);
         throw e;
     }
-}
-
-function formatMessage(
-    msg: ApiMessage,
-    foldersById: Record<number, string> = {}
-): FormattedMessage {
-    return {
-        id: msg.id,
-        subject: msg.subject || "(Sans objet)",
-        date: msg.date,
-        read: msg.read,
-        answered: msg.answered,
-        transferred: msg.transferred,
-        canAnswer: msg.canAnswer,
-        type: msg.mtype,
-        folderId: msg.idClasseur || null,
-        folderName: foldersById[msg.idClasseur] || null,
-        hasAttachments: Array.isArray(msg.files) && msg.files.length > 0,
-        files: (msg.files || []).map((f) => ({
-            id: f.id,
-            libelle: f.libelle || "",
-            type: f.type || "",
-            ...f,
-        })) as MessageAttachment[],
-        recipientType: msg.to_cc_cci || null,
-        sender: formatSender(msg.from),
-    };
 }
 
 function formatSender(from?: ApiMessageSender): MessageSender {
@@ -176,11 +153,42 @@ function getInitials(from?: ApiMessageSender): string {
     return `${first}${last}`.toUpperCase() || "?";
 }
 
+function formatMessage(
+    msg: ApiMessage,
+    foldersById: Record<number, string> = {}
+): FormattedMessage {
+    const fullSenderName =
+        [msg.from.civilite, msg.from.prenom, msg.from.particule, msg.from.nom]
+            .filter(Boolean)
+            .join(" ")
+            .trim() || "Inconnu";
+    return {
+        id: msg.id,
+        subject: msg.subject || "(Sans objet)",
+        date: msg.date.replace(" ", "T"),
+        read: msg.read,
+        answered: msg.answered,
+        transferred: msg.transferred,
+        canAnswer: msg.canAnswer,
+        type: msg.mtype,
+        folder: {
+            id: msg.idClasseur || null,
+            name: foldersById[msg.idClasseur] || null,
+        },
+        files: (msg.files || []).map((f) => ({
+            id: f.id,
+            libelle: f.libelle || "",
+            type: f.type || "",
+        })) as MessageAttachment[],
+        recipientType: msg.to_cc_cci || null,
+        sender: formatSender(msg.from),
+    };
+}
 
 export async function messageContentResolver({
     token,
     messageId,
-    mode = "destinataire",
+    mode = "recipient",
 }: MessageContentResolverParams): Promise<MessageContent | null> {
     try {
         const response = await fetchApi<FetchApiResponse<any>>(
@@ -211,4 +219,3 @@ export async function messageContentResolver({
         throw e;
     }
 }
-

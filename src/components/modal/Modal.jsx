@@ -6,10 +6,8 @@ import Animated, {
     withTiming,
 } from "react-native-reanimated";
 import { scheduleOnRN } from "react-native-worklets";
-import { useTabPadding } from "@/hooks/useTabPadding";
 
 export default function Modal({ children, visible, handleClose }) {
-    const tabPadding = useTabPadding();
     const [isRendered, setIsRendered] = useState(false);
     const translateY = useSharedValue(500);
     const opacity = useSharedValue(0);
@@ -76,7 +74,7 @@ export default function Modal({ children, visible, handleClose }) {
                         borderTopRightRadius: 42,
                         paddingHorizontal: 24,
                         paddingTop: 16,
-                        paddingBottom: 40 + tabPadding,
+                        paddingBottom: 40,
                         minHeight: (1 / 3) * 100 + "%", // 1/3 of the screen
                         maxHeight: (4 / 6) * 100 + "%",
                     },
@@ -101,4 +99,3 @@ export default function Modal({ children, visible, handleClose }) {
         </View>
     );
 }
-

@@ -93,11 +93,7 @@ export default function DropDownMenu({
         opacity: opacityProgress.value,
         transform: [
             {
-                translateY: interpolate(
-                    transitionProgress.value,
-                    [0, 1],
-                    [-8, 0]
-                ),
+                translateY: interpolate(transitionProgress.value, [0, 1], [-8, 0]),
             },
             {
                 scale: interpolate(transitionProgress.value, [0, 1], [0.98, 1]),
@@ -113,8 +109,7 @@ export default function DropDownMenu({
         transform: [
             {
                 rotate:
-                    interpolate(transitionProgress.value, [0, 1], [90, 270]) +
-                    "deg",
+                    interpolate(transitionProgress.value, [0, 1], [90, 270]) + "deg",
             },
         ],
     }));
@@ -232,3 +227,4 @@ export default function DropDownMenu({
         </View>
     );
 }
+
