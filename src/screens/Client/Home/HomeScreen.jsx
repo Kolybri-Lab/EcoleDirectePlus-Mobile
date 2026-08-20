@@ -24,7 +24,7 @@ import {
 } from "@/utils/time";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Image, Pressable, TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -38,8 +38,12 @@ export default function HomeScreen() {
     const name = profile?.name ?? "";
     const { data: timetableData } = useTimetable(token);
     const { data: gradesData } = useGrades(token);
-
     const { data: homeworksData } = useHomeworks(token);
+
+    const {
+        profile: { localPhotoUri },
+    } = useUserStore();
+
     const customDataStore = useCustomDataStore();
     const currentTime = useCurrentTime();
     const [greetingMessage] = useState(getGreetingMessage);
@@ -79,6 +83,14 @@ export default function HomeScreen() {
                 "    at executeDispatch (react-dom.development.js:8243)"
         );
     }
+
+    const getProfileImageSource = useCallback(
+        () =>
+            localPhotoUri
+                ? { uri: localPhotoUri }
+                : require("../../../../assets/custom/default-user-picture.png"),
+        [localPhotoUri]
+    );
 
     const activeDate = useMemo(() => {
         if (!Array.isArray(timetableData)) return null;
@@ -222,10 +234,6 @@ export default function HomeScreen() {
             nextCourseKnown: !objectsEqual(nextCourse, {}),
         };
     }, [activeCourse, nextCourse]);
-    const {
-        profile: { localPhotoUri },
-    } = useUserStore();
-    console.log(localPhotoUri);
     return (
         <ScreenStack>
             <LinearGradient
@@ -242,7 +250,6 @@ export default function HomeScreen() {
                 >
                     <SafeAreaView
                         style={{
-                            // marginTop: "20%",
                             marginTop: 10,
                             alignItems: "flex-start",
                         }}
@@ -267,11 +274,11 @@ export default function HomeScreen() {
                                 })
                             }
                         >
-                            {localPhotoUri === undefined ? (
+                            {localPhotoUri == undefined ? (
                                 <Text preset="h4">{name[0]}</Text>
                             ) : (
                                 <Image
-                                    source={require("../../../../assets/custom/default-user-picture.png")}
+                                    source={getProfileImageSource()}
                                     style={{
                                         width: 46,
                                         height: 46,
