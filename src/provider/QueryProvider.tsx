@@ -1,15 +1,36 @@
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
-import { QueryClient } from "@tanstack/react-query";
+import { defaultShouldDehydrateQuery, MutationCache, QueryCache, QueryClient } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createMMKV } from "react-native-mmkv";
+import { useErrorStore } from "@/hooks/useErrorStore";
 
 export const queryClient = new QueryClient({
+    queryCache: new QueryCache({
+        onSuccess: () => {
+            useErrorStore.getState().clearNetworkErrors();
+        },
+        onError: (error) => {
+            useErrorStore.getState().pushError(error as any);
+        },
+    }),
+    mutationCache: new MutationCache({
+        onSuccess: () => {
+            useErrorStore.getState().clearNetworkErrors();
+        },
+        onError: (error) => {
+            useErrorStore.getState().pushError(error as any);
+        },
+    }),
     defaultOptions: {
         queries: {
             staleTime: 1000 * 60 * 5, // 5 min
             gcTime: 1000 * 60 * 60 * 14, // 14 h
             refetchOnWindowFocus: false,
-            retry: 2,
+            placeholderData: (previousData) => previousData,
+            retry: (failureCount, error: any) => {
+                if (error?.type === "auth" || error?.type === "api-business") return false;
+                return failureCount < 2;
+            },
         },
     },
 });
@@ -32,7 +53,23 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
     return (
         <PersistQueryClientProvider
             client={queryClient}
-            persistOptions={{ persister: mmkvPersister }}
+            persistOptions={{
+                persister: mmkvPersister,
+                dehydrateOptions: {
+                    shouldDehydrateQuery: (query) => {
+                        if (query.queryKey[0] === "timetable") {
+                            const offset = query.queryKey[1];
+                            const isPersistableOffset =
+                                offset === -1 || offset === 0 || offset === 1;
+                            return (
+                                isPersistableOffset &&
+                                query.state.status === "success"
+                            );
+                        }
+                        return defaultShouldDehydrateQuery(query);
+                    },
+                },
+            }}
         >
             {children}
         </PersistQueryClientProvider>

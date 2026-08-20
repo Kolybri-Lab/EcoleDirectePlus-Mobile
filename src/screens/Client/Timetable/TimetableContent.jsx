@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
-
-import { useNavigation, useTheme } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useTheme } from "@react-navigation/native";
 
 import VerticalScrollView from "@/components/layout/VerticalScrollView";
 import { RoadFinish } from "@/components/svg";
@@ -37,13 +36,23 @@ export default function TimetableContent() {
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const token = useUserStore((state) => state.token);
-    const { data: timetableData, isLoading, isError } = useTimetable(token);
+    const {
+        data: timetableData,
+        isLoading,
+        isError,
+        extendForward,
+        extendBackward,
+        resetRange,
+    } = useTimetable(token);
     const [timetableViewDims, setTimetableViewDims] = useState({
         width: 0,
         height: 0,
     });
     const [timetableCoreSuccessLoaded, setTimetableCoreSuccessLoaded] =
         useState(false);
+
+    const currentDateRef = useRef(null);
+    const prevFirstDateRef = useRef(null);
 
     const dynamicOpacity = useSharedValue(0);
     const dynamicOpacityStyle = useAnimatedStyle(() => ({
@@ -52,21 +61,77 @@ export default function TimetableContent() {
 
     const activeDate = timetableData?.[currentIndex]?.iSODate || "";
 
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+                currentDateRef.current = null;
+                prevFirstDateRef.current = null;
+                resetRange();
+            };
+        }, [resetRange])
+    );
+
     useEffect(() => {
-        if (!timetableCoreSuccessLoaded || !timetableData) return;
+        if (timetableData?.[currentIndex]) {
+            currentDateRef.current = timetableData[currentIndex].date;
+        }
+    }, [currentIndex, timetableData]);
 
-        const todayIndex = timetableData.findIndex(
-            (day) => day.date === CONFIG.dateNow
-        );
+    const handleIndexChange = useCallback(
+        (index) => {
+            setCurrentIndex(index);
 
-        if (todayIndex !== -1) {
-            scrollViewRef.current.scrollToIndex(todayIndex, false);
+            if (timetableData && index >= timetableData.length - 4) {
+                extendForward();
+            }
+
+            if (index <= 4) {
+                extendBackward();
+            }
+        },
+        [timetableData?.length, extendForward, extendBackward]
+    );
+
+    useLayoutEffect(() => {
+        if (
+            !timetableCoreSuccessLoaded ||
+            !Array.isArray(timetableData) ||
+            !timetableData.length
+        )
+            return;
+
+        if (!currentDateRef.current || !prevFirstDateRef.current) {
+            const todayIndex = timetableData.findIndex(
+                (day) => day.date === CONFIG.dateNow
+            );
+
+            if (todayIndex !== -1) {
+                scrollViewRef.current?.scrollToIndex(todayIndex, false);
+                setCurrentIndex(todayIndex);
+                currentDateRef.current = timetableData[todayIndex].date;
+            }
+
+            prevFirstDateRef.current = timetableData[0]?.date;
+            dynamicOpacity.value = withSpring(1, { duration: 1500 });
+            return;
         }
 
-        dynamicOpacity.value = withSpring(1, { duration: 1500 });
-    }, [timetableCoreSuccessLoaded, timetableData]);
+        const oldFirstDate = prevFirstDateRef.current;
+        const newFirstDate = timetableData[0]?.date;
 
-    if (isError) return null;
+        if (oldFirstDate && oldFirstDate !== newFirstDate) {
+            const addedAtStart = timetableData.findIndex(
+                (d) => d.date === oldFirstDate
+            );
+
+            if (addedAtStart > 0) {
+                scrollViewRef.current?.adjustForPrepend(addedAtStart);
+                setCurrentIndex((prev) => prev + addedAtStart);
+            }
+        }
+
+        prevFirstDateRef.current = newFirstDate;
+    }, [timetableCoreSuccessLoaded, timetableData]);
 
     return (
         <View
@@ -108,6 +173,7 @@ export default function TimetableContent() {
                             bottom: 0,
                         }}
                         onLongPress={() => {
+                            if (!Array.isArray(timetableData)) return;
                             const todayIndex = timetableData.findIndex(
                                 (day) => day.date === CONFIG.dateNow
                             );
@@ -124,29 +190,34 @@ export default function TimetableContent() {
 
                 <VerticalScrollView
                     arrayLength={timetableData?.length}
-                    getIndex={(i) => setCurrentIndex(i)}
+                    getIndex={handleIndexChange}
                     ref={scrollViewRef}
                 >
-                    {timetableData?.map((currentDay, index) => (
-                        <DayShedule
-                            key={index}
-                            currentDay={currentDay}
-                            navigation={navigation}
-                            theme={theme}
-                            timetableViewDims={{
-                                getter: timetableViewDims,
-                                setter: setTimetableViewDims,
-                            }}
-                            index={index}
-                        />
-                    ))}
+                    {timetableData?.map((currentDay, index) => {
+                        const isVisible = Math.abs(index - currentIndex) <= 2;
+                        return (
+                            <DayShedule
+                                key={currentDay.date || index}
+                                currentDay={currentDay}
+                                navigation={navigation}
+                                theme={theme}
+                                timetableViewDims={{
+                                    getter: timetableViewDims,
+                                    setter: setTimetableViewDims,
+                                }}
+                                index={index}
+                                tabPadding={tabPadding}
+                                isVisible={isVisible}
+                            />
+                        );
+                    })}
                 </VerticalScrollView>
             </Animated.View>
         </View>
     );
 }
 
-const CourseBox = ({ course, navigation, theme, timetableViewDims }) => {
+const CourseBox = memo(({ course, navigation, theme, timetableViewDims }) => {
     const [roomLayout, setRoomLayout] = useState(null);
     const [overlap, setOverlap] = useState(false);
     const libelleLayoutRef = useRef(false);
@@ -369,7 +440,7 @@ const CourseBox = ({ course, navigation, theme, timetableViewDims }) => {
                             flexDirection: "column",
                             justifyContent: "flex-end",
                             right: 40,
-                            postion: "absolute",
+                            position: "absolute",
                             height: "100%",
                         }}
                     >
@@ -402,18 +473,33 @@ const CourseBox = ({ course, navigation, theme, timetableViewDims }) => {
             </TouchableOpacity>
         </Animated.View>
     );
-};
+});
 
-const DayShedule = ({
+const DayShedule = memo(({
     currentDay,
     navigation,
     theme,
     timetableViewDims = { getter, setter },
     index,
+    tabPadding = 0,
+    isVisible = true,
 }) => {
+    if (!isVisible) {
+        return (
+            <View
+                style={{
+                    width: "100%",
+                    height: screenHeight - 95, // idk why but... works on other devices ?
+                    top: 25,
+                    position: "absolute",
+                    zIndex: 10,
+                }}
+            />
+        );
+    }
+
     return (
         <View
-            key={index}
             style={{
                 width: "100%",
                 height: screenHeight - 95, // idk why but... works on other devices ?
@@ -440,7 +526,7 @@ const DayShedule = ({
             ))}
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     loader: {

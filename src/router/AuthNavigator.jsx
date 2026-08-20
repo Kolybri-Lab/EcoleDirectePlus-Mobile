@@ -16,6 +16,9 @@ import {
 import { THEMES_ASSOCIATIONS } from "@/themes/themes";
 import Auth from "./display/auth/Auth";
 import Client from "./display/client/Client";
+import NetworkBanner from "@/components/error/NetworkBanner";
+import ErrorToast from "@/components/error/ErrorToast";
+import ErrorBoundary from "@/components/error/ErrorBoundary";
 
 export default function AuthNavigator() {
     const activeMode = useActiveThemeMode();
@@ -99,17 +102,21 @@ export default function AuthNavigator() {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <NavigationContainer theme={THEMES_ASSOCIATIONS[activeMode]}>
-                {isBooting ? (
-                    <SplashScreen />
-                ) : isAuthenticated ? (
-                    <StyleMask>
-                        <Client />
-                    </StyleMask>
-                ) : (
-                    <Auth />
-                )}
-            </NavigationContainer>
+            <ErrorBoundary>
+                <NavigationContainer theme={THEMES_ASSOCIATIONS[activeMode]}>
+                    {isBooting ? (
+                        <SplashScreen />
+                    ) : isAuthenticated ? (
+                        <StyleMask>
+                            <Client />
+                        </StyleMask>
+                    ) : (
+                        <Auth />
+                    )}
+                </NavigationContainer>
+                <NetworkBanner />
+                <ErrorToast />
+            </ErrorBoundary>
         </GestureHandlerRootView>
     );
 }

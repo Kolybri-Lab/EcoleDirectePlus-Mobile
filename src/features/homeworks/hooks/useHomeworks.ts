@@ -93,6 +93,7 @@ export function useHomeworks(token: string) {
 
     return {
         ...query,
+        data: query.data ?? ({} as ResolvedHomeworks),
         toggleHomework: mutation.mutate,
     };
 }
