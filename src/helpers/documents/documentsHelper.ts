@@ -2,7 +2,11 @@ import { API } from "@/constants/api/api";
 import * as FileSystem from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
 import { Alert } from "react-native";
-import { DocumentActionResult, DocumentFile, SetDownloadProgress } from "./types";
+import {
+    DocumentActionResult,
+    DocumentFile,
+    SetDownloadProgress,
+} from "../../types/types";
 
 const MIME_TYPES: Record<string, string> = {
     pdf: "application/pdf",
