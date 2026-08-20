@@ -5,6 +5,7 @@ export { default as Check } from "./Check";
 export { default as Chevron } from "./Chevron";
 export { default as Clock } from "./Clock";
 export { default as CopyLeft } from "./CopyLeft";
+export { default as Cross } from "./Cross";
 export { default as DoorOpen } from "./DoorOpen";
 export { default as File } from "./File";
 export { default as GradeArrow } from "./GradeArrow";
