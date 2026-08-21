@@ -29,6 +29,7 @@ export { default as CheckBox } from "./form/CheckBox";
 // display
 export { default as LinkButton } from "./display/LinkButton";
 export { default as LinkText } from "./display/LinkText";
+export { default as Section } from "./display/Section";
 export { default as Separation } from "./display/Separation";
 export { default as Subtitle } from "./display/Subtitle";
 export { default as Title } from "./display/Title";
