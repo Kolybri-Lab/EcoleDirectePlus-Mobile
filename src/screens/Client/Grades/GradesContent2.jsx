@@ -112,9 +112,6 @@ export default function GradesContent() {
         <View style={{ flex: 1 }}>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{
-                    paddingBottom: 120,
-                }}
             >
                 {periodes.length > 0 && (
                     <View

@@ -366,4 +366,3 @@ const CourseContentModal = ({ visible, setVisible, courseHTML }) => {
         </Modal>
     );
 };
-

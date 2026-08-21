@@ -377,3 +377,4 @@ const MessageItem = memo(({ item, index, navigation, messages, token }) => {
         </TouchableOpacity>
     );
 });
+

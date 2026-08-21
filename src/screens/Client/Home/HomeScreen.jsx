@@ -286,7 +286,6 @@ export default function HomeScreen() {
                             <View
                                 style={{
                                     marginTop: 24,
-                                    marginBottom: 140,
                                     padding: 16,
                                     borderRadius: 16,
                                     backgroundColor: "rgba(255, 255, 255, 0.05)",
@@ -501,3 +500,4 @@ export default function HomeScreen() {
         </ScreenStack>
     );
 }
+

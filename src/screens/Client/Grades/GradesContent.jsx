@@ -23,6 +23,10 @@ import {
     formatGradeText,
 } from "@/features/grades/utils/helpers";
 import { useSimulation } from "@/features/grades/hooks/useSimulation";
+import {
+    calculateStrengthsWeaknesses,
+    formatGradeText,
+} from "@/features/grades/utils/helpers";
 
 import { useGrades } from "@/features/grades";
 import { useUserStore } from "@/hooks/useUserStore";
