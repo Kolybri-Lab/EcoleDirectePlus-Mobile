@@ -1,4 +1,4 @@
-import { ScreenStack, Text } from "@/components";
+import { ScreenStack, Section, Text } from "@/components";
 import {
     Chevron,
     Cross,
@@ -9,7 +9,7 @@ import {
     Sun,
 } from "@/components/svg";
 import { useThemeStore } from "@/hooks/useThemeStore";
-import dynamicBorderRadius from "@/utils/borderRadius";
+import { routesNames } from "@/router/config/routesNames";
 import { useNavigation } from "@react-navigation/native";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -19,42 +19,22 @@ const RADIUS_EXT = 12;
 const ICON_SIZE = 18;
 
 function SettingsSection({ options }) {
+    const navigation = useNavigation();
     return (
         <View style={{ gap: 2, marginTop: 8 }}>
             {options.map((opt, index) => (
-                <Pressable
+                <Section
+                    icon={opt.icon}
+                    label={opt.label}
+                    onPress={() => navigation.navigate(opt.route)}
+                    index={index}
+                    totalLength={options.length}
+                    radiusExt={RADIUS_EXT}
+                    radiusInt={RADIUS_INT}
                     key={opt.label}
-                    onPress={opt.onPress}
-                    style={({ pressed }) => ({
-                        backgroundColor: "hsla(0, 0%, 100%, .1)",
-                        paddingVertical: 16,
-                        paddingHorizontal: 14,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        opacity: pressed ? 0.6 : 1,
-                        ...dynamicBorderRadius(
-                            index,
-                            options.length,
-                            RADIUS_INT,
-                            RADIUS_EXT
-                        ),
-                    })}
                 >
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 12,
-                        }}
-                    >
-                        {opt.icon}
-                        <Text preset="title2">{opt.label}</Text>
-                    </View>
-                    {opt.showChevron !== false && (
-                        <Chevron size={16} fill="hsla(0, 0%, 100%, 0.3)" />
-                    )}
-                </Pressable>
+                    <Chevron size={16} fill="hsla(0, 0%, 100%, 0.3)" />
+                </Section>
             ))}
         </View>
     );
@@ -69,31 +49,31 @@ export default function SettingsScreen({}) {
         {
             label: "Compte",
             icon: <Person size={ICON_SIZE} />,
-            onPress: () => {},
+            route: routesNames.settings.account_settings.account,
         },
         {
             label: "Données et confidentialité",
             icon: <SafetyShield size={ICON_SIZE} />,
-            onPress: () => {},
+            route: routesNames.settings.account_settings.data_and_confidentiality,
         },
     ];
     const appOptions = [
         {
             label: "Thèmes",
             icon: <Sun size={ICON_SIZE} />,
-            onPress: () => {},
+            route: routesNames.settings.app_settings.theme,
         },
     ];
     const aboutOptions = [
         {
             label: "Notes de version",
             icon: <Merge size={ICON_SIZE} />,
-            onPress: () => {},
+            route: routesNames.settings.about_settings.release_notes,
         },
         {
             label: "À propos",
             icon: <Info size={ICON_SIZE} />,
-            onPress: () => {},
+            route: routesNames.settings.about_settings.about,
         },
     ];
 

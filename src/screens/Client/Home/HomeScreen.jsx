@@ -269,9 +269,12 @@ export default function HomeScreen() {
                                 backgroundColor: "hsla(0, 0%, 100%, 0.3)",
                             }}
                             onPress={() =>
-                                navigation.navigate(routesNames.navigators.core, {
-                                    screen: routesNames.core.settings,
-                                })
+                                navigation.navigate(
+                                    routesNames.navigators.settings,
+                                    {
+                                        screen: routesNames.settings.home,
+                                    }
+                                )
                             }
                         >
                             {localPhotoUri == undefined ? (

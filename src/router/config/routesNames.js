@@ -28,11 +28,22 @@ export const routesNames = {
             details: "client_messaging_details",
         },
     },
-    core: {
-        settings: "client_core_settings",
+    settings: {
+        home: "client_settings_home",
+        account_settings: {
+            account: "account_setting",
+            data_and_confidentiality: "data_and_confidentiality_setting",
+        },
+        app_settings: {
+            theme: "theme_setting",
+        },
+        about_settings: {
+            release_notes: "releaes_notes_setting",
+            about: "about_setting",
+        },
     },
     navigators: {
-        core: "navigators_variable_settings",
+        settings: "navigators_variable_settings",
         tabs: "navigators_root",
     },
 };
