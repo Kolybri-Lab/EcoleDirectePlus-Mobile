@@ -1,7 +1,7 @@
 // components/CustomNavbar.js
 import { useHaptic } from "@/hooks/useHaptics";
 import { useTheme } from "@/hooks/useThemeStore";
-import { useEffect, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useRef } from "react";
 import { TouchableOpacity, View } from "react-native";
 import Animated, {
     useAnimatedStyle,
@@ -10,6 +10,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MorphingText } from "../core";
+
 const ROUTES_NAMES = {
     client_grades: "Notes",
     client_homeworks: "Tâches",
@@ -19,16 +20,13 @@ const ROUTES_NAMES = {
 };
 const BAR_WIDTH = 36;
 const SPRING_CONFIG = {
-    damping: 50,
-    stiffness: 80,
+    damping: 18,
+    stiffness: 150,
     mass: 1,
     overshootClamping: false,
 };
 
 const NavigationBottomBar = ({ state, descriptors, navigation }) => {
-    const [isPressedIn, setIsPressedIn] = useState();
-    const [isLongPressed, setIsLongPressed] = useState();
-
     const tabLayouts = useRef({});
     const hasMeasuredActive = useRef(false);
     const theme = useTheme();
@@ -38,31 +36,52 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
         transform: [{ translateX: indicatorX.value }],
     }));
 
-    const moveIndicatorTo = (index, animated = true) => {
-        const layout = tabLayouts.current[index];
-        if (!layout) return;
-        const centeredX = layout.x + layout.width / 2 - BAR_WIDTH / 2;
+    const moveIndicatorTo = useCallback(
+        (index, animated = true) => {
+            const layout = tabLayouts.current[index];
+            if (!layout) return;
+            const centeredX = layout.x + layout.width / 2 - BAR_WIDTH / 2;
 
-        if (animated) {
-            indicatorX.value = withSpring(centeredX, SPRING_CONFIG);
-        } else {
-            indicatorX.value = centeredX;
-        }
-    };
+            if (animated) {
+                indicatorX.value = withSpring(centeredX, SPRING_CONFIG);
+            } else {
+                indicatorX.value = centeredX;
+            }
+        },
+        [indicatorX]
+    );
 
-    const onTabLayout = (index, event) => {
-        const { x, width } = event.nativeEvent.layout;
-        tabLayouts.current[index] = { x, width };
+    const onTabLayout = useCallback(
+        (index, event) => {
+            const { x, width } = event.nativeEvent.layout;
+            tabLayouts.current[index] = { x, width };
 
-        if (index === state.index && !hasMeasuredActive.current) {
-            hasMeasuredActive.current = true;
-            moveIndicatorTo(index, false);
-        }
-    };
+            if (index === state.index && !hasMeasuredActive.current) {
+                hasMeasuredActive.current = true;
+                moveIndicatorTo(index, false);
+            }
+        },
+        [state.index, moveIndicatorTo]
+    );
+
+    const handleTabPress = useCallback(
+        (routeKey, routeName, isFocused) => {
+            const event = navigation.emit({
+                type: "tabPress",
+                target: routeKey,
+                canPreventDefault: true,
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(routeName);
+            }
+        },
+        [navigation]
+    );
 
     useEffect(() => {
         moveIndicatorTo(state.index, true);
-    }, [state.index]);
+    }, [state.index, moveIndicatorTo]);
 
     return (
         <SafeAreaView
@@ -94,31 +113,17 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
                     const { options } = descriptors[route.key];
                     if (!options.inNavbar) return null;
                     const isFocused = state.index === index;
-
-                    const onPress = () => {
-                        const event = navigation.emit({
-                            type: "tabPress",
-                            target: route.key,
-                            canPreventDefault: true,
-                        });
-
-                        if (!isFocused && !event.defaultPrevented) {
-                            navigation.navigate(route.name);
-                        }
-                    };
                     const IconComponent = options.icon;
 
                     return (
                         <TabButton
-                            key={index}
+                            key={route.key}
                             index={index}
                             route={route}
                             options={options}
                             isFocused={isFocused}
-                            onPress={onPress}
-                            onLayout={(e) => onTabLayout(index, e)}
-                            setIsPressedIn={setIsPressedIn}
-                            setIsLongPressed={setIsLongPressed}
+                            onPress={handleTabPress}
+                            onLayout={onTabLayout}
                             IconComponent={IconComponent}
                         />
                     );
@@ -129,88 +134,110 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
     );
 };
 
-const TabButton = ({
-    route,
-    options,
-    isFocused,
-    onPress,
-    onLayout,
-    setIsPressedIn,
-    setIsLongPressed,
-    IconComponent,
-}) => {
-    const BASE_ICON_SIZE = 26;
-    const FOCUSED_SCALE = 1;
-    const UNFOCUSED_SCALE = 1.3;
+const TabButton = memo(
+    ({
+        index,
+        route,
+        options,
+        isFocused,
+        onPress,
+        onLayout,
+        IconComponent,
+    }) => {
+        const BASE_ICON_SIZE = 26;
+        const FOCUSED_SCALE = 1;
+        const UNFOCUSED_SCALE = 1.3;
 
-    const iconScale = useSharedValue(isFocused ? FOCUSED_SCALE : UNFOCUSED_SCALE);
-    const pressScale = useSharedValue(1);
+        const iconScale = useSharedValue(
+            isFocused ? FOCUSED_SCALE : UNFOCUSED_SCALE
+        );
+        const pressScale = useSharedValue(1);
 
-    const haptics = useHaptic("warning");
+        const haptics = useHaptic("warning");
 
-    useEffect(() => {
-        iconScale.value = withSpring(isFocused ? FOCUSED_SCALE : UNFOCUSED_SCALE, {
-            damping: 100,
-            mass: 1,
-            stiffness: 145,
-        });
-    }, [isFocused]);
+        useEffect(() => {
+            iconScale.value = withSpring(
+                isFocused ? FOCUSED_SCALE : UNFOCUSED_SCALE,
+                {
+                    damping: 100,
+                    mass: 1,
+                    stiffness: 145,
+                }
+            );
+        }, [isFocused]);
 
-    const animatedIconStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: iconScale.value * pressScale.value }],
-    }));
+        const animatedIconStyle = useAnimatedStyle(() => ({
+            transform: [{ scale: iconScale.value * pressScale.value }],
+        }));
 
-    return (
-        <TouchableOpacity
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options.tabBarAccessibilityLabel}
-            testID={options.tabBarTestID}
-            onPress={onPress}
-            onPressIn={() => {
-                setIsPressedIn(true);
-                pressScale.value = withSpring(0.9, {
-                    damping: 10,
-                    stiffness: 350,
-                });
-            }}
-            onPressOut={() => {
-                setIsPressedIn(false);
-                setIsLongPressed(false);
-                pressScale.value = withSpring(1, { damping: 100, stiffness: 250 });
-            }}
-            onLongPress={() => {
-                setIsLongPressed(true);
-                haptics();
-            }}
-            onLayout={onLayout}
-            style={{ flex: 1, alignItems: "center" }}
-        >
-            <View
-                style={{
-                    padding: 14,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    overflow: "visible",
+        const handlePress = useCallback(() => {
+            onPress(route.key, route.name, isFocused);
+        }, [onPress, route.key, route.name, isFocused]);
+
+        const handleLayout = useCallback(
+            (e) => {
+                onLayout(index, e);
+            },
+            [onLayout, index]
+        );
+
+        return (
+            <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityState={isFocused ? { selected: true } : {}}
+                accessibilityLabel={options.tabBarAccessibilityLabel}
+                testID={options.tabBarTestID}
+                onPress={handlePress}
+                onPressIn={() => {
+                    pressScale.value = withSpring(0.9, {
+                        damping: 10,
+                        stiffness: 350,
+                    });
                 }}
+                onPressOut={() => {
+                    pressScale.value = withSpring(1, {
+                        damping: 100,
+                        stiffness: 250,
+                    });
+                }}
+                onLongPress={() => {
+                    haptics();
+                }}
+                onLayout={handleLayout}
+                style={{ flex: 1, alignItems: "center" }}
             >
-                <Animated.View style={animatedIconStyle}>
-                    <IconComponent
-                        width={BASE_ICON_SIZE}
-                        height={BASE_ICON_SIZE}
+                <View
+                    style={{
+                        padding: 14,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        overflow: "visible",
+                    }}
+                >
+                    <Animated.View style={animatedIconStyle}>
+                        <IconComponent
+                            width={BASE_ICON_SIZE}
+                            height={BASE_ICON_SIZE}
+                            color={isFocused ? "#C7CCFD" : "#838CEB"}
+                        />
+                    </Animated.View>
+                    <MorphingText
+                        preset="label3"
+                        weight={isFocused ? "bold" : "medium"}
                         color={isFocused ? "#C7CCFD" : "#838CEB"}
+                        value={
+                            isFocused
+                                ? ROUTES_NAMES[route.name] ?? "N/A"
+                                : ""
+                        }
+                        style={{ letterSpacing: 0.8, width: "100%" }}
                     />
-                </Animated.View>
-                <MorphingText
-                    preset="label3"
-                    weight={isFocused ? "bold" : "medium"}
-                    color={isFocused ? "#C7CCFD" : "#838CEB"}
-                    value={isFocused ? (ROUTES_NAMES[route.name] ?? "N/A") : ""}
-                    style={{ letterSpacing: 0.8, width: "100%" }}
-                />
-            </View>
-        </TouchableOpacity>
-    );
-};
+                </View>
+            </TouchableOpacity>
+        );
+    }
+);
 
 export default NavigationBottomBar;
+
+

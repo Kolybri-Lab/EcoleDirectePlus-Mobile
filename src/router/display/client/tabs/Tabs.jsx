@@ -7,12 +7,14 @@ import tabClientScreens from "./indexClientTabs";
 
 const Tab = createBottomTabNavigator();
 
+const renderTabBar = (props) => <NavigationBottomBar {...props} />;
+
 export default function Tabs() {
     const screens = mapScreens({ navMethod: Tab, screenArray: tabClientScreens });
 
     return (
         <Tab.Navigator
-            tabBar={(props) => <NavigationBottomBar {...props} />}
+            tabBar={renderTabBar}
 
             initialRouteName={routesNames.client.home}
             screenOptions={{
@@ -26,3 +28,4 @@ export default function Tabs() {
         </Tab.Navigator>
     );
 }
+
