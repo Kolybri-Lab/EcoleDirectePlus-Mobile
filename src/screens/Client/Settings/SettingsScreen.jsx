@@ -48,38 +48,38 @@ export default function SettingsScreen({}) {
     const accountOptions = [
         {
             label: "Compte",
-            icon: <Person size={ICON_SIZE} />,
+            icon: <Person size={ICON_SIZE} opacity={0.6} />,
             route: routesNames.settings.account_settings.account,
         },
         {
             label: "Données et confidentialité",
-            icon: <SafetyShield size={ICON_SIZE} />,
+            icon: <SafetyShield size={ICON_SIZE} opacity={0.6} />,
             route: routesNames.settings.account_settings.data_and_confidentiality,
         },
     ];
     const appOptions = [
         {
             label: "Thèmes",
-            icon: <Sun size={ICON_SIZE} />,
+            icon: <Sun size={ICON_SIZE} opacity={0.6} />,
             route: routesNames.settings.app_settings.theme,
         },
     ];
     const aboutOptions = [
         {
             label: "Notes de version",
-            icon: <Merge size={ICON_SIZE} />,
+            icon: <Merge size={ICON_SIZE} opacity={0.6} />,
             route: routesNames.settings.about_settings.release_notes,
         },
         {
             label: "À propos",
-            icon: <Info size={ICON_SIZE} />,
+            icon: <Info size={ICON_SIZE} opacity={0.6} />,
             route: routesNames.settings.about_settings.about,
         },
     ];
 
     return (
         <ScreenStack
-            horizontalSpacing={40}
+            horizontalSpacing={30}
             style={{ backgroundColor: "hsl(230, 30%, 8%)" }}
         >
             <SafeAreaView

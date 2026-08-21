@@ -25,6 +25,7 @@ export { default as Modal } from "./modal/Modal";
 
 // form
 export { default as CheckBox } from "./form/CheckBox";
+export { default as Switch } from "./form/Switch";
 
 // display
 export { default as LinkButton } from "./display/LinkButton";

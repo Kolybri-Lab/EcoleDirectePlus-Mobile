@@ -1,5 +1,8 @@
-import { DropDownMenu, Text } from "@/components";
+import { GoBackHeader, ScreenStack, Section, Switch, Text } from "@/components";
+import { Lightning, Moon, Sun } from "@/components/svg";
 import { useThemeStore } from "@/hooks/useThemeStore";
+import { useState } from "react";
+import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const THEMES_OPT = [
@@ -8,18 +11,106 @@ const THEMES_OPT = [
 ];
 
 export default function ThemeScreen() {
+    const [tempState, setTempStateValue] = useState(true);
+
     const themeMode = useThemeStore((state) => state.themeMode);
     const setThemeMode = useThemeStore((state) => state.setThemeMode);
     const followSystem = useThemeStore((state) => state.followSystem);
     const setFollowSystem = useThemeStore((state) => state.setFollowSystem);
+
+    const value = followSystem ? "system" : themeMode;
+
+    const handleChange = (id) => {
+        if (id === "system") {
+            setFollowSystem(true);
+        } else {
+            setFollowSystem(false);
+            setThemeMode(id);
+        }
+    };
+
     return (
-        <SafeAreaView>
-            <Text>{followSystem}</Text>
-            <DropDownMenu
-                options={THEMES_OPT}
-                value={THEMES_OPT.find(({ id }) => id === themeMode)}
-                onSelect={(value) => setThemeMode(value.id)}
-            />
-        </SafeAreaView>
+        <ScreenStack
+            horizontalSpacing={18}
+            style={{ backgroundColor: "hsl(230, 30%, 8%)" }}
+        >
+            <GoBackHeader />
+            <SafeAreaView style={{ gap: 2 }}>
+                <Section
+                    label={"Thème"}
+                    icon={<Sun size={18} opacity={0.6} />}
+                    disabled
+                    index={0}
+                    totalLength={2}
+                >
+                    <View
+                        style={{
+                            alignItems: "center",
+                            flexDirection: "row",
+                            gap: 16,
+                            borderColor: "hsla(0, 0%, 100%, .3)",
+                            borderWidth: 1,
+                            paddingVertical: 2,
+                            paddingHorizontal: 4,
+                            borderRadius: 50,
+                        }}
+                    >
+                        <Pressable
+                            onPress={() => handleChange("dark")}
+                            style={{
+                                padding: 6,
+                                borderRadius: 50,
+                                backgroundColor:
+                                    value === "dark"
+                                        ? "hsla(0, 0%, 100%, .4)"
+                                        : "transparent",
+                            }}
+                        >
+                            <Moon size={18} />
+                        </Pressable>
+
+                        <Pressable
+                            style={{
+                                padding: 6,
+                                borderRadius: 50,
+                                backgroundColor:
+                                    value === "system"
+                                        ? "hsla(0, 0%, 100%, .4)"
+                                        : "transparent",
+                            }}
+                            onPress={() => handleChange("system")}
+                        >
+                            <Text preset="label2">Auto</Text>
+                        </Pressable>
+
+                        <Pressable
+                            onPress={() => handleChange("light")}
+                            style={{
+                                padding: 6,
+                                borderRadius: 50,
+                                backgroundColor:
+                                    value === "light"
+                                        ? "hsla(0, 0%, 100%, .4)"
+                                        : "transparent",
+                            }}
+                        >
+                            <Sun size={21} opacity={1} />
+                        </Pressable>
+                    </View>
+                </Section>
+                <Section
+                    label={"Jouer les animations"}
+                    icon={<Lightning size={18} opacity={0.6} />}
+                    disabled
+                    index={1}
+                    totalLength={2}
+                >
+                    <Switch
+                        value={tempState}
+                        onValueChange={(toSet) => setTempStateValue(toSet)}
+                    />
+                </Section>
+            </SafeAreaView>
+        </ScreenStack>
     );
 }
