@@ -22,7 +22,6 @@ import {
     isInInterval,
 } from "@/utils/time";
 import { useNavigation } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useMemo, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -222,12 +221,7 @@ export default function HomeScreen() {
     }, [activeCourse, nextCourse]);
     return (
         <ScreenStack>
-            <LinearGradient
-                colors={["hsla(228, 70%, 18%, 1)", "hsla(228, 30%, 8%, 0.85)"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 0.3 }}
-                style={{ paddingHorizontal: 20 }}
-            >
+            <View style={{ paddingHorizontal: 20 }}>
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     bounces={false}
@@ -496,7 +490,7 @@ export default function HomeScreen() {
                         )}
                     </View>
                 </ScrollView>
-            </LinearGradient>
+            </View>
         </ScreenStack>
     );
 }

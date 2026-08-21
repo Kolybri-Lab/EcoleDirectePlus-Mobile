@@ -4,7 +4,7 @@ import { BackArrow } from "@/components/svg";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
 import { formatDuration, getTimeInterval } from "@/utils/time";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { TouchableOpacity, View } from "react-native";
 
 export default function ActiveCourseCard({
@@ -14,6 +14,7 @@ export default function ActiveCourseCard({
     activeStatus,
     isLast,
 }) {
+    const { colors } = useTheme();
     const navigation = useNavigation();
     const haptic = useHaptic("light");
     const { message, color, displayComponents, extras } = getStatus(activeStatus);
@@ -43,7 +44,7 @@ export default function ActiveCourseCard({
                 }
             }}
             style={{
-                backgroundColor: "hsla(235, 28%, 15%, 1)",
+                backgroundColor: colors.secondary,
                 borderColor: "hsla(219, 100%, 69%, 0.6)",
                 borderWidth: 1,
                 borderRadius: 22,
@@ -291,3 +292,4 @@ const STATUS_CONFIG = {
 const getStatus = ({ inClass, nextCourseKnown }) => {
     return STATUS_CONFIG[`${inClass}-${nextCourseKnown}`];
 };
+
