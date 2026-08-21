@@ -2,11 +2,12 @@ import { Text } from "@/components";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
 import { blendWithWhite } from "@/utils/colorGenerator";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { useMemo } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 export default function LastGrades({ lastGradesObject }) {
     const navigation = useNavigation();
+    const { colors } = useTheme();
     const haptic = useHaptic("light");
     // const hapticFeedback = useHaptic("heavy");
 
@@ -64,13 +65,14 @@ const GradeCard = ({ disciplineColor, disciplineName, data }) => {
         () => blendWithWhite(disciplineColor, 0.35),
         [disciplineColor]
     );
+    const { colors } = useTheme();
 
     if (!disciplineName || !data) return null;
 
     return (
         <View
             style={{
-                backgroundColor: "hsla(235, 28%, 15%, 1)",
+                backgroundColor: colors.secondary,
                 borderRadius: 16,
                 width: 150,
                 paddingHorizontal: 20,

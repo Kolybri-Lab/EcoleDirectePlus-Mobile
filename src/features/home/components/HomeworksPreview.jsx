@@ -5,7 +5,7 @@ import { routesNames } from "@/router/config/routesNames";
 
 import { formatFrenchDate } from "@/utils/date";
 import base64Handler from "@/utils/handleBase64";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { useMemo } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
 import RenderHtml from "react-native-render-html";
@@ -89,6 +89,7 @@ const DateHeader = ({ date, meta, countForDate }) => (
 );
 
 const Homework = ({ homework, index, countForDate }) => {
+    const { colors } = useTheme();
     const { width } = useWindowDimensions();
     const decodedContent = useMemo(
         () => base64Handler.decode(homework.homeworksContent.content),
@@ -134,7 +135,7 @@ const Homework = ({ homework, index, countForDate }) => {
                     flex: 1,
                     backgroundColor: homework.isCustom
                         ? "hsl(235, 28%, 30%)"
-                        : "hsl(235, 28%, 15%)",
+                        : colors.secondary,
                     marginVertical: 2,
                     alignItems: "center",
                     flexDirection: "row",
@@ -208,3 +209,4 @@ const Homework = ({ homework, index, countForDate }) => {
         </View>
     );
 };
+
