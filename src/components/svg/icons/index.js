@@ -12,6 +12,7 @@ export { default as GradeArrow } from "./GradeArrow";
 export { default as Hourglass } from "./Hourglass";
 export { default as Info } from "./Info";
 export { default as Key } from "./Key";
+export { default as Lightning } from "./Lightning";
 export { default as Menu } from "./Menu";
 export { default as Merge } from "./Merge";
 export { default as Moon } from "./Moon";

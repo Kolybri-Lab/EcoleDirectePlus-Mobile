@@ -49,7 +49,6 @@ IGNORED_ATTRS = {"fill", "stroke", "id", "class"}
 
 
 def pascal_case(name: str) -> str:
-    """Transforme un nom de fichier quelconque en PascalCase."""
     cleaned = re.sub(r"[^0-9a-zA-Z]+", " ", name)
     parts = cleaned.split()
     return "".join(p[:1].upper() + p[1:] for p in parts if p)
@@ -113,7 +112,7 @@ def build_jsx(component_name: str, view_box: str, paths_jsx: list[str]) -> str:
     paths_block = "\n".join(paths_jsx)
     return f'''import Svg, {{ Path }} from "react-native-svg";
 
-export default function {component_name}({{ size = 30, fill = "white", props = {{}} }}) {{
+export default function {component_name}({{ size = 30, fill = "white", ...props }}) {{
   return (
     <Svg width={{size}} height={{size}} viewBox="{view_box}" fill={{fill}} {{...props}}>
 {paths_block}
