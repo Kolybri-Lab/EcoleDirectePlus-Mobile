@@ -156,9 +156,7 @@ export default function HomeworksContent() {
         [dispatch]
     );
 
-    if (isError) {
-        return null;
-    }
+
     return (
         <>
             <NewHomeworkModal visible={modalOpen} />

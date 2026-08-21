@@ -8,6 +8,7 @@ import { useCallback, useEffect } from "react";
 import { useAuthStore } from "./useAuthStore";
 import { useCustomDataStore } from "./useCustomDataStore";
 import { useUserStore } from "./useUserStore";
+import { useErrorStore } from "./useErrorStore";
 
 export const useSignIn = () => {
     const error = useAuthStore((state) => state.error);
@@ -33,7 +34,6 @@ export const useSignIn = () => {
             setKeepConnected(keepConnected);
 
             if (
-
                 username === GUEST_CREDENTIALS.username &&
                 password === GUEST_CREDENTIALS.password
             ) {
@@ -115,6 +115,7 @@ export const useSignIn = () => {
         resetAuth();
         useUserStore.getState().reset();
         useCustomDataStore.getState().reset();
+        useErrorStore.getState().clearAll();
         queryClient.clear();
     }, [resetAuth]);
 
@@ -142,4 +143,3 @@ export const useSignIn = () => {
         setApiError: setError,
     };
 };
-

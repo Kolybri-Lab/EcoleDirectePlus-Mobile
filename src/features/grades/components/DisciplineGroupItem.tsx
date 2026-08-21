@@ -4,63 +4,81 @@ import { Text as CoreText } from "@/components/core";
 const Text = CoreText as any;
 import { formatGradeText } from "@/features/grades/utils/helpers";
 import Discipline from "../models/Discipline";
+import DisciplineItem from "./DisciplineItem";
 
 interface DisciplineGroupItemProps {
-    discipline: Discipline;
-    dataLength: number;
-    index: number;
+    group: any;
+    groupIndex?: number;
+    expandedChain: string | null;
+    onItemPress: (chain: string) => void;
+    dispatch: (action: any) => void;
 }
 
-export default function DisciplineGroupItem({ discipline, dataLength, index }: DisciplineGroupItemProps) {
+export default function DisciplineGroupItem({
+    group,
+    groupIndex = 0,
+    expandedChain,
+    onItemPress,
+    dispatch,
+}: DisciplineGroupItemProps) {
+    const groupObj = new Discipline(group);
+    const disciplines = group.disciplines || [];
+    const userAverage =
+        groupObj.getDisciplineGroupAverage() ?? groupObj.averageDatas?.userAverage;
+    const title = groupObj.libelle || group.name || "Matières";
+
     return (
-        <View
-            style={{
-                backgroundColor: "hsl(240, 24%, 29%)",
-                overflow: "hidden",
-                ...(index === 0
-                    ? {
-                          borderTopLeftRadius: 12,
-                          borderTopRightRadius: 12,
-                          borderBottomLeftRadius: 3,
-                          borderBottomRightRadius: 3,
-                      }
-                    : { borderRadius: 3 }),
-                ...(dataLength - 1 === index
-                    ? {
-                          borderTopLeftRadius: 3,
-                          borderTopRightRadius: 3,
-                          borderBottomLeftRadius: 12,
-                          borderBottomRightRadius: 12,
-                      }
-                    : { borderRadius: 3 }),
-            }}
-        >
+        <View style={{ gap: 4 }}>
+            {/* Header du groupe (Titre + Moyenne) */}
             <View
                 style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
-                    padding: 18,
-                    alignItems: "center",
+                    alignItems: "flex-end",
+                    overflow: "hidden",
+                    paddingHorizontal: 4,
+                    marginBottom: 2,
+                    paddingVertical: 2,
                 }}
             >
-                <Text style={{ width: "70%" }} oneLine preset="h4">
-                    {discipline.libelle}
+                <Text preset="h4" style={{ fontWeight: "semibold", fontSize: 18 }}>
+                    {title}
                 </Text>
-                <View
-                    style={{
-                        backgroundColor: "hsla(240, 26%, 13%, .35)",
-                        borderRadius: 14,
-                        paddingHorizontal: 8,
-                        paddingVertical: 1,
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <Text preset="h3">
-                        {formatGradeText(discipline.averageDatas.userAverage)}
+                {userAverage !== null && userAverage !== undefined && (
+                    <Text preset="h4" style={{ fontWeight: "bold" }}>
+                        {formatGradeText(userAverage)}
                     </Text>
-                </View>
+                )}
+            </View>
+
+            {/* Liste des matières du groupe */}
+            <View style={{ gap: 8 }}>
+                {disciplines.map((item: any, dIndex: number) => {
+                    const discipline = new Discipline(item);
+                    const chain = `${discipline.code}-${discipline.libelle}`;
+                    const isFirst = dIndex === 0;
+                    const isLast = dIndex === disciplines.length - 1;
+
+                    return (
+                        <DisciplineItem
+                            key={
+                                item.id
+                                    ? `disc-${item.id}`
+                                    : `g${groupIndex}-d${dIndex}-${discipline.code || discipline.libelle}`
+                            }
+                            discipline={discipline}
+                            index={dIndex}
+                            dataLength={disciplines.length}
+                            isFirst={isFirst}
+                            isLast={isLast}
+                            isExpanded={expandedChain === chain}
+                            onPress={() => onItemPress(chain)}
+                            dispatch={dispatch}
+                        />
+                    );
+                })}
             </View>
         </View>
     );
 }
+

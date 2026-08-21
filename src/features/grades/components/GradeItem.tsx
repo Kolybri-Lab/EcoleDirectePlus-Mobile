@@ -1,5 +1,6 @@
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
+import { useTheme } from "@react-navigation/native";
 import {
     BestGrade,
     EqualToDisciplineAverage,
@@ -10,7 +11,7 @@ import {
 } from "@/components/svg";
 import { Text as CoreText } from "@/components/core";
 const Text = CoreText as any;
-import { cssHslaToHsla } from "@/utils/colorGenerator";
+import { addOpacityToCssRgb } from "@/utils/colorGenerator";
 import { formatGradeText } from "@/features/grades/utils/helpers";
 import Grade from "../models/Grade";
 
@@ -19,36 +20,37 @@ interface GradeItemProps {
     dispatch: (action: any) => void;
 }
 
-export default function GradeItem({ grade, dispatch }: GradeItemProps) {
-    const uiBadges: Record<string, any> = {
-        max_grade: MaxGrade,
-        best_grade: BestGrade,
-        upper_than_class_average: UpperThanClassAverage,
-        upper_than_discipline_average: UpperThanDisciplineAverage,
-        up_the_streak: UpTheStreak,
-        equal_to_discipline_average: EqualToDisciplineAverage,
-    };
+const UI_BADGES: Record<string, any> = {
+    max_grade: MaxGrade,
+    best_grade: BestGrade,
+    upper_than_class_average: UpperThanClassAverage,
+    upper_than_discipline_average: UpperThanDisciplineAverage,
+    up_the_streak: UpTheStreak,
+    equal_to_discipline_average: EqualToDisciplineAverage,
+};
 
-    let backgroundColor = "";
+export default function GradeItem({ grade, dispatch }: GradeItemProps) {
+    const { colors } = useTheme() as any;
+    const mainColor = colors?.main ?? "hsl(240, 50%, 50%)";
+
+    let backgroundColor = addOpacityToCssRgb(mainColor, 0.15);
     switch (grade.actionOnStreak) {
         case "nothing":
-            backgroundColor = "hsla(240, 24%, 28%, 1)";
+            backgroundColor = addOpacityToCssRgb(mainColor, 0.15);
             break;
         case "up":
-            backgroundColor = "hsla(36, 100%, 34%, .3)";
+            backgroundColor = "hsla(36, 100%, 34%, .35)";
             break;
         case "previous up":
-            backgroundColor = "hsla(240, 10%, 41%, .3)";
+            backgroundColor = "hsla(36, 10%, 41%, .3)";
             break;
-        default:
-            backgroundColor = "red";
     }
 
-    const hsla = cssHslaToHsla(backgroundColor);
-    const borderColor = `hsla(${hsla[0]}, ${hsla[1]}%, ${hsla[2] + 16}%, ${hsla[3]})`;
+    const borderColor = addOpacityToCssRgb(mainColor, 0.25);
 
     return (
         <TouchableOpacity
+            activeOpacity={0.7}
             onPress={() =>
                 dispatch({
                     type: "SEE_GRADE_DETAILS",
@@ -82,23 +84,27 @@ export default function GradeItem({ grade, dispatch }: GradeItemProps) {
                 >
                     {grade.badges &&
                         grade.badges.map((badge, i) => {
-                            const BadgeComponent = uiBadges[badge];
+                            const BadgeComponent = UI_BADGES[badge];
                             if (!BadgeComponent) return null;
                             return (
                                 <BadgeComponent
                                     key={`${badge}-${i}`}
-                                    size={24}
+                                    size={22}
                                 />
                             );
                         })}
                 </View>
                 <Text preset="label1">
                     {grade.notSignificant
-                        ? `(${formatGradeText(grade.data.grade)})`
-                        : formatGradeText(grade.data.grade)}
-                    <Text preset="label3">
-                        {grade.data.outOf !== 20 && `/${grade.data.outOf}`}
-                    </Text>
+                        ? `(${formatGradeText(grade.data?.grade)})`
+                        : formatGradeText(grade.data?.grade)}
+                    {grade.data?.outOf !== 20 &&
+                        grade.data?.outOf !== null &&
+                        grade.data?.outOf !== undefined && (
+                            <Text preset="label3">
+                                {`/${grade.data.outOf}`}
+                            </Text>
+                        )}
                 </Text>
             </View>
         </TouchableOpacity>

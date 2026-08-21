@@ -13,12 +13,14 @@ export default async function timetableResolver({
     const baseMonday = getPreviousMonday(CONFIG.dateNow);
     const requestedMonday = addDaysToDateString(baseMonday, offset * 7);
 
+    const requestedSunday = addDaysToDateString(requestedMonday, 6);
+
     const timetableResponse = await fetchApi<FetchApiResponse<ApiTimetableCourse[]>>(
         `https://api.ecoledirecte.com/v3/E/{USER_ID}/emploidutemps.awp?verbe=get&{API_VERSION}`,
         {
             body: {
                 dateDebut: requestedMonday,
-                dateFin: addDaysToDateString(requestedMonday, 13),
+                dateFin: requestedSunday,
                 avecTrous: false,
             },
             headers: {
@@ -33,6 +35,6 @@ export default async function timetableResolver({
     }
 
     return !timetableResponse
-        ? (fillHolidays(requestedMonday, addDaysToDateString(requestedMonday, 13)) as any)
+        ? (fillHolidays(requestedMonday, requestedSunday) as any)
         : await sortedTimetable(timetableResponse.data);
 }

@@ -138,4 +138,14 @@ export interface SimulatedGrade {
     isSimulation: true;
 }
 
+export interface BestGradeProps {
+    size?: number;
+    width?: number | string;
+    height?: number | string;
+    color?: string;
+    fill?: string;
+}
+
+export type SimpleFlammeProps = BestGradeProps;
+
 
