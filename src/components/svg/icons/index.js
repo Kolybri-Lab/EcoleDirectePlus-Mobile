@@ -14,6 +14,7 @@ export { default as Info } from "./Info";
 export { default as Key } from "./Key";
 export { default as Menu } from "./Menu";
 export { default as Merge } from "./Merge";
+export { default as Moon } from "./Moon";
 export { default as PenSquare } from "./PenSquare";
 export { default as Peoples } from "./Peoples";
 export { default as Person } from "./Person";

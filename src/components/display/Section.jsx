@@ -7,8 +7,8 @@ export default function Section({
     onPress,
     index = 0,
     totalLength = 0,
-    radiusExt = 10,
-    radiusInt = 10,
+    radiusExt = 12,
+    radiusInt = 5,
     label,
     icon,
     children,
@@ -19,7 +19,7 @@ export default function Section({
             disabled={disabled}
             style={({ pressed }) => ({
                 backgroundColor: "hsla(0, 0%, 100%, .1)",
-                paddingVertical: 16,
+                height: 54,
                 paddingHorizontal: 14,
                 flexDirection: "row",
                 alignItems: "center",
