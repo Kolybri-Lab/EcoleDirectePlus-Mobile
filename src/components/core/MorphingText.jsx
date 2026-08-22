@@ -7,7 +7,7 @@ import Animated, {
     useSharedValue,
     withTiming,
 } from "react-native-reanimated";
-import { Text } from "./index";
+import Text from "./Text";
 
 const MorphingText = ({
     value,
