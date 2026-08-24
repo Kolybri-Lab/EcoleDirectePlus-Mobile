@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
-import { FlatList } from "react-native-gesture-handler";
+import { ScrollView, TouchableOpacity, View } from "react-native";
 
 import { Text } from "@/components/core";
 import { Plus } from "@/components/svg";
@@ -60,14 +59,7 @@ export default function HomeworksContent() {
         return merged;
     }, [homeworksData, customHomeworksData]);
 
-    const [homeworksDates, setHomeworksDates] = useState();
-    const [formatedDates, setFormatedDates] = useState();
     const [activeDate, setActiveDate] = useState("");
-    const [progression, setProgression] = useState(0);
-    const [displayTasks, setDisplayTasks] = useState([]);
-    const [encouragementSentence, setEncouragemementSentence] = useState("");
-    const [completedTasks, setCompletedTasks] = useState([]);
-
     const [modalOpen, setModalOpen] = useState(false);
 
     useHomeworksHandler({
@@ -75,64 +67,42 @@ export default function HomeworksContent() {
         toggleHomework,
     });
 
-    const pickSentence = useCallback(
-        (progression) => {
-            let key;
+    const homeworksDates = mergedHomeworks?.formatedDates;
 
-            if (progression === 0) {
-                setEncouragemementSentence("");
-                return;
-            } else if (progression < 0.25) key = "0.25";
-            else if (progression < 0.5) key = "0.5";
-            else if (progression < 1) key = "0.75";
-            else key = "1";
-
-            const sentences = motivationSentences[key];
-            setEncouragemementSentence(
-                sentences[Math.floor(Math.random() * sentences.length)]
-            );
-        },
-        [progression]
-    );
     useEffect(() => {
-        if (!mergedHomeworks || Object.keys(mergedHomeworks).length === 0) return;
-
-        setHomeworksDates(mergedHomeworks.formatedDates);
-        setFormatedDates(mergedHomeworks.formatedDates);
+        if (!mergedHomeworks?.formatedDates || Object.keys(mergedHomeworks.formatedDates).length === 0) return;
 
         if (!activeDate || !mergedHomeworks.formatedDates[activeDate]) {
             setActiveDate(Object.keys(mergedHomeworks.formatedDates)[0]);
         }
-    }, [mergedHomeworks]);
+    }, [mergedHomeworks, activeDate]);
 
-    useEffect(() => {
-        if (!activeDate || !mergedHomeworks) return;
-
-        const datas = mergedHomeworks[activeDate] || [];
-        setDisplayTasks(datas);
-        const completed = datas.filter(({ isDone }) => isDone === "done");
-        setCompletedTasks(completed);
-        const progression =
-            datas.length > 0
-                ? Math.round((completed.length / datas.length) * 100) / 100
-                : 0;
-        setProgression(progression);
-        pickSentence(progression);
+    const displayTasks = useMemo(() => {
+        if (!activeDate || !mergedHomeworks) return [];
+        return mergedHomeworks[activeDate] || [];
     }, [activeDate, mergedHomeworks]);
 
-    useEffect(() => {
-        if (!homeworksDates || !activeDate || !homeworksDates[activeDate]) return;
-        setHomeworksDates((prev) => {
-            if (!prev[activeDate]) return prev;
-            prev[activeDate].allTasksCompleted = progression === 1;
-            return { ...prev };
-        });
-    }, [progression, activeDate]);
+    const completedTasks = useMemo(() => {
+        return displayTasks.filter(({ isDone }) => isDone === "done");
+    }, [displayTasks]);
 
-    const renderHomework = useCallback(
-        ({ item }) => <HomeworkCard dispatch={dispatch} homework={item} />,
-        [dispatch]
-    );
+    const progression = useMemo(() => {
+        return displayTasks.length > 0
+            ? Math.round((completedTasks.length / displayTasks.length) * 100) / 100
+            : 0;
+    }, [displayTasks, completedTasks]);
+
+    const encouragementSentence = useMemo(() => {
+        let key;
+        if (progression === 0) return "";
+        else if (progression < 0.25) key = "0.25";
+        else if (progression < 0.5) key = "0.5";
+        else if (progression < 1) key = "0.75";
+        else key = "1";
+
+        const sentences = motivationSentences[key];
+        return sentences ? sentences[Math.floor(Math.random() * sentences.length)] : "";
+    }, [progression]);
 
     return (
         <>
@@ -159,28 +129,31 @@ export default function HomeworksContent() {
                     </TouchableOpacity>
                 </View>
 
-                <HomeworkProgress
-                    completedCount={completedTasks.length}
-                    totalCount={displayTasks.length}
-                    progression={progression}
-                    encouragementSentence={encouragementSentence}
-                />
+                <ScrollView
+                    showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{
+                        paddingBottom: 40,
+                    }}
+                >
+                    <HomeworkProgress
+                        completedCount={completedTasks.length}
+                        totalCount={displayTasks.length}
+                        progression={progression}
+                        encouragementSentence={encouragementSentence}
+                    />
 
-                <View style={{ flex: 1 }}>
                     <HomeworkDatesRow
                         homeworksDates={homeworksDates}
                         activeDate={activeDate}
                         setActiveDate={setActiveDate}
                         mergedHomeworks={mergedHomeworks}
                     />
+
                     <View
                         style={{
-                            flex: 1,
-                            backgroundColor: "hsl(240, 29%, 11%)",
-                            borderTopLeftRadius: 30,
-                            borderTopRightRadius: 30,
                             paddingTop: 24,
                             paddingHorizontal: 24,
+                            gap: 10,
                         }}
                     >
                         {objectsEqual({}, homeworksData) && (
@@ -193,32 +166,16 @@ export default function HomeworksContent() {
                                 </Text>
                             </Text>
                         )}
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignSelf: "center",
-                                marginBottom: 24,
-                            }}
-                        >
-                            <Text preset="custom2">
-                                {activeDate &&
-                                    formatedDates &&
-                                    formatedDates[activeDate].long}
-                            </Text>
-                        </View>
-                        <FlatList
-                            data={displayTasks}
-                            renderItem={renderHomework}
-                            keyExtractor={({ id }) => id}
-                            showsVerticalScrollIndicator={false}
-                            contentContainerStyle={{
-                                gap: 10,
-                            }}
-                        />
+                        {displayTasks.map((homework) => (
+                            <HomeworkCard
+                                key={homework.id}
+                                dispatch={dispatch}
+                                homework={homework}
+                            />
+                        ))}
                     </View>
-                </View>
+                </ScrollView>
             </ScreenStack>
         </>
     );
 }
-

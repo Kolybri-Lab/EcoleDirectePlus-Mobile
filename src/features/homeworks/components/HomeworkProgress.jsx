@@ -24,9 +24,11 @@ export default function HomeworkProgress({
         <SafeAreaView
             style={[
                 {
-                    height: "25%",
+                    minHeight: 160,
                     justifyContent: "space-between",
                     paddingTop: 14,
+                    paddingBottom: 14,
+                    gap: 14,
                 },
                 style,
             ]}
