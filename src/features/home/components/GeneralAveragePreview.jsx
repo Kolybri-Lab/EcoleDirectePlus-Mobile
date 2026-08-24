@@ -38,15 +38,25 @@ export default function GeneralAveragePreview({ gradesData }) {
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 19,
-                paddingVertical: 24,
+                paddingHorizontal: 20,
+                paddingTop: 11,
+                paddingBottom: 13,
             }}
         >
-            <View style={{ gap: 5 }}>
-                <Text preset="title1" color="hsl(228, 100%, 69%)">
+            <View>
+                <Text
+                    style={{ color: colors.main, fontSize: 18, fontFamily: "Bold" }}
+                >
                     {"Moyenne Générale".toUpperCase() /* j'autorise les jugements */}
                 </Text>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 8,
+                        marginTop: -4,
+                    }}
+                >
                     <Text preset="label2" color="hsla(0, 0%, 100%, 0.55)">
                         {gradesData.activePeriod.periodName}
                     </Text>
@@ -63,9 +73,9 @@ export default function GeneralAveragePreview({ gradesData }) {
                     </Text>
                 </View>
             </View>
-            <Text size={34} weight="bold">
+            <Text style={{ fontFamily: "Bold", fontSize: 32, marginTop: 3 }}>
                 {generalAverage}
-                <Text size={16} color="hsla(0, 0%, 100%, 0.55)">
+                <Text size={16} color="hsla(0, 0%, 100%, 0.55)" fontFamily="Medium">
                     /20
                 </Text>
             </Text>

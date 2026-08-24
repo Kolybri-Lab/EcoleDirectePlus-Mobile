@@ -4,11 +4,14 @@ import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
 
 import { formatFrenchDate } from "@/utils/date";
+import { addOpacityToCssRgb } from "@/utils/colorGenerator";
 import base64Handler from "@/utils/handleBase64";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { useMemo } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
-import RenderHtml from "react-native-render-html";
+import RenderHtml, { defaultSystemFonts } from "react-native-render-html";
+
+const systemFonts = [...defaultSystemFonts, "Medium"];
 
 export default function HomeworksPreview({ homeworksDatas, customHomeworks }) {
     const navigation = useNavigation();
@@ -25,13 +28,14 @@ export default function HomeworksPreview({ homeworksDatas, customHomeworks }) {
             .sort(([a], [b]) => new Date(a) - new Date(b))
             .map(([date, homeworks]) => ({
                 date,
-                homeworks,
+                homeworks: homeworks.filter((item) => item.isDone === "todo"),
                 meta: formatedDates[date],
-            }));
+            }))
+            .filter(({ homeworks }) => homeworks.length > 0);
     }, [mergedHomeworks]);
 
     return (
-        <View style={{ width: "100%", flex: 1 }}>
+        <View style={{ width: "100%", flex: 1, gap: 16, marginTop: -14 }}>
             {groupedHomeworks.map(({ date, homeworks, meta }) => (
                 <View key={date}>
                     <DateHeader
@@ -70,23 +74,29 @@ export default function HomeworksPreview({ homeworksDatas, customHomeworks }) {
     );
 }
 
-const DateHeader = ({ date, meta, countForDate }) => (
-    <View
-        style={{
-            paddingVertical: 8,
-            paddingHorizontal: 4,
-            flexDirection: "row",
-            justifyContent: "space-between",
-        }}
-    >
-        <Text preset="title1">
-            {(meta?.long ?? `POUR ${formatFrenchDate(date)}`).toUpperCase()}
-        </Text>
-        <Text preset="h4" color="hsl(228, 100%, 69%)">
-            {countForDate}
-        </Text>
-    </View>
-);
+const DateHeader = ({ date, meta, countForDate }) => {
+    const { colors } = useTheme();
+    return (
+        <View
+            style={{
+                paddingBottom: 4,
+                paddingHorizontal: 6,
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "flex-end",
+            }}
+        >
+            <Text style={{ fontSize: 18, fontFamily: "SemiBold" }}>
+                {(meta?.long ?? `POUR ${formatFrenchDate(date)}`).toUpperCase()}
+            </Text>
+            <Text
+                style={{ fontSize: 20, fontFamily: "SemiBold", color: colors.main }}
+            >
+                {countForDate}
+            </Text>
+        </View>
+    );
+};
 
 const Homework = ({ homework, index, countForDate }) => {
     const { colors } = useTheme();
@@ -96,7 +106,7 @@ const Homework = ({ homework, index, countForDate }) => {
         [homework.homeworksContent.content]
     );
     let borderRadiusStyle = {};
-    const BORDER_RADIUS_EXT = 28;
+    const BORDER_RADIUS_EXT = 16;
     const BORDER_RADIUS_INT = 8;
     if (index === 0 && countForDate > 1) {
         borderRadiusStyle = {
@@ -136,10 +146,11 @@ const Homework = ({ homework, index, countForDate }) => {
                     backgroundColor: homework.isCustom
                         ? "hsl(235, 28%, 30%)"
                         : colors.secondary,
-                    marginVertical: 2,
+                    marginVertical: 3.5,
                     alignItems: "center",
                     flexDirection: "row",
-                    padding: 19,
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
                     gap: 10,
                 },
                 borderRadiusStyle,
@@ -155,9 +166,11 @@ const Homework = ({ homework, index, countForDate }) => {
                 }}
             >
                 <Text
-                    preset="title1"
                     style={{
                         flexShrink: 0,
+                        fontSize: 18,
+                        fontFamily: "SemiBold",
+                        minWidth: 80,
                     }}
                 >
                     {homework.discipline.name}
@@ -166,10 +179,14 @@ const Homework = ({ homework, index, countForDate }) => {
                 <View style={{ flex: 1, flexShrink: 1, minWidth: 0 }}>
                     {homework.isCustom ? (
                         <Text
-                            preset="label2"
-                            color="hsla(1, 0%, 100%, 0.55)"
+                            style={{
+                                color: addOpacityToCssRgb(colors.contrast, 0.55),
+                                fontSize: 14,
+                                fontFamily: "Medium",
+                                flexShrink: 1,
+                                color: addOpacityToCssRgb(colors.contrast, 0.55),
+                            }}
                             oneLine
-                            style={{ flexShrink: 1 }}
                         >
                             {homework.homeworksContent.content}
                         </Text>
@@ -177,9 +194,11 @@ const Homework = ({ homework, index, countForDate }) => {
                         <RenderHtml
                             contentWidth={width}
                             source={{ html: decodedContent }}
+                            systemFonts={systemFonts}
                             baseStyle={{
-                                color: "hsla(1, 0%, 100%, 0.55)",
-                                fontSize: 13,
+                                color: addOpacityToCssRgb(colors.contrast, 0.55),
+                                fontSize: 14,
+                                fontFamily: "Medium",
                             }}
                             defaultTextProps={{
                                 numberOfLines: 1,
@@ -195,15 +214,26 @@ const Homework = ({ homework, index, countForDate }) => {
                 <View
                     style={{
                         flexShrink: 1,
-                        backgroundColor: "hsla(219, 100%, 69%, 0.75)",
-                        borderColor: "hsla(219, 100%, 69%, 1)",
+                        backgroundColor: addOpacityToCssRgb(colors.main, 0.7),
+                        borderColor: colors.main,
                         borderWidth: 1,
-                        borderRadius: 20,
+                        borderRadius: 10,
                         paddingHorizontal: 8,
-                        paddingVertical: 4,
+                        paddingVertical: 2,
+                        marginRight: -8,
+                        flexShrink: 0,
                     }}
                 >
-                    <Text preset="label3">Contrôle</Text>
+                    <Text
+                        style={{
+                            color: colors.contrast,
+                            fontFamily: "SemiBold",
+                            fontSize: 13,
+                            marginBottom: -1,
+                        }}
+                    >
+                        Contrôle
+                    </Text>
                 </View>
             )}
         </View>

@@ -22,7 +22,7 @@ export default function LastGrades({ lastGradesObject }) {
     // }).current;
 
     return (
-        <View style={{ height: 100 }}>
+        <View style={{ height: 94, marginTop: -14 }}>
             <FlatList
                 // onViewableItemsChanged={onViewableItemsChanged}
                 // viewabilityConfig={viewabilityConfig}
@@ -74,10 +74,12 @@ const GradeCard = ({ disciplineColor, disciplineName, data }) => {
             style={{
                 backgroundColor: colors.secondary,
                 borderRadius: 16,
-                width: 150,
-                paddingHorizontal: 20,
-                paddingVertical: 19,
+                width: 130,
+                height: 80,
+                paddingHorizontal: 18,
+                paddingVertical: 12,
                 justifyContent: "space-between",
+
                 boxShadow: [
                     {
                         blurRadius: 6,
@@ -88,7 +90,11 @@ const GradeCard = ({ disciplineColor, disciplineName, data }) => {
                 ],
             }}
         >
-            <Text align="left" oneLine style={{ color: disciplineColor }}>
+            <Text
+                align="left"
+                oneLine
+                style={{ color: disciplineColor, fontSize: 14, fontFamily: "Bold" }}
+            >
                 {disciplineName.toUpperCase()}
             </Text>
 
@@ -97,18 +103,30 @@ const GradeCard = ({ disciplineColor, disciplineName, data }) => {
                     flexDirection: "row",
                     alignItems: "flex-start",
                     justifyContent: "center",
+                    marginTop: -2,
+                    marginLeft: 5,
                 }}
             >
-                <Text preset="h3" color={lightColor}>
+                <Text
+                    style={{ fontSize: 26, fontFamily: "Bold" }}
+                    color={lightColor}
+                >
                     {data.grade.toFixed(2)}
-                    <Text preset="label2" color="hsla(1, 0%, 100%, .55)">
+                    <Text
+                        style={{ fontFamily: "Medium", fontSize: 12 }}
+                        color="hsla(1, 0%, 100%, .55)"
+                    >
                         /{data.outOf}
                     </Text>
                 </Text>
                 <Text
-                    preset="label3"
                     color="hsla(1, 0%, 100%, .55)"
-                    style={{ marginLeft: 2 }}
+                    style={{
+                        marginLeft: -2,
+                        marginTop: -2,
+                        fontFamily: "Medium",
+                        fontSize: 12,
+                    }}
                 >
                     ({data.coef})
                 </Text>
