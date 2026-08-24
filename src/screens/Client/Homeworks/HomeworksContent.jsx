@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TouchableOpacity, View } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 
@@ -6,16 +6,15 @@ import { Text } from "@/components/core";
 import { Plus } from "@/components/svg";
 import { motivationSentences } from "@/constants/features/homeworksConfig";
 import HomeworkCard from "@/features/homeworks/components/HomeworkCard";
-import { SafeAreaView } from "react-native-safe-area-context";
+import HomeworkDatesRow from "@/features/homeworks/components/HomeworkDatesRow";
+import HomeworkProgress from "@/features/homeworks/components/HomeworkProgress";
 
 import NewHomeworkModal from "@/features/homeworks/components/NewHomeworkModal";
 import { useHomework } from "@/features/homeworks/context/HomeworkContext";
 import { useHomeworksHandler } from "@/features/homeworks/hooks/useHomeworksHandler";
-import { adjustLightness } from "@/utils/colorGenerator";
 import { formatFrenchDate } from "@/utils/date";
 
 import { ScreenStack } from "@/components";
-import { ProgressBar } from "@/components/progression/ProgressBar";
 import { useHomeworks } from "@/features/homeworks";
 import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 import { useUserStore } from "@/hooks/useUserStore";
@@ -130,32 +129,10 @@ export default function HomeworksContent() {
         });
     }, [progression, activeDate]);
 
-    const renderDateItem = useCallback(
-        ({ item }) => {
-            const [date, { contracted, isEvaluation }] = item;
-
-            const tasks = mergedHomeworks[date] ?? [];
-            const allTasksCompleted =
-                tasks.length > 0 && tasks.every(({ isDone }) => isDone === "done");
-
-            return (
-                <DateItem
-                    date={date}
-                    contracted={contracted}
-                    isEvaluation={isEvaluation}
-                    isActive={date === activeDate}
-                    allTasksCompleted={allTasksCompleted}
-                    onPress={() => setActiveDate(date)}
-                />
-            );
-        },
-        [activeDate, mergedHomeworks]
-    );
     const renderHomework = useCallback(
         ({ item }) => <HomeworkCard dispatch={dispatch} homework={item} />,
         [dispatch]
     );
-
 
     return (
         <>
@@ -182,55 +159,20 @@ export default function HomeworksContent() {
                     </TouchableOpacity>
                 </View>
 
-                <SafeAreaView
-                    style={{
-                        height: "25%",
-                        justifyContent: "space-between",
-                        paddingTop: 14,
-                    }}
-                >
-                    <View
-                        style={{
-                            backgroundColor: "hsl(240, 19%, 38%)",
-                            alignSelf: "center",
-                            paddingHorizontal: 12,
-                            paddingVertical: 3,
-                            borderRadius: 9,
-                        }}
-                    >
-                        <Text align="center" preset="h3">
-                            {completedTasks.length}/{displayTasks.length}
-                        </Text>
-                    </View>
-                    <ProgressBar
-                        progression={progression}
-                        style={{
-                            marginHorizontal: 50,
-                            backgroundColor: "hsl(240, 15%, 33%)",
-                        }}
-                    />
+                <HomeworkProgress
+                    completedCount={completedTasks.length}
+                    totalCount={displayTasks.length}
+                    progression={progression}
+                    encouragementSentence={encouragementSentence}
+                />
 
-                    <Text preset="custom1" align="center" color="hsl(240, 34%, 77%)">
-                        {encouragementSentence}
-                    </Text>
-                </SafeAreaView>
                 <View style={{ flex: 1 }}>
-                    {homeworksDates && (
-                        <View style={{ flexDirection: "row", paddingHorizontal: 9 }}>
-                            <FlatList
-                                data={Object.entries(homeworksDates)}
-                                horizontal
-                                renderItem={renderDateItem}
-                                contentContainerStyle={{
-                                    gap: 12,
-                                    paddingVertical: 10,
-                                    paddingHorizontal: 6,
-                                }}
-                                keyExtractor={([date]) => date}
-                                showsHorizontalScrollIndicator={false}
-                            />
-                        </View>
-                    )}
+                    <HomeworkDatesRow
+                        homeworksDates={homeworksDates}
+                        activeDate={activeDate}
+                        setActiveDate={setActiveDate}
+                        mergedHomeworks={mergedHomeworks}
+                    />
                     <View
                         style={{
                             flex: 1,
@@ -280,55 +222,3 @@ export default function HomeworksContent() {
     );
 }
 
-const DateItem = memo(
-    ({ contracted, isEvaluation, isActive, allTasksCompleted, onPress }) => {
-        let dateBackgroundColor;
-        if (isEvaluation && allTasksCompleted) {
-            dateBackgroundColor = "hsl(28, 48%, 33%)"; //temp color
-        } else if (isEvaluation) {
-            dateBackgroundColor = "hsl(2, 63%, 43%)"; // temp color
-        } else if (allTasksCompleted) {
-            dateBackgroundColor = "hsl(115, 33%, 38%)"; // maybe good ?
-        } else {
-            dateBackgroundColor = "hsl(240, 19%, 36%)"; // keep this
-        }
-        return (
-            <TouchableOpacity
-                style={{
-                    width: 58,
-                    height: 58,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: 4,
-                }}
-                onPress={onPress}
-                activeOpacity={0.7}
-            >
-                <View
-                    style={{
-                        width: 50,
-                        height: 50,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        backgroundColor: dateBackgroundColor,
-                        borderRadius: 10,
-                        ...(isActive && {
-                            boxShadow: [
-                                {
-                                    offsetX: 0,
-                                    offsetY: 0,
-                                    blurRadius: 6,
-                                    spreadDistance: 3,
-                                    color: adjustLightness(dateBackgroundColor, 30),
-                                },
-                            ],
-                        }),
-                    }}
-                >
-                    <Text preset="label1">{contracted[1]}</Text>
-                    <Text preset="label2">{contracted[0]}</Text>
-                </View>
-            </TouchableOpacity>
-        );
-    }
-);
