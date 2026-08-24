@@ -102,7 +102,7 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
                         width: BAR_WIDTH,
                         height: 2,
                         borderRadius: 6,
-                        backgroundColor: "#C7CCFD",
+                        backgroundColor: theme.colors.accent,
                     },
                     animatedIndicatorStyle,
                 ]}
@@ -135,18 +135,12 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
 };
 
 const TabButton = memo(
-    ({
-        index,
-        route,
-        options,
-        isFocused,
-        onPress,
-        onLayout,
-        IconComponent,
-    }) => {
+    ({ index, route, options, isFocused, onPress, onLayout, IconComponent }) => {
         const BASE_ICON_SIZE = 26;
         const FOCUSED_SCALE = 1;
         const UNFOCUSED_SCALE = 1.3;
+
+        const { colors } = useTheme();
 
         const iconScale = useSharedValue(
             isFocused ? FOCUSED_SCALE : UNFOCUSED_SCALE
@@ -218,18 +212,14 @@ const TabButton = memo(
                         <IconComponent
                             width={BASE_ICON_SIZE}
                             height={BASE_ICON_SIZE}
-                            color={isFocused ? "#C7CCFD" : "#838CEB"}
+                            color={isFocused ? colors.accent : colors.inactive}
                         />
                     </Animated.View>
                     <MorphingText
                         preset="label3"
                         weight={isFocused ? "bold" : "medium"}
-                        color={isFocused ? "#C7CCFD" : "#838CEB"}
-                        value={
-                            isFocused
-                                ? ROUTES_NAMES[route.name] ?? "N/A"
-                                : ""
-                        }
+                        color={colors.accent}
+                        value={isFocused ? (ROUTES_NAMES[route.name] ?? "N/A") : ""}
                         style={{ letterSpacing: 0.8, width: "100%" }}
                     />
                 </View>
@@ -239,5 +229,4 @@ const TabButton = memo(
 );
 
 export default NavigationBottomBar;
-
 
