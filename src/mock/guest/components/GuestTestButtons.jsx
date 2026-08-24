@@ -1,14 +1,11 @@
 import { Text } from "@/components";
 import { useErrorStore } from "@/hooks/useErrorStore";
 import { useUserStore } from "@/hooks/useUserStore";
-import { queryClient } from "@/provider/QueryProvider";
 import React from "react";
 import { DevSettings, TouchableOpacity, View } from "react-native";
-import { resetAllGuestTests } from "../guestData";
 import ErrorsTestButtons from "./ErrorsTestButtons";
 import GradesTestButtons from "./GradesTestButtons";
 import HomeworksTestButtons from "./HomeworksTestButtons";
-import SettingsTestButtons from "./SettingsTestButtons";
 import TimetableTestButtons from "./TimetableTestButtons";
 
 export default function GuestTestButtons() {
@@ -35,36 +32,10 @@ export default function GuestTestButtons() {
                 🧪 Panneau de Test Développeur
             </Text>
 
-            <SettingsTestButtons />
             <TimetableTestButtons />
             <GradesTestButtons />
             <HomeworksTestButtons />
             <ErrorsTestButtons />
-
-            {/* --- RÉINITIALISATION GLOBALE DE TOUS LES TESTS --- */}
-            <TouchableOpacity
-                onPress={() => {
-                    useErrorStore.getState().clearAll();
-                    resetAllGuestTests();
-                    queryClient.invalidateQueries();
-                }}
-                style={{
-                    padding: 12,
-                    borderRadius: 8,
-                    backgroundColor: "rgba(16, 185, 129, 0.25)",
-                    borderWidth: 1,
-                    borderColor: "rgba(16, 185, 129, 0.4)",
-                    marginTop: 4,
-                }}
-            >
-                <Text
-                    size={13}
-                    color="#10B981"
-                    style={{ textAlign: "center", fontFamily: "SemiBold" }}
-                >
-                    🟢 Résoudre & Réinitialiser Tous les Tests
-                </Text>
-            </TouchableOpacity>
 
             {/* --- REDÉMARRAGE DE L'APPLICATION --- */}
             <TouchableOpacity
@@ -78,6 +49,7 @@ export default function GuestTestButtons() {
                     backgroundColor: "rgba(59, 130, 246, 0.25)",
                     borderWidth: 1,
                     borderColor: "rgba(59, 130, 246, 0.4)",
+                    marginTop: 4,
                 }}
             >
                 <Text
