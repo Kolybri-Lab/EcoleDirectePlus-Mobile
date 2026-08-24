@@ -83,10 +83,14 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
         moveIndicatorTo(state.index, true);
     }, [state.index, moveIndicatorTo]);
 
+    const navbarBackgroundColor = Array.isArray(theme.colors.background.gradient)
+        ? theme.colors.background.gradient[1] || theme.colors.background.gradient[0]
+        : theme.colors.background.gradient;
+
     return (
         <SafeAreaView
             edges={["bottom"]}
-            style={{ backgroundColor: theme.colors.background.gradient }}
+            style={{ backgroundColor: navbarBackgroundColor }}
         >
             <View
                 style={{

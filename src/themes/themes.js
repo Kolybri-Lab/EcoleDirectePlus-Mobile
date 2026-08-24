@@ -37,6 +37,7 @@ export const THEMES = {
             pastel: "rgb(222, 222, 250)",
             secondary: "rgb(180, 180, 253)",
             main: "rgb(119, 119, 247)",
+            inactive: "rgb(140, 140, 215)",
             accent: "rgb(62, 62, 221)",
             contrast: "rgb(0, 0, 0)",
             case: "rgb(255, 255, 255)",
