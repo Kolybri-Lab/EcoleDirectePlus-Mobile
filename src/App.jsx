@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import RootProviders from "./provider";
 import AuthNavigator from "./router/AuthNavigator";
 
+import { setupDevMenu } from "./mock/guest/setupDevMenu";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -19,6 +21,12 @@ export default function App() {
         Bold: require("assets/fonts/Baloo2-Bold.ttf"),
         ExtraBold: require("assets/fonts/Baloo2-ExtraBold.ttf"),
     });
+
+    useEffect(() => {
+        if (__DEV__) {
+            setupDevMenu();
+        }
+    }, []);
 
     useEffect(() => {
         if (fontLoaded) {
