@@ -1,4 +1,5 @@
 import { Text } from "@/components";
+import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 import { queryClient } from "@/provider/QueryProvider";
 import React from "react";
 import { TouchableOpacity, View } from "react-native";
@@ -29,7 +30,23 @@ export default function HomeworksTestButtons() {
 
             <TouchableOpacity
                 onPress={() => {
+                    useCustomDataStore.getState().clearCustomHomeworks();
+                }}
+                style={{
+                    padding: 10,
+                    borderRadius: 8,
+                    backgroundColor: "rgba(239, 68, 68, 0.2)",
+                }}
+            >
+                <Text size={13} color="#F87171">
+                    🗑️ Supprimer tous les devoirs personnalisés
+                </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+                onPress={() => {
                     resetGuestHomeworks();
+                    useCustomDataStore.getState().clearCustomHomeworks();
                     queryClient.invalidateQueries({ queryKey: ["homeworks"] });
                 }}
                 style={{
