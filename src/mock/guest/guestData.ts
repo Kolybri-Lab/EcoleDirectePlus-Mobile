@@ -132,16 +132,9 @@ export const getGuestData = (url: string, body?: any): any => {
     if (url.includes("verbe=put") || url.includes("/cahierdetexte.awp?verbe=put")) {
         return handleToggleHomework(body);
     }
-    if (url.includes("/cahierdetexte/") && dateRegex.test(url)) {
-        if (guestOverrides.homeworksEmpty) {
-            return {
-                code: 200,
-                token: "guest_token",
-                host: "HTTP200",
-                data: { matieres: [] },
-            };
-        }
-        return mockHomeworksPreciseDay;
+    const dateMatch = url.match(dateRegex);
+    if (url.includes("/cahierdetexte/") && dateMatch) {
+        return getGuestHomeworksForDate(dateMatch[0]);
     }
     if (url.includes("/cahierdetexte.awp")) {
         if (guestOverrides.homeworksEmpty) {
@@ -170,28 +163,6 @@ export const getGuestData = (url: string, body?: any): any => {
         }
         return mockMessagesReceivedPage1;
     }
-    if (url.includes("/cahierdetexte.awp") && !dateRegex.test(url)) {
-        if (guestOverrides.homeworksEmpty) {
-            return {
-                code: 200,
-                token: "guest_token",
-                host: "HTTP200",
-                data: {},
-            };
-        }
-        return mockHomeworks;
-    }
-    if (url.includes("/cahierdetexte/") && dateRegex.test(url)) {
-        if (guestOverrides.homeworksEmpty) {
-            return {
-                code: 200,
-                token: "guest_token",
-                host: "HTTP200",
-                data: { matieres: [] },
-            };
-        }
-        return mockHomeworksPreciseDay;
-    }
 
     // (messages/{messageId}.awp)
     if (messageDetailMatch) {
@@ -203,6 +174,71 @@ export const getGuestData = (url: string, body?: any): any => {
     }
 
     return null;
+};
+
+const getGuestHomeworksForDate = (date: string) => {
+    if (guestOverrides.homeworksEmpty) {
+        return {
+            code: 200,
+            token: "guest_token",
+            host: "HTTP200",
+            data: { date, matieres: [] },
+        };
+    }
+
+    const dayHomeworks = mockHomeworks?.data?.[date] || [];
+
+    const matieres = dayHomeworks.map((hw: any) => ({
+        entityCode: "1",
+        entityLibelle: "Classe Invité",
+        entityType: "C",
+        matiere: hw.matiere,
+        codeMatiere: hw.codeMatiere,
+        nomProf: "M. Professeur",
+        id: hw.idDevoir,
+        interrogation: hw.interrogation ?? false,
+        blogActif: false,
+        nbJourMaxRenduDevoir: 0,
+        aFaire: {
+            idDevoir: hw.idDevoir,
+            contenu: "Vm9pY2kgbGUgdHJhdmFpbCDDoCBmYWlyZSwgaWwgZXN0IHRyw6hzIGRyw7RsZQ==",
+            rendreEnLigne: hw.rendreEnLigne ?? false,
+            donneLe: hw.donneLe || date,
+            effectue: hw.effectue ?? false,
+            ressource: "",
+            documentsRendusDeposes: false,
+            ressourceDocuments: [],
+            documents: hw.documentsAFaire
+                ? [
+                      {
+                          id: 1000 + hw.idDevoir,
+                          libelle: `Consignes_${hw.matiere}.pdf`,
+                          type: "PDF",
+                          taille: 1048576,
+                      },
+                  ]
+                : [],
+            commentaires: [],
+            elementsProg: [],
+            liensManuel: [],
+            documentsRendus: [],
+            contenuDeSeance: {
+                contenu: "Vm9pY2kgbGUgdHJhdmFpbCBlZmZlY3R1w6kgYXVqb3VyZCdodWk=",
+                documents: [],
+                commentaires: [],
+            },
+        },
+    }));
+
+    return {
+        code: 200,
+        token: "guest_token",
+        host: "HTTP200",
+        data: {
+            date,
+            matieres,
+        },
+    };
 };
 
 const handleToggleHomework = (body?: any) => {
