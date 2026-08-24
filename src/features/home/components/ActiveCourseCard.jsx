@@ -42,7 +42,7 @@ export default function ActiveCourseCard({
                         <View
                             style={{
                                 backgroundColor: addOpacityToCssRgb(
-                                    colors.contrast,
+                                    colors.main,
                                     0.9
                                 ),
                                 width: 6,
@@ -51,7 +51,7 @@ export default function ActiveCourseCard({
                             }}
                         />
                         <Text
-                            color={addOpacityToCssRgb(colors.contrast, 0.9)}
+                            color={addOpacityToCssRgb(colors.main, 0.9)}
                             style={{ fontFamily: "SemiBold", fontSize: 16 }}
                         >
                             {isLast ? "DERNIER COURS DE LA JOURNÉE !" : message}
@@ -90,7 +90,7 @@ export default function ActiveCourseCard({
                         }}
                     >
                         <Text
-                            color={addOpacityToCssRgb(colors.contrast, 0.9)}
+                            color={addOpacityToCssRgb(colors.main, 0.9)}
                             style={{ fontFamily: "SemiBold", fontSize: 16 }}
                         >
                             PROCHAIN COURS
