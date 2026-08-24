@@ -5,16 +5,103 @@ import storeDatas from "@/services/login/tools/storeLoginDatas";
 import dayjs from "dayjs";
 
 import { GUEST_CREDENTIALS } from "@/constants/config";
-import mockGrades from "./grades.json";
-import mockHomeworks from "./homeworks.json";
-import mockHomeworksPreciseDay from "./homeworks_precise_day.json";
-import mockLogin from "./login.json";
-import mockMessageDetail from "./message_detail.json";
-import mockMessagesFolder from "./messages_folder.json";
-import mockMessagesReceivedPage1 from "./messages_received_page1.json";
-import mockMessagesReceivedPage2 from "./messages_received_page2.json";
-import mockMessagesReceivedPage3 from "./messages_received_page3.json";
-import mockTimetable from "./timetable.json";
+import {
+    mockGrades,
+    mockHomeworks,
+    mockHomeworksPreciseDay,
+    mockLogin,
+    mockMessageDetail,
+    mockMessagesFolder,
+    mockMessagesReceivedPage1,
+    mockMessagesReceivedPage2,
+    mockMessagesReceivedPage3,
+    mockTimetable,
+} from "./json";
+
+interface GuestOverrides {
+    timetableEmpty: boolean;
+    gradesEmpty: boolean;
+    homeworksEmpty: boolean;
+    activeTestCourse: boolean;
+    hiddenCurrentCourse: boolean;
+}
+
+let guestOverrides: GuestOverrides = {
+    timetableEmpty: false,
+    gradesEmpty: false,
+    homeworksEmpty: false,
+    activeTestCourse: false,
+    hiddenCurrentCourse: false,
+};
+
+export const getGuestOverrides = () => guestOverrides;
+
+export const setGuestTimetableEmpty = (empty: boolean) => {
+    guestOverrides.timetableEmpty = empty;
+};
+
+export const resetGuestTimetable = () => {
+    guestOverrides.timetableEmpty = false;
+    guestOverrides.activeTestCourse = false;
+    guestOverrides.hiddenCurrentCourse = false;
+};
+
+export const toggleGuestActiveCourse = () => {
+    if (guestOverrides.activeTestCourse) {
+        guestOverrides.activeTestCourse = false;
+        return;
+    }
+    if (guestOverrides.hiddenCurrentCourse) {
+        guestOverrides.hiddenCurrentCourse = false;
+        return;
+    }
+
+    const now = dayjs();
+    const nowStr = now.format("YYYY-MM-DD HH:mm");
+    const rawShifted = getShiftedTimetable();
+    const courses = rawShifted.data || [];
+    const hasActiveNow = courses.some((c: any) => {
+        return (
+            c.start_date &&
+            c.end_date &&
+            c.start_date <= nowStr &&
+            c.end_date >= nowStr &&
+            !c.isTestCourse
+        );
+    });
+
+    if (hasActiveNow) {
+        guestOverrides.hiddenCurrentCourse = true;
+    } else {
+        guestOverrides.activeTestCourse = true;
+    }
+};
+
+export const setGuestGradesEmpty = (empty: boolean) => {
+    guestOverrides.gradesEmpty = empty;
+};
+
+export const resetGuestGrades = () => {
+    guestOverrides.gradesEmpty = false;
+};
+
+export const setGuestHomeworksEmpty = (empty: boolean) => {
+    guestOverrides.homeworksEmpty = empty;
+};
+
+export const resetGuestHomeworks = () => {
+    guestOverrides.homeworksEmpty = false;
+};
+
+export const resetAllGuestTests = () => {
+    guestOverrides = {
+        timetableEmpty: false,
+        gradesEmpty: false,
+        homeworksEmpty: false,
+        activeTestCourse: false,
+        hiddenCurrentCourse: false,
+    };
+};
 
 export const getGuestData = (url: string, body?: any): any => {
     const messageDetailMatch = url.match(/\/messages\/(\d+)\.awp/);
@@ -23,6 +110,18 @@ export const getGuestData = (url: string, body?: any): any => {
     const requestedPage = pageMatch ? Number(pageMatch[1]) : 0;
 
     if (url.includes("/notes.awp")) {
+        if (guestOverrides.gradesEmpty) {
+            return {
+                code: 200,
+                token: "guest_token",
+                host: "HTTP200",
+                data: {
+                    notes: [],
+                    periodes: [],
+                    parametres: {},
+                },
+            };
+        }
         return mockGrades;
     }
 
@@ -34,9 +133,25 @@ export const getGuestData = (url: string, body?: any): any => {
         return handleToggleHomework(body);
     }
     if (url.includes("/cahierdetexte/") && dateRegex.test(url)) {
+        if (guestOverrides.homeworksEmpty) {
+            return {
+                code: 200,
+                token: "guest_token",
+                host: "HTTP200",
+                data: { matieres: [] },
+            };
+        }
         return mockHomeworksPreciseDay;
     }
     if (url.includes("/cahierdetexte.awp")) {
+        if (guestOverrides.homeworksEmpty) {
+            return {
+                code: 200,
+                token: "guest_token",
+                host: "HTTP200",
+                data: {},
+            };
+        }
         return mockHomeworks;
     }
 
@@ -56,9 +171,25 @@ export const getGuestData = (url: string, body?: any): any => {
         return mockMessagesReceivedPage1;
     }
     if (url.includes("/cahierdetexte.awp") && !dateRegex.test(url)) {
+        if (guestOverrides.homeworksEmpty) {
+            return {
+                code: 200,
+                token: "guest_token",
+                host: "HTTP200",
+                data: {},
+            };
+        }
         return mockHomeworks;
     }
     if (url.includes("/cahierdetexte/") && dateRegex.test(url)) {
+        if (guestOverrides.homeworksEmpty) {
+            return {
+                code: 200,
+                token: "guest_token",
+                host: "HTTP200",
+                data: { matieres: [] },
+            };
+        }
         return mockHomeworksPreciseDay;
     }
 
@@ -175,7 +306,12 @@ const getGenericMessageDetail = (messageId: string | number) => {
 };
 
 const getShiftedTimetable = (requestedMonday?: string) => {
-    if (!requestedMonday) return mockTimetable;
+    if (guestOverrides.timetableEmpty) {
+        return {
+            ...mockTimetable,
+            data: [],
+        };
+    }
 
     const courses = mockTimetable.data || [];
     const firstCourse = courses.find((c: any) => c.start_date);
@@ -186,10 +322,12 @@ const getShiftedTimetable = (requestedMonday?: string) => {
     const daysToSubtract = mockDayOfWeek === 0 ? 6 : mockDayOfWeek - 1;
     const mockMonday = mockFirstDate.subtract(daysToSubtract, "day");
 
-    const reqMonday = dayjs(requestedMonday);
+    const reqMonday = requestedMonday
+        ? dayjs(requestedMonday)
+        : dayjs().startOf("week").add(1, "day");
     const diffInDays = reqMonday.diff(mockMonday, "day");
 
-    const shiftedCourses = courses.map((course: any) => {
+    let shiftedCourses = courses.map((course: any) => {
         if (!course.start_date || !course.end_date) return course;
 
         const start = dayjs(course.start_date);
@@ -201,6 +339,76 @@ const getShiftedTimetable = (requestedMonday?: string) => {
             end_date: end.add(diffInDays, "day").format("YYYY-MM-DD HH:mm"),
         };
     });
+
+    const todayStr = dayjs().format("YYYY-MM-DD");
+    const now = dayjs();
+    const nowTimeStr = now.format("YYYY-MM-DD HH:mm");
+
+    if (guestOverrides.hiddenCurrentCourse) {
+        shiftedCourses = shiftedCourses.map((c: any) => {
+            if (
+                c.start_date &&
+                c.end_date &&
+                c.start_date <= nowTimeStr &&
+                c.end_date >= nowTimeStr &&
+                !c.isTestCourse
+            ) {
+                return {
+                    ...c,
+                    end_date: now.subtract(1, "minute").format("YYYY-MM-DD HH:mm"),
+                };
+            }
+            return c;
+        });
+    }
+
+    if (guestOverrides.activeTestCourse) {
+        const todayNextCourses = shiftedCourses
+            .filter(
+                (c: any) =>
+                    c.start_date &&
+                    c.start_date.startsWith(todayStr) &&
+                    c.start_date > nowTimeStr
+            )
+            .sort((a: any, b: any) => a.start_date.localeCompare(b.start_date));
+
+        const nextCourse = todayNextCourses[0];
+        const testStartTime = now.subtract(15, "minute").format("YYYY-MM-DD HH:mm");
+        const testEndTime = nextCourse
+            ? nextCourse.start_date
+            : now.add(45, "minute").format("YYYY-MM-DD HH:mm");
+
+        const testCourse = {
+            id: 99999,
+            text: "TEST",
+            matiere: "TEST",
+            codeMatiere: "TEST",
+            typeCours: "COURS",
+            start_date: testStartTime,
+            end_date: testEndTime,
+            color: "#3b82f6",
+            dispensable: false,
+            dispense: 0,
+            prof: "M. TEST",
+            salle: "Salle TEST",
+            classe: "TEST",
+            classeId: 999,
+            classeCode: "TEST",
+            evenementId: 0,
+            groupe: " ",
+            groupeCode: "",
+            isFlexible: false,
+            groupeId: 0,
+            icone: "",
+            isModifie: false,
+            contenuDeSeance: false,
+            devoirAFaire: false,
+            isAnnule: false,
+            isTestCourse: true,
+        };
+
+        shiftedCourses = [...shiftedCourses, testCourse];
+    }
 
     return {
         ...mockTimetable,
