@@ -26,7 +26,7 @@ export default function ActiveCourseCard({
     const extras = inClass ? [] : [{ resizeBars: true }];
 
     return (
-        <View style={{ width: "100%", gap: 12 }}>
+        <View style={{ width: "100%", gap: 7 }}>
             {inClass && (
                 <View>
                     <View
@@ -35,7 +35,7 @@ export default function ActiveCourseCard({
                             alignItems: "center",
                             gap: 6,
                             marginTop: -6,
-                            marginBottom: 2,
+                            marginBottom: 0,
                             paddingHorizontal: 6,
                         }}
                     >
@@ -85,7 +85,7 @@ export default function ActiveCourseCard({
                             flexDirection: "row",
                             alignItems: "center",
                             marginTop: -6,
-                            marginBottom: 2,
+                            marginBottom: 0,
                             paddingHorizontal: 6,
                         }}
                     >

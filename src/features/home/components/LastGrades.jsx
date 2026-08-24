@@ -22,7 +22,7 @@ export default function LastGrades({ lastGradesObject }) {
     // }).current;
 
     return (
-        <View style={{ height: 94, marginTop: -14 }}>
+        <View style={{ height: 94, marginTop: -19 }}>
             <FlatList
                 // onViewableItemsChanged={onViewableItemsChanged}
                 // viewabilityConfig={viewabilityConfig}
@@ -30,7 +30,7 @@ export default function LastGrades({ lastGradesObject }) {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.libelle}
-                contentContainerStyle={{ gap: 10 }}
+                contentContainerStyle={{ gap: 7 }}
                 renderItem={({ item }) => (
                     <TouchableOpacity
                         onPress={() => {
