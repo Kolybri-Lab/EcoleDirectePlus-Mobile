@@ -25,7 +25,7 @@ export async function tryLoginWithStoredCreds({ cipherText }) {
                 !getDataFromStorage &&
                 payload.superSecretUserToken === "guest_token"
             ) {
-                const mockLogin = require("@/mock/guest/login.json");
+                const { mockLogin } = require("@/mock/guest/json");
                 getDataFromStorage = mockLogin?.data?.accounts?.[0];
             }
 
