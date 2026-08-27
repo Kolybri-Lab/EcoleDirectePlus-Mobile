@@ -168,7 +168,7 @@
                 "entityLibelle": "1",
                 "entityType": "C",
                 "matiere": "Sciences",
-                "codeMatiere": "Mathématiques",
+                "codeMatiere": "MATHS",
                 "nomProf": "Le prof",
                 "id": 9577,
                 "interrogation": true,
@@ -328,3 +328,4 @@
     "host": "HTTP00",
     "token": "token"
 }
+
