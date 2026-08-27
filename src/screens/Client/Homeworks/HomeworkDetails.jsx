@@ -55,7 +55,7 @@ export default function HomeworkDetails({ route }) {
 
     const homeworkContent = homework.isCustom
         ? homework.homeworksContent.content
-        : homework.decodedHTMLHomework;
+        : homework.homeworksContent.renderHtml || homework.decodedHTMLHomework;
 
     const [downloadProgress, setDownloadProgress] = useState({});
 
