@@ -61,6 +61,15 @@ export default function HomeworksContent() {
 
     const [activeDate, setActiveDate] = useState("");
     const [modalOpen, setModalOpen] = useState(false);
+    const [expandedHomeworkId, setExpandedHomeworkId] = useState(null);
+
+    const handleItemPress = useCallback((id) => {
+        setExpandedHomeworkId((prev) => (prev === id ? null : id));
+    }, []);
+
+    useEffect(() => {
+        setExpandedHomeworkId(null);
+    }, [activeDate]);
 
     useHomeworksHandler({
         setModalOpen,
@@ -171,6 +180,8 @@ export default function HomeworksContent() {
                                 key={homework.id}
                                 dispatch={dispatch}
                                 homework={homework}
+                                isExpanded={expandedHomeworkId === homework.id}
+                                onToggleExpand={() => handleItemPress(homework.id)}
                             />
                         ))}
                     </View>
