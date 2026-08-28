@@ -20,6 +20,7 @@ export { default as PenSquare } from "./PenSquare";
 export { default as Peoples } from "./Peoples";
 export { default as Person } from "./Person";
 export { default as Plus } from "./Plus";
+export { default as Power } from "./Power";
 export { default as RoadFinish } from "./RoadFinish";
 export { default as SafetyShield } from "./SafetyShield";
 export { default as Search } from "./Search";
