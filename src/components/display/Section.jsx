@@ -8,9 +8,11 @@ export default function Section({
     index = 0,
     totalLength = 0,
     radiusExt = 12,
+    backgroundColor = "hsla(0, 0%, 100%, .1)",
     radiusInt = 5,
     label,
     icon,
+    height = 54,
     children,
 }) {
     return (
@@ -18,8 +20,8 @@ export default function Section({
             onPress={onPress}
             disabled={disabled}
             style={({ pressed }) => ({
-                backgroundColor: "hsla(0, 0%, 100%, .1)",
-                height: 54,
+                backgroundColor,
+                height,
                 paddingHorizontal: 14,
                 flexDirection: "row",
                 alignItems: "center",
