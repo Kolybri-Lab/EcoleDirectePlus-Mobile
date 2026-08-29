@@ -303,22 +303,6 @@ export default function HomeScreen() {
                                 </Text>
                                 <Text size={38}>{name}</Text>
                             </View>
-                            <TouchableOpacity
-                                onPress={signOut}
-                                style={{
-                                    paddingVertical: 8,
-                                    paddingHorizontal: 14,
-                                    borderRadius: 10,
-                                    backgroundColor: "hsla(0, 70%, 50%, 0.2)",
-                                    borderWidth: 1,
-                                    borderColor: "hsla(0, 70%, 50%, 0.4)",
-                                    marginTop: 8,
-                                }}
-                            >
-                                <Text size={14} color="hsla(0, 100%, 80%, 1)">
-                                    Déconnexion
-                                </Text>
-                            </TouchableOpacity>
                         </View>
                     </SafeAreaView>
                     <View style={{ alignItems: "center", gap: 20 }}>
