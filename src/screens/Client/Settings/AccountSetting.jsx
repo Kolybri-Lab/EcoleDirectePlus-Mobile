@@ -2,23 +2,124 @@ import { Section, Text } from "@/components";
 import { Power } from "@/components/svg";
 import { useSignIn } from "@/hooks/useSignIn";
 import { useUserStore } from "@/hooks/useUserStore";
-import { TextInput, View } from "react-native";
+import { useEffect, useRef, useState } from "react";
+import { Pressable, TextInput, View } from "react-native";
 import SettingSectionLayout from "./components/SettingSectionLayout";
 
 export default function AccountScreen({ route }) {
     const { label } = route.params;
     const profile = useUserStore((state) => state.profile);
+    const setProfile = useUserStore((state) => state.setProfile);
     const { signOut } = useSignIn();
-    console.log(profile);
+    const nameInputRef = useRef(null);
+    const surnameInputRef = useRef(null);
+
+    const [profileDatas, setProfileDatas] = useState({
+        name: profile.name,
+        surname: profile.surname,
+    });
+    const [ableToValidate, setAbleToValidate] = useState(false);
+
+    useEffect(() => {
+        const hasChanged =
+            profileDatas.name !== profile.name ||
+            profileDatas.surname !== profile.surname;
+
+        const isValid =
+            profileDatas.name.trim() !== "" && profileDatas.surname.trim() !== "";
+
+        setAbleToValidate(hasChanged && isValid);
+    }, [profileDatas, profile.name, profile.surname]);
+
     return (
         <SettingSectionLayout label={label}>
-            <View style={{ gap: 2 }}>
-                <Section label={"Prénom"} disabled index={0} totalLength={2}>
-                    <Text>{profile.name}</Text>
-                </Section>
-                <Section label={"Nom"} disabled index={1} totalLength={2}>
-                    <TextInput placeholder={profile.surname}></TextInput>
-                </Section>
+            <View style={{ gap: 4 }}>
+                <Pressable
+                    style={{
+                        backgroundColor: "hsla(0, 0%, 100%, .1)",
+                        padding: 5,
+                        borderRadius: 99,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 12,
+                        paddingHorizontal: 20,
+                        flexShrink: 1,
+                    }}
+                    onPress={() => nameInputRef.current?.focus()}
+                >
+                    <Text preset="title1">Prénom</Text>
+                    <TextInput
+                        ref={nameInputRef}
+                        value={profileDatas.name}
+                        placeholder={profileDatas.name}
+                        placeholderTextColor="hsla(0, 0%, 100%, .7)"
+                        style={{ color: "hsla(0, 0%, 100%, 1)", fontSize: 18 }}
+                        onChangeText={(text) =>
+                            setProfileDatas((prev) => ({
+                                ...prev,
+                                name: text,
+                            }))
+                        }
+                    />
+                </Pressable>
+                <Pressable
+                    style={{
+                        backgroundColor: "hsla(0, 0%, 100%, .1)",
+                        padding: 5,
+                        borderRadius: 99,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 12,
+                        paddingHorizontal: 20,
+                        flexShrink: 1,
+                    }}
+                    onPress={() => surnameInputRef.current?.focus()}
+                >
+                    <Text preset="title1">Nom</Text>
+                    <TextInput
+                        ref={surnameInputRef}
+                        value={profileDatas.surname}
+                        placeholder={profileDatas.surname}
+                        placeholderTextColor="hsla(0, 0%, 100%, .7)"
+                        style={{ color: "hsla(0, 0%, 100%, 1)", fontSize: 18 }}
+                        onChangeText={(text) =>
+                            setProfileDatas((prev) => ({
+                                ...prev,
+                                surname: text,
+                            }))
+                        }
+                    />
+                </Pressable>
+                <Text preset="label3" style={{ opacity: 0.4 }}>
+                    Note: la modification du nom et prénom n'impacte pas votre compte
+                    Ecole Directe. Tout reste local.
+                </Text>
+                {ableToValidate && (
+                    <Pressable
+                        style={{
+                            backgroundColor: "green",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            paddingVertical: 12,
+                            borderRadius: 14,
+                        }}
+                        onPress={() => {
+                            setProfile({
+                                ...profile,
+                                name: profileDatas.name.trim(),
+                                surname: profileDatas.surname.trim(),
+                            });
+                            setProfileDatas({
+                                name: profileDatas.name.trim(),
+                                surname: profileDatas.surname.trim(),
+                            });
+                            setAbleToValidate(false);
+                        }}
+                    >
+                        <Text preset="label1">Valider les modifications</Text>
+                    </Pressable>
+                )}
+
                 <View style={{ marginTop: 18 }}>
                     <Section
                         label={"Se déconnecter"}
