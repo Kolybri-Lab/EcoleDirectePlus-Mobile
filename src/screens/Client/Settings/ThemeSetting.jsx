@@ -1,16 +1,17 @@
-import { GoBackHeader, ScreenStack, Section, Switch, Text } from "@/components";
+import { Section, Switch, Text } from "@/components";
 import { Lightning, Moon, Sun } from "@/components/svg";
 import { useThemeStore } from "@/hooks/useThemeStore";
 import { useState } from "react";
 import { Pressable, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import SettingSectionLayout from "./components/SettingSectionLayout";
 
 const THEMES_OPT = [
     { id: "dark", name: "Sombre" },
     { id: "light", name: "Clair" },
 ];
 
-export default function ThemeScreen() {
+export default function ThemeScreen({ route }) {
+    const { label } = route.params;
     const [tempState, setTempStateValue] = useState(true);
 
     const themeMode = useThemeStore((state) => state.themeMode);
@@ -30,12 +31,8 @@ export default function ThemeScreen() {
     };
 
     return (
-        <ScreenStack
-            horizontalSpacing={18}
-            style={{ backgroundColor: "hsl(230, 30%, 8%)" }}
-        >
-            <GoBackHeader />
-            <SafeAreaView style={{ gap: 2 }}>
+        <SettingSectionLayout label={label}>
+            <View style={{ gap: 2 }}>
                 <Section
                     label={"Thème"}
                     icon={<Sun size={18} opacity={0.6} />}
@@ -110,7 +107,7 @@ export default function ThemeScreen() {
                         onValueChange={(toSet) => setTempStateValue(toSet)}
                     />
                 </Section>
-            </SafeAreaView>
-        </ScreenStack>
+            </View>
+        </SettingSectionLayout>
     );
 }

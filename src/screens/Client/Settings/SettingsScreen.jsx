@@ -1,16 +1,21 @@
 import { ScreenStack, Section, Text } from "@/components";
 import {
+    At,
     Chevron,
     Cross,
+    GraduationCap,
     Info,
     Merge,
     Person,
+    Phone,
     SafetyShield,
     Sun,
 } from "@/components/svg";
 import { useThemeStore } from "@/hooks/useThemeStore";
+import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
 import { useNavigation } from "@react-navigation/native";
+import { useCallback } from "react";
 import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,15 +23,22 @@ const RADIUS_INT = 5;
 const RADIUS_EXT = 12;
 const ICON_SIZE = 18;
 
+const formatPhoneNumber = (input) =>
+    input.replace(/\D/g, "").replace(/(\d{2})(?=\d)/g, "$1 ");
+
 function SettingsSection({ options }) {
     const navigation = useNavigation();
     return (
-        <View style={{ gap: 2, marginTop: 8 }}>
+        <View style={{ gap: 3, marginTop: 8 }}>
             {options.map((opt, index) => (
                 <Section
                     icon={opt.icon}
                     label={opt.label}
-                    onPress={() => navigation.navigate(opt.route)}
+                    onPress={() =>
+                        navigation.navigate(opt.route, {
+                            label: opt.label,
+                        })
+                    }
                     index={index}
                     totalLength={options.length}
                     radiusExt={RADIUS_EXT}
@@ -44,6 +56,7 @@ export default function SettingsScreen({}) {
     const themeMode = useThemeStore((state) => state.themeMode);
     const setThemeMode = useThemeStore((state) => state.setThemeMode);
     const navigation = useNavigation();
+    const profile = useUserStore((state) => state.profile);
 
     const accountOptions = [
         {
@@ -59,7 +72,7 @@ export default function SettingsScreen({}) {
     ];
     const appOptions = [
         {
-            label: "Thèmes",
+            label: "Thème",
             icon: <Sun size={ICON_SIZE} opacity={0.6} />,
             route: routesNames.settings.app_settings.theme,
         },
@@ -76,6 +89,14 @@ export default function SettingsScreen({}) {
             route: routesNames.settings.about_settings.about,
         },
     ];
+
+    const getProfileImageSource = useCallback(
+        () =>
+            profile.localPhotoUri
+                ? { uri: profile.localPhotoUri }
+                : require("../../../../assets/custom/default-user-picture.png"),
+        [profile.localPhotoUri]
+    );
 
     return (
         <ScreenStack
@@ -95,6 +116,129 @@ export default function SettingsScreen({}) {
                     <Text preset="h4">Paramètres</Text>
                 </Pressable>
             </SafeAreaView>
+            <View
+                style={{
+                    backgroundColor: "hsl(231, 21%, 28%)", // hsl(231, 23%, 28%) hsl(230, 21%, 18%) hsl(210, 33%, 50%)
+                    padding: 14,
+                    borderRadius: 26,
+                    marginBottom: 6,
+                    gap: 14,
+                }}
+            >
+                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <View
+                        style={{
+                            borderRadius: 25,
+                            marginRight: 18,
+                            width: 50,
+                            height: 50,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            backgroundColor: "hsla(0, 0%, 100%, 0.3)",
+                        }}
+                    >
+                        {profile.localPhotoUri == undefined ? (
+                            <Text preset="h4">{profile.name[0]}</Text>
+                        ) : (
+                            <Image
+                                source={getProfileImageSource()}
+                                style={{
+                                    width: 50,
+                                    height: 50,
+                                }}
+                            />
+                        )}
+                    </View>
+                    <View>
+                        <Text preset="label1" weight="bold">
+                            {profile.name} {profile.surname}
+                        </Text>
+                        <Text preset="label2">{profile.schoolName}</Text>
+                    </View>
+                </View>
+
+                <View
+                    style={{
+                        backgroundColor: "hsla(0, 0%, 100%, .22)",
+                        paddingHorizontal: 16,
+                        borderRadius: 16,
+                    }}
+                >
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingVertical: 10,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "hsla(0, 0%, 100%, .25)",
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 12,
+                            }}
+                        >
+                            <At opacity={0.75} size={20} />
+                            <Text style={{ opacity: 0.75 }}>E-mail</Text>
+                        </View>
+                        <Text weight="medium">
+                            {profile.email ?? "Pas d'e-mail connu..."}
+                        </Text>
+                    </View>
+
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingVertical: 10,
+                            borderBottomWidth: 1,
+                            borderBottomColor: "hsla(0, 0%, 100%, .25)",
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 12,
+                            }}
+                        >
+                            <Phone opacity={0.75} size={20} />
+                            <Text style={{ opacity: 0.75 }}>Téléphone</Text>
+                        </View>
+                        <Text weight="medium">
+                            {formatPhoneNumber(profile.phone) ??
+                                "Pas de téléphone connu..."}
+                        </Text>
+                    </View>
+
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            paddingVertical: 10,
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: 12,
+                            }}
+                        >
+                            <GraduationCap opacity={0.75} size={22} />
+                            <Text style={{ opacity: 0.75 }}>Classe</Text>
+                        </View>
+                        <Text weight="medium">
+                            {profile.class.libelle ?? "Pas de classe connue..."}
+                        </Text>
+                    </View>
+                </View>
+            </View>
             <View style={{ flex: 1, gap: 2 }}>
                 <Text
                     preset="label2"
