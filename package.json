@@ -25,6 +25,7 @@
     "dayjs": "^1.11.21",
     "dotenv": "^16.5.0",
     "expo": "~54.0.36",
+    "expo-application": "~7.0.8",
     "expo-constants": "~18.0.9",
     "expo-crypto": "~15.0.7",
     "expo-dev-client": "~6.0.21",
