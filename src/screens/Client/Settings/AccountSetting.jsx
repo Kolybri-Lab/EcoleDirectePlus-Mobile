@@ -1,6 +1,4 @@
-import { Section, Text } from "@/components";
-import { Power } from "@/components/svg";
-import { useSignIn } from "@/hooks/useSignIn";
+import { Text } from "@/components";
 import { useUserStore } from "@/hooks/useUserStore";
 import { useEffect, useRef, useState } from "react";
 import { Pressable, TextInput, View } from "react-native";
@@ -10,7 +8,6 @@ export default function AccountScreen({ route }) {
     const { label } = route.params;
     const profile = useUserStore((state) => state.profile);
     const setProfile = useUserStore((state) => state.setProfile);
-    const { signOut } = useSignIn();
     const nameInputRef = useRef(null);
     const surnameInputRef = useRef(null);
 
@@ -119,17 +116,6 @@ export default function AccountScreen({ route }) {
                         <Text preset="label1">Valider les modifications</Text>
                     </Pressable>
                 )}
-
-                <View style={{ marginTop: 18 }}>
-                    <Section
-                        label={"Se déconnecter"}
-                        icon={<Power size={18} opacity={0.6} />}
-                        onPress={signOut}
-                        index={0}
-                        totalLength={1}
-                        backgroundColor="hsla(0, 47%, 55%, .8)"
-                    />
-                </View>
             </View>
         </SettingSectionLayout>
     );

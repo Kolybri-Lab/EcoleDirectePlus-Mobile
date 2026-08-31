@@ -8,15 +8,17 @@ import {
     Merge,
     Person,
     Phone,
+    Power,
     SafetyShield,
     Sun,
 } from "@/components/svg";
+import { useSignIn } from "@/hooks/useSignIn";
 import { useThemeStore } from "@/hooks/useThemeStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
-import { Pressable, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const RADIUS_INT = 5;
@@ -55,6 +57,8 @@ function SettingsSection({ options }) {
 export default function SettingsScreen({}) {
     const themeMode = useThemeStore((state) => state.themeMode);
     const setThemeMode = useThemeStore((state) => state.setThemeMode);
+    const { signOut } = useSignIn();
+
     const navigation = useNavigation();
     const profile = useUserStore((state) => state.profile);
 
@@ -103,184 +107,205 @@ export default function SettingsScreen({}) {
             horizontalSpacing={30}
             style={{ backgroundColor: "hsl(230, 30%, 8%)" }}
         >
-            <SafeAreaView
-                style={{
-                    marginTop: 8,
-                }}
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                bounces={false}
+                alwaysBounceVertical={false}
+                overScrollMode="never"
             >
-                <Pressable
-                    style={{ flexDirection: "row", gap: 16, alignItems: "center" }}
-                    onPress={() => navigation.goBack()}
+                <SafeAreaView
+                    style={{
+                        marginTop: 8,
+                    }}
                 >
-                    <Cross size={ICON_SIZE} />
-                    <Text preset="h4">Paramètres</Text>
-                </Pressable>
-            </SafeAreaView>
-            <View
-                style={{
-                    backgroundColor: "hsl(231, 21%, 28%)", // hsl(231, 23%, 28%) hsl(230, 21%, 18%) hsl(210, 33%, 50%)
-                    padding: 14,
-                    borderRadius: 26,
-                    marginBottom: 6,
-                    gap: 14,
-                }}
-            >
-                <View style={{ flexDirection: "row", alignItems: "center" }}>
+                    <Pressable
+                        style={{
+                            flexDirection: "row",
+                            gap: 16,
+                            alignItems: "center",
+                        }}
+                        onPress={() => navigation.goBack()}
+                    >
+                        <Cross size={ICON_SIZE} />
+                        <Text preset="h4">Paramètres</Text>
+                    </Pressable>
+                </SafeAreaView>
+                <View
+                    style={{
+                        backgroundColor: "hsl(231, 21%, 28%)", // hsl(231, 23%, 28%) hsl(230, 21%, 18%) hsl(210, 33%, 50%)
+                        padding: 14,
+                        borderRadius: 26,
+                        marginBottom: 6,
+                        gap: 14,
+                    }}
+                >
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <View
+                            style={{
+                                borderRadius: 25,
+                                marginRight: 18,
+                                width: 50,
+                                height: 50,
+                                alignItems: "center",
+                                justifyContent: "center",
+                                backgroundColor: "hsla(0, 0%, 100%, 0.3)",
+                            }}
+                        >
+                            {profile.localPhotoUri == undefined ? (
+                                <Text preset="h4">{profile.name[0]}</Text>
+                            ) : (
+                                <Image
+                                    source={getProfileImageSource()}
+                                    style={{
+                                        width: 50,
+                                        height: 50,
+                                    }}
+                                />
+                            )}
+                        </View>
+                        <View>
+                            <Text preset="label1" weight="bold">
+                                {profile.name} {profile.surname}
+                            </Text>
+                            <Text preset="label2">{profile.schoolName}</Text>
+                        </View>
+                    </View>
+
                     <View
                         style={{
-                            borderRadius: 25,
-                            marginRight: 18,
-                            width: 50,
-                            height: 50,
+                            backgroundColor: "hsla(0, 0%, 100%, .22)",
+                            paddingHorizontal: 16,
+                            borderRadius: 16,
+                        }}
+                    >
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                paddingVertical: 10,
+                                borderBottomWidth: 1,
+                                borderBottomColor: "hsla(0, 0%, 100%, .25)",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 12,
+                                }}
+                            >
+                                <At opacity={0.75} size={20} />
+                                <Text style={{ opacity: 0.75 }}>E-mail</Text>
+                            </View>
+                            <Text weight="medium">
+                                {profile.email ?? "Pas d'e-mail connu..."}
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                paddingVertical: 10,
+                                borderBottomWidth: 1,
+                                borderBottomColor: "hsla(0, 0%, 100%, .25)",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 12,
+                                }}
+                            >
+                                <Phone opacity={0.75} size={20} />
+                                <Text style={{ opacity: 0.75 }}>Téléphone</Text>
+                            </View>
+                            <Text weight="medium">
+                                {formatPhoneNumber(profile.phone) ??
+                                    "Pas de téléphone connu..."}
+                            </Text>
+                        </View>
+
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                paddingVertical: 10,
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 12,
+                                }}
+                            >
+                                <GraduationCap opacity={0.75} size={22} />
+                                <Text style={{ opacity: 0.75 }}>Classe</Text>
+                            </View>
+                            <Text weight="medium">
+                                {profile.class.libelle ?? "Pas de classe connue..."}
+                            </Text>
+                        </View>
+                    </View>
+                </View>
+                <View style={{ flex: 1, gap: 2 }}>
+                    <Text
+                        preset="label2"
+                        style={{ marginTop: 26 }}
+                        color="hsla(0, 0%, 100%, .6)"
+                    >
+                        Paramètres de compte
+                    </Text>
+                    <SettingsSection options={accountOptions} />
+                    <Text
+                        preset="label2"
+                        style={{ marginTop: 26 }}
+                        color="hsla(0, 0%, 100%, .6)"
+                    >
+                        Paramètres de l'app
+                    </Text>
+                    <SettingsSection options={appOptions} />
+                    <Text
+                        preset="label2"
+                        style={{ marginTop: 26 }}
+                        color="hsla(0, 0%, 100%, .6)"
+                    >
+                        À propos
+                    </Text>
+                    <SettingsSection options={aboutOptions} />
+                    <View style={{ marginTop: 28, marginBottom: 18 }}>
+                        <Section
+                            label={"Se déconnecter"}
+                            icon={<Power size={18} opacity={0.6} />}
+                            onPress={signOut}
+                            index={0}
+                            totalLength={1}
+                            backgroundColor="hsla(0, 47%, 55%, .8)"
+                        />
+                    </View>
+                </View>
+                <SafeAreaView edges={["bottom"]} style={{ marginBottom: 20 }}>
+                    <View
+                        style={{
+                            backgroundColor: "hsla(0, 0%, 35%, .3)",
+                            paddingVertical: 12,
+                            paddingHorizontal: 14,
                             alignItems: "center",
                             justifyContent: "center",
-                            backgroundColor: "hsla(0, 0%, 100%, 0.3)",
+                            borderRadius: 20,
                         }}
                     >
-                        {profile.localPhotoUri == undefined ? (
-                            <Text preset="h4">{profile.name[0]}</Text>
-                        ) : (
-                            <Image
-                                source={getProfileImageSource()}
-                                style={{
-                                    width: 50,
-                                    height: 50,
-                                }}
-                            />
-                        )}
-                    </View>
-                    <View>
-                        <Text preset="label1" weight="bold">
-                            {profile.name} {profile.surname}
-                        </Text>
-                        <Text preset="label2">{profile.schoolName}</Text>
-                    </View>
-                </View>
-
-                <View
-                    style={{
-                        backgroundColor: "hsla(0, 0%, 100%, .22)",
-                        paddingHorizontal: 16,
-                        borderRadius: 16,
-                    }}
-                >
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            paddingVertical: 10,
-                            borderBottomWidth: 1,
-                            borderBottomColor: "hsla(0, 0%, 100%, .25)",
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 12,
-                            }}
-                        >
-                            <At opacity={0.75} size={20} />
-                            <Text style={{ opacity: 0.75 }}>E-mail</Text>
-                        </View>
-                        <Text weight="medium">
-                            {profile.email ?? "Pas d'e-mail connu..."}
+                        <Text preset="label3" color="hsla(0, 0%, 100%, .6)">
+                            Le meilleur reste à venir...
                         </Text>
                     </View>
-
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            paddingVertical: 10,
-                            borderBottomWidth: 1,
-                            borderBottomColor: "hsla(0, 0%, 100%, .25)",
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 12,
-                            }}
-                        >
-                            <Phone opacity={0.75} size={20} />
-                            <Text style={{ opacity: 0.75 }}>Téléphone</Text>
-                        </View>
-                        <Text weight="medium">
-                            {formatPhoneNumber(profile.phone) ??
-                                "Pas de téléphone connu..."}
-                        </Text>
-                    </View>
-
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            justifyContent: "space-between",
-                            paddingVertical: 10,
-                        }}
-                    >
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 12,
-                            }}
-                        >
-                            <GraduationCap opacity={0.75} size={22} />
-                            <Text style={{ opacity: 0.75 }}>Classe</Text>
-                        </View>
-                        <Text weight="medium">
-                            {profile.class.libelle ?? "Pas de classe connue..."}
-                        </Text>
-                    </View>
-                </View>
-            </View>
-            <View style={{ flex: 1, gap: 2 }}>
-                <Text
-                    preset="label2"
-                    style={{ marginTop: 26 }}
-                    color="hsla(0, 0%, 100%, .6)"
-                >
-                    Paramètres de compte
-                </Text>
-                <SettingsSection options={accountOptions} />
-                <Text
-                    preset="label2"
-                    style={{ marginTop: 26 }}
-                    color="hsla(0, 0%, 100%, .6)"
-                >
-                    Paramètres de l'app
-                </Text>
-                <SettingsSection options={appOptions} />
-                <Text
-                    preset="label2"
-                    style={{ marginTop: 26 }}
-                    color="hsla(0, 0%, 100%, .6)"
-                >
-                    À propos
-                </Text>
-                <SettingsSection options={aboutOptions} />
-            </View>
-            <SafeAreaView edges={["bottom"]} style={{ marginBottom: 20 }}>
-                <View
-                    style={{
-                        backgroundColor: "hsla(0, 0%, 35%, .3)",
-                        paddingVertical: 12,
-                        paddingHorizontal: 14,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: 20,
-                    }}
-                >
-                    <Text preset="label3" color="hsla(0, 0%, 100%, .6)">
-                        Le meilleur reste à venir...
-                    </Text>
-                </View>
-            </SafeAreaView>
+                </SafeAreaView>
+            </ScrollView>
         </ScreenStack>
     );
 }

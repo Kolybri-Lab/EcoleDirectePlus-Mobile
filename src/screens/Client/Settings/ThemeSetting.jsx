@@ -32,20 +32,23 @@ export default function ThemeScreen({ route }) {
 
     return (
         <SettingSectionLayout label={label}>
-            <View style={{ gap: 2 }}>
-                <View
+            <View style={{ position: "relative", opacity: 0.4 }}>
+                <Pressable
                     style={{
-                        backgroundColor: "hsla(0, 0%, 0%, .8)",
-                        borderTopLeftRadius: 12,
-                        borderTopRightRadius: 12,
-                        borderBottomRightRadius: 5,
-                        borderBottomLeftRadius: 5,
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 10,
                     }}
-                >
+                    onPress={() => {}}
+                />
+
+                <View style={{ gap: 2 }}>
                     <Section
                         label={"Thème"}
                         icon={<Sun size={18} opacity={0.6} />}
-                        disabled
                         index={0}
                         totalLength={2}
                     >
@@ -59,11 +62,9 @@ export default function ThemeScreen({ route }) {
                                 paddingVertical: 2,
                                 paddingHorizontal: 4,
                                 borderRadius: 50,
-                                opacity: 0.4,
                             }}
                         >
                             <Pressable
-                                disabled
                                 onPress={() => handleChange("dark")}
                                 style={{
                                     padding: 6,
@@ -78,7 +79,6 @@ export default function ThemeScreen({ route }) {
                             </Pressable>
 
                             <Pressable
-                                disabled
                                 style={{
                                     padding: 6,
                                     borderRadius: 50,
@@ -93,7 +93,6 @@ export default function ThemeScreen({ route }) {
                             </Pressable>
 
                             <Pressable
-                                disabled
                                 onPress={() => handleChange("light")}
                                 style={{
                                     padding: 6,
@@ -108,20 +107,28 @@ export default function ThemeScreen({ route }) {
                             </Pressable>
                         </View>
                     </Section>
+                    <Section
+                        label={"Jouer les animations"}
+                        icon={<Lightning size={18} opacity={0.6} />}
+                        index={1}
+                        totalLength={2}
+                    >
+                        <Switch
+                            value={tempState}
+                            onValueChange={(toSet) => setTempStateValue(toSet)}
+                        />
+                    </Section>
                 </View>
-                <Section
-                    label={"Jouer les animations"}
-                    icon={<Lightning size={18} opacity={0.6} />}
-                    disabled
-                    index={1}
-                    totalLength={2}
-                >
-                    <Switch
-                        value={tempState}
-                        onValueChange={(toSet) => setTempStateValue(toSet)}
-                    />
-                </Section>
             </View>
+
+            <Text
+                style={{ marginTop: 20 }}
+                color="hsla(0, 0%, 100%, .85)"
+                preset="label1"
+                align="center"
+            >
+                Ça arrive bientôt !
+            </Text>
         </SettingSectionLayout>
     );
 }
