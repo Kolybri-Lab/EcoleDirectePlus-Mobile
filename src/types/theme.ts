@@ -1,6 +1,9 @@
 export interface AppColors {
     background: {
-        gradient: string | string[];
+        gradient:
+            | string
+            | (string | number)[]
+            | { colors: string[]; locations?: number[] };
         login: string;
     };
     txt: Record<string, string>;

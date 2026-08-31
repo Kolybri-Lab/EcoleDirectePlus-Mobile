@@ -17,7 +17,7 @@ export default class Discipline {
     disciplines?: FormattedDiscipline[];
     disciplineCodes?: string[];
     simulatedGrades: FormattedGrade[];
-    color?: string;
+    color: string;
 
     constructor(data: any) {
         this.code = data.code || "";
@@ -88,7 +88,9 @@ export default class Discipline {
         let totalWeightedScore = 0;
         let totalCoef = 0;
 
-        this.grades.forEach((evaluation) => {
+        const allGrades = [...this.grades, ...(this.simulatedGrades || [])];
+
+        allGrades.forEach((evaluation) => {
             const { notSignificant, data } = evaluation;
             if (!data) return;
             const { grade, outOf, coef } = data;
@@ -96,21 +98,31 @@ export default class Discipline {
             if (
                 notSignificant ||
                 grade === null ||
-                isNaN(grade) ||
+                grade === undefined ||
+                isNaN(Number(grade)) ||
                 outOf === 0 ||
                 outOf === null ||
-                isNaN(outOf) ||
-                coef === 0 ||
+                outOf === undefined ||
+                isNaN(Number(outOf)) ||
                 coef === null ||
-                isNaN(coef)
+                coef === undefined ||
+                isNaN(Number(coef))
             ) {
                 return;
             }
 
-            const normalizedGrade = (grade / outOf) * 20;
+            const numCoef = Number(coef);
+            if (numCoef <= 0) {
+                return;
+            }
 
-            totalWeightedScore += normalizedGrade * coef;
-            totalCoef += coef;
+            const numGrade = Number(grade);
+            const numOutOf = Number(outOf);
+
+            const normalizedGrade = (numGrade / numOutOf) * 20;
+
+            totalWeightedScore += normalizedGrade * numCoef;
+            totalCoef += numCoef;
         });
 
         if (totalCoef === 0) return null;
@@ -121,29 +133,73 @@ export default class Discipline {
     getDisciplineGroupAverage(): number | null {
         if (!this.disciplines || this.disciplines.length === 0) return null;
 
-        let total = 0;
+        let totalWeighted = 0;
         let totalCoef = 0;
+        let sumSimpleAverage = 0;
+        let countValidDisciplines = 0;
 
         this.disciplines.forEach((item) => {
-            const userAverage = item.averageDatas.userAverage;
-            if (userAverage !== null) {
-                total += userAverage * item.coef;
-                totalCoef += item.coef;
+            const disciplineObj = new Discipline(item);
+            const calculatedAvg = disciplineObj.getWeightedAverage();
+            const userAverage =
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : item.averageDatas?.userAverage;
+
+            if (
+                userAverage !== null &&
+                userAverage !== undefined &&
+                !isNaN(userAverage)
+            ) {
+                const rawCoef = item.coef;
+                const coef =
+                    typeof rawCoef === "number" && !isNaN(rawCoef) ? rawCoef : 1;
+
+                if (coef > 0) {
+                    totalWeighted += userAverage * coef;
+                    totalCoef += coef;
+                }
+
+                sumSimpleAverage += userAverage;
+                countValidDisciplines += 1;
             }
         });
 
-        if (totalCoef === 0) return null;
+        if (totalCoef > 0) {
+            return parseNumber(totalWeighted / totalCoef);
+        }
 
-        return parseNumber(total / totalCoef);
+        if (countValidDisciplines > 0) {
+            return parseNumber(sumSimpleAverage / countValidDisciplines);
+        }
+
+        return null;
     }
 
     injectGrade(gradeToInject: FormattedGrade) {
         this.grades = [...this.grades, gradeToInject];
+        const calculatedAvg = this.getWeightedAverage();
+        this.averageDatas = {
+            ...this.averageDatas,
+            userAverage:
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : this.averageDatas?.userAverage,
+        };
     }
 
     removeGrade(gradeToRemove: FormattedGrade) {
         this.grades = this.grades.filter(
             (g) => !objectsEqual(new Grade(g).getGrade(), gradeToRemove)
         );
+        const calculatedAvg = this.getWeightedAverage();
+        this.averageDatas = {
+            ...this.averageDatas,
+            userAverage:
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : this.averageDatas?.userAverage,
+        };
     }
 }
+

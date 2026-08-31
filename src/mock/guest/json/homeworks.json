@@ -3,8 +3,8 @@
     "data": {
         "2026-07-25": [
             {
-                "matiere": "Mathématiques",
-                "codeMatiere": "Philosophie",
+                "matiere": "MATHEMATIQUES",
+                "codeMatiere": "MATHS",
                 "aFaire": true,
                 "idDevoir": 2266,
                 "documentsAFaire": true,
@@ -16,8 +16,8 @@
         ],
         "2026-07-26": [
             {
-                "matiere": "Biologie",
-                "codeMatiere": "Économie",
+                "matiere": "BIOLOGIE",
+                "codeMatiere": "BIO",
                 "aFaire": true,
                 "idDevoir": 2941,
                 "documentsAFaire": true,
@@ -27,8 +27,8 @@
                 "rendreEnLigne": false
             },
             {
-                "matiere": "Philosophie",
-                "codeMatiere": "Musique",
+                "matiere": "PHILOSOPHIE",
+                "codeMatiere": "PHIL",
                 "aFaire": false,
                 "idDevoir": 9555,
                 "documentsAFaire": true,
@@ -38,8 +38,8 @@
                 "rendreEnLigne": true
             },
             {
-                "matiere": "Anglais",
-                "codeMatiere": "Histoire",
+                "matiere": "ANGLAIS",
+                "codeMatiere": "AGL2",
                 "aFaire": false,
                 "idDevoir": 1662,
                 "documentsAFaire": false,
@@ -134,3 +134,4 @@
     "host": "HTTP00",
     "token": "token"
 }
+

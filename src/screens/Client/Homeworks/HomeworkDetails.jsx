@@ -55,7 +55,7 @@ export default function HomeworkDetails({ route }) {
 
     const homeworkContent = homework.isCustom
         ? homework.homeworksContent.content
-        : homework.decodedHTMLHomework;
+        : homework.homeworksContent.renderHtml || homework.decodedHTMLHomework;
 
     const [downloadProgress, setDownloadProgress] = useState({});
 
@@ -186,7 +186,9 @@ export default function HomeworkDetails({ route }) {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: colors.background.gradient,
+                    backgroundColor: Array.isArray(colors.background.gradient)
+                        ? colors.background.gradient[0]
+                        : colors.background.gradient,
                     marginHorizontal: 20,
                     marginBottom: 110,
                 }}

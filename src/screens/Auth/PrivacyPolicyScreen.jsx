@@ -56,11 +56,10 @@ export default function PrivacyPolicyScreen() {
     const { colors } = useTheme();
 
     return (
-        <ScreenStack
-            style={{ backgroundColor: colors.background.login }}
-            horizontalSpacing={14}
-        >
-            <GoBackHeader />
+        <View style={{ flex: 1, backgroundColor: colors.background.login }}>
+            <View style={{ marginHorizontal: 20 }}>
+                <GoBackHeader />
+            </View>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View>
                     <Title>Politique de confidentialité</Title>

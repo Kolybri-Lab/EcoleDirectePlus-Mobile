@@ -8,6 +8,7 @@ export interface HomeworkDiscipline {
 
 export interface HomeworkContent {
     content: string | null;
+    renderHtml?: string;
     joinedDocuments: any[];
 }
 
@@ -16,6 +17,7 @@ export interface Homework {
     date: string;
     discipline: HomeworkDiscipline;
     homeworksContent: HomeworkContent;
+    plainText: string;
     isDone: "done" | "todo";
     loadingState?: "idle" | "loading" | "error";
     isEvaluation: boolean;

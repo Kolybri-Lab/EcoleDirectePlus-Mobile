@@ -1,11 +1,6 @@
-import { useTheme } from "@react-navigation/native";
-import { View } from "react-native";
+import GradientBackground from "./GradientBackground";
 
 export default function StyleMask({ children }) {
-    const { colors } = useTheme();
-    return (
-        <View style={{ backgroundColor: colors.background.gradient, flex: 1 }}>
-            {children}
-        </View>
-    );
+    return <GradientBackground>{children}</GradientBackground>;
 }
+

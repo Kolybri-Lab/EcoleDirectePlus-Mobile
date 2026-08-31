@@ -25,6 +25,7 @@ interface CustomDataState {
     addCustomHomework: (homework: Homework) => void;
     toggleCustomHomeworkDone: (id: number) => void;
     removeCustomHomework: (id: number) => void;
+    clearCustomHomeworks: () => void;
 
     addSimulatedGrade: (grade: SimulatedGrade) => void;
     removeSimulatedGrade: (id: string) => void;
@@ -65,6 +66,11 @@ export const useCustomDataStore = create<CustomDataState>()(
                         (hw) => hw.id !== id
                     ),
                 })),
+
+            clearCustomHomeworks: () =>
+                set({
+                    customHomeworks: [],
+                }),
 
             addSimulatedGrade: (grade) =>
                 set((state) => ({
