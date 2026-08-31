@@ -48,6 +48,7 @@ export default function AboutScreen({ route }) {
                         padding: 18,
                         borderRadius: 28,
                         gap: 20,
+                        marginBottom: 20,
                     }}
                 >
                     <Text preset="body1" align="center">
@@ -150,3 +151,4 @@ export default function AboutScreen({ route }) {
         </SettingSectionLayout>
     );
 }
+

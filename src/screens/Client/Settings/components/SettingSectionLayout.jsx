@@ -1,4 +1,5 @@
 import { GoBackHeader, ScreenStack, Text } from "@/components";
+import { ScrollView } from "react-native";
 
 export default function SettingSectionLayout({ label = undefined, children }) {
     return (
@@ -10,7 +11,13 @@ export default function SettingSectionLayout({ label = undefined, children }) {
             <Text preset="h1" style={{ marginTop: 8, marginBottom: 38 }}>
                 {label}
             </Text>
-            {children}
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ flexGrow: 1 }}
+            >
+                {children}
+            </ScrollView>
         </ScreenStack>
     );
 }
+
