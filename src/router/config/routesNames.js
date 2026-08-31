@@ -40,6 +40,8 @@ export const routesNames = {
         about_settings: {
             release_notes: "releaes_notes_setting",
             about: "about_setting",
+            contributors: "contributors",
+            plus: "plus",
         },
     },
     navigators: {
