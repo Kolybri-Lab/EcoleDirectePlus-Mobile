@@ -34,9 +34,11 @@ export default class Period {
 
         disciplines.forEach((discipline) => {
             const disciplineObj = new Discipline(discipline);
+            const calculatedAvg = disciplineObj.getWeightedAverage();
             const average =
-                discipline.averageDatas?.userAverage ??
-                disciplineObj.getWeightedAverage();
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : discipline.averageDatas?.userAverage;
 
             if (average !== null && average !== undefined && !isNaN(average)) {
                 const rawCoef = discipline.coef;
@@ -86,7 +88,10 @@ export default class Period {
         }
 
         const discipline = new Discipline(disciplineSearched);
-        return discipline.getWeightedAverage();
+        const calculatedAvg = discipline.getWeightedAverage();
+        return calculatedAvg !== null && calculatedAvg !== undefined
+            ? calculatedAvg
+            : disciplineSearched.averageDatas?.userAverage;
     }
 
     createReferentialStreakScore(): Record<string, Record<string, number>> {
@@ -146,6 +151,16 @@ export default class Period {
         }
 
         discipline.grades.push(grade.getGrade());
+        const disciplineObj = new Discipline(discipline);
+        const calculatedAvg = disciplineObj.getWeightedAverage();
+        discipline.averageDatas = {
+            ...discipline.averageDatas,
+            userAverage:
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : discipline.averageDatas?.userAverage,
+        };
+        return true;
     }
 
     removeGrade(rawGrade: FormattedGrade) {
@@ -169,6 +184,16 @@ export default class Period {
         discipline.grades = discipline.grades.filter(
             (g) => !objectsEqual(new Grade(g).getGrade(), gradeObj)
         );
+
+        const disciplineObj = new Discipline(discipline);
+        const calculatedAvg = disciplineObj.getWeightedAverage();
+        discipline.averageDatas = {
+            ...discipline.averageDatas,
+            userAverage:
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : discipline.averageDatas?.userAverage,
+        };
 
         if (discipline.grades.length === initialLength) {
             console.warn(

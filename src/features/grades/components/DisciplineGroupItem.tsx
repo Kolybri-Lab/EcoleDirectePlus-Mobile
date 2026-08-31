@@ -23,8 +23,11 @@ export default function DisciplineGroupItem({
 }: DisciplineGroupItemProps) {
     const groupObj = new Discipline(group);
     const disciplines = group.disciplines || [];
+    const calculatedGroupAvg = groupObj.getDisciplineGroupAverage();
     const userAverage =
-        groupObj.getDisciplineGroupAverage() ?? groupObj.averageDatas?.userAverage;
+        calculatedGroupAvg !== null && calculatedGroupAvg !== undefined
+            ? calculatedGroupAvg
+            : groupObj.averageDatas?.userAverage;
     const title = groupObj.libelle || group.name || "Matières";
 
     return (

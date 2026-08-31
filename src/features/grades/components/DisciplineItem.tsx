@@ -134,6 +134,12 @@ export default function DisciplineItem({
             : discipline.teachers[0] || ""
         : discipline.teachers || "";
 
+    const calculatedUserAvg = discipline.getWeightedAverage();
+    const userAverage =
+        calculatedUserAvg !== null && calculatedUserAvg !== undefined
+            ? calculatedUserAvg
+            : discipline.averageDatas?.userAverage;
+
     return (
         <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
             <Animated.View
@@ -235,7 +241,7 @@ export default function DisciplineItem({
                                 fontFamily: "Lexend-Bold",
                             }}
                         >
-                            {formatGradeText(discipline.averageDatas?.userAverage)}
+                            {formatGradeText(userAverage)}
                         </Text>
                     </View>
                 </View>

@@ -102,7 +102,10 @@ export default function GradeDetails({ route }) {
                         }}
                     >
                         <Text preset="h3">
-                            {formatGradeText(discipline.averageDatas.userAverage)}
+                            {formatGradeText(
+                                discipline.getWeightedAverage() ??
+                                    discipline.averageDatas?.userAverage
+                            )}
                         </Text>
                     </View>
                 </View>

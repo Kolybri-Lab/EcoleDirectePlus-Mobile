@@ -44,6 +44,7 @@ export default function GradesContent() {
         setRenderDisciplineArray,
         renderDisciplinesArray,
         displayPeriode,
+        setDisplayPeriode,
         setGeneralAverage,
     });
 
@@ -110,9 +111,7 @@ export default function GradesContent() {
 
     return (
         <View style={{ flex: 1 }}>
-            <ScrollView
-                showsVerticalScrollIndicator={false}
-            >
+            <ScrollView showsVerticalScrollIndicator={false}>
                 {periodes.length > 0 && (
                     <View
                         style={{
@@ -177,18 +176,6 @@ export default function GradesContent() {
             <AddGradeModal
                 visible={state.simulation.modalOpen}
                 disciplineCodes={simulatedDisciplineCodes}
-            />
-            <LottieView
-                source={canardman}
-                autoPlay
-                loop
-                style={styles.canardman}
-                colorFilters={[
-                    {
-                        keyPath: "eVpvGSAbUci5_to.**",
-                        color: colors?.canardman ?? "#FFD700",
-                    },
-                ]}
             />
         </View>
     );
