@@ -22,20 +22,22 @@ export default function storeDatas({ data, token }) {
                   code: data.profile?.classe?.code || "",
               },
           };
-
-    useUserStore.getState().setProfile(formattedProfile);
+    if (!useUserStore.getState().profile)
+        useUserStore.getState().setProfile(formattedProfile);
     useUserStore.getState().setToken(token);
 
     if (formattedProfile.photoUrl && !formattedProfile.localPhotoUri) {
-        cacheProfilePhoto(formattedProfile.id, formattedProfile.photoUrl, token)
-            .then((localPath) => {
-                if (localPath) {
-                    useUserStore.getState().setProfile({
-                        ...formattedProfile,
-                        localPhotoUri: localPath
-                    });
-                }
-            });
+        cacheProfilePhoto(
+            formattedProfile.id,
+            formattedProfile.photoUrl,
+            token
+        ).then((localPath) => {
+            if (localPath) {
+                useUserStore.getState().setProfile({
+                    ...formattedProfile,
+                    localPhotoUri: localPath,
+                });
+            }
+        });
     }
 }
-

@@ -25,10 +25,12 @@ export { default as Modal } from "./modal/Modal";
 
 // form
 export { default as CheckBox } from "./form/CheckBox";
+export { default as Switch } from "./form/Switch";
 
 // display
 export { default as LinkButton } from "./display/LinkButton";
 export { default as LinkText } from "./display/LinkText";
+export { default as Section } from "./display/Section";
 export { default as Separation } from "./display/Separation";
 export { default as StyleMask } from "./display/StyleMask";
 export { default as Subtitle } from "./display/Subtitle";

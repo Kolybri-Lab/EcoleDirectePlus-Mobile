@@ -15,7 +15,6 @@ import { routesNames } from "../../../config/routesNames";
 
 const {
     client: { grades, home, homeworks, messaging, timetable },
-    navigators: { settings },
 } = routesNames;
 
 const tabClientScreens = [
