@@ -77,7 +77,7 @@ export default function HomeworkCard({
                 borderRadius: 20,
                 overflow: "hidden",
                 paddingTop: 17,
-                paddingHorizontal: 17,
+                paddingHorizontal: 20,
                 borderColor: homework.discipline.color,
                 borderWidth: isExpanded ? 1 : 0,
             }}
