@@ -35,7 +35,7 @@ export default function HomeworksPreview({ homeworksDatas, customHomeworks }) {
     }, [mergedHomeworks]);
 
     return (
-        <View style={{ width: "100%", flex: 1, gap: 16, marginTop: -14 }}>
+        <View style={{ width: "100%", flex: 1, gap: 16, marginTop: -24 }}>
             {groupedHomeworks.map(({ date, homeworks, meta }) => (
                 <View key={date}>
                     <DateHeader

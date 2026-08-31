@@ -26,8 +26,6 @@ import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useMemo, useState } from "react";
 import { Image, Pressable, TouchableOpacity, View } from "react-native";
-import { useMemo, useState } from "react";
-import { TouchableOpacity, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -266,7 +264,7 @@ export default function HomeScreen() {
                             </View>
                         </View>
                     </SafeAreaView>
-                    <View style={{ alignItems: "center", gap: 20 }}>
+                    <View style={{ alignItems: "center", gap: 26 }}>
                         <ActiveCourseCard
                             progression={progression}
                             activeCourse={activeCourse}

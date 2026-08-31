@@ -56,7 +56,7 @@ export default function PrivacyPolicyScreen() {
     const { colors } = useTheme();
 
     return (
-        <View style={{ flex: 1, backgroundColor: colors.background.login }}>
+        <ScreenStack style={{ flex: 1, backgroundColor: colors.background.login }}>
             <View style={{ marginHorizontal: 20 }}>
                 <GoBackHeader />
             </View>
@@ -430,3 +430,4 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
 });
+
