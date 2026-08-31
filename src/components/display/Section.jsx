@@ -11,6 +11,7 @@ export default function Section({
     backgroundColor = "hsla(0, 0%, 100%, .1)",
     radiusInt = 5,
     label,
+    subtitle,
     icon,
     height = 54,
     children,
@@ -38,7 +39,14 @@ export default function Section({
                 }}
             >
                 {icon}
-                <Text preset="title2">{label}</Text>
+                <View>
+                    <Text preset="title2">{label}</Text>
+                    {subtitle ? (
+                        <Text preset="label2" color="hsla(0, 0%, 100%, .5)">
+                            {subtitle}
+                        </Text>
+                    ) : null}
+                </View>
             </View>
             {children}
         </Pressable>
