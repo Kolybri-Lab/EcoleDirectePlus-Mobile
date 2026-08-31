@@ -43,7 +43,7 @@ export const HomeworkDateItem = memo(
                             backgroundColor: colors.secondary,
                             borderRadius: 16,
                             borderWidth: allTasksCompleted ? 1.5 : 0,
-                            borderColor: "#129e43ff",
+                            borderColor: "#129e43",
                         },
                         animatedStyle,
                     ]}

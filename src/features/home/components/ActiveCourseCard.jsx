@@ -26,7 +26,7 @@ export default function ActiveCourseCard({
     const extras = inClass ? [] : [{ resizeBars: true }];
 
     return (
-        <View style={{ width: "100%", gap: 7 }}>
+        <View style={{ width: "100%", gap: 0 }}>
             {inClass && (
                 <View>
                     <View
@@ -80,22 +80,24 @@ export default function ActiveCourseCard({
             )}
             {nextCourseKnown && (
                 <View>
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            marginTop: -6,
-                            marginBottom: 0,
-                            paddingHorizontal: 6,
-                        }}
-                    >
-                        <Text
-                            color={addOpacityToCssRgb(colors.main, 0.9)}
-                            style={{ fontFamily: "SemiBold", fontSize: 16 }}
+                    {!inClass && (
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                marginTop: -6,
+                                marginBottom: 0,
+                                paddingHorizontal: 6,
+                            }}
                         >
-                            PROCHAIN COURS
-                        </Text>
-                    </View>
+                            <Text
+                                color={addOpacityToCssRgb(colors.main, 0.9)}
+                                style={{ fontFamily: "SemiBold", fontSize: 16 }}
+                            >
+                                PROCHAIN COURS
+                            </Text>
+                        </View>
+                    )}
                     <TouchableOpacity
                         onPress={() => {
                             haptic();
@@ -103,12 +105,13 @@ export default function ActiveCourseCard({
                                 screen: routesNames.client.timetable.content,
                             });
                         }}
-                        style={{ width: "100%" }}
+                        style={{ width: "100%", marginTop: inClass ? -10 : 0 }}
                     >
                         <NextCourse
                             data={{
                                 courseData: nextCourse,
                                 extras,
+                                inClass,
                             }}
                         />
                     </TouchableOpacity>
@@ -125,7 +128,7 @@ const Course = ({ data }) => {
     return (
         <View
             style={{
-                gap: 7,
+                gap: 3,
                 width: "100%",
                 height: 65,
                 flexDirection: "row",
@@ -139,9 +142,9 @@ const Course = ({ data }) => {
                     width: 65,
                     backgroundColor: colors.secondary,
                     borderTopLeftRadius: 16,
-                    borderTopRightRadius: 8,
-                    borderBottomLeftRadius: 16,
-                    borderBottomRightRadius: 8,
+                    borderTopRightRadius: 4,
+                    borderBottomLeftRadius: 0,
+                    borderBottomRightRadius: 0,
                     paddingLeft: 14,
                     paddingRight: 12,
                 }}
@@ -171,10 +174,10 @@ const Course = ({ data }) => {
                     flex: 1,
                     paddingHorizontal: 18,
                     paddingVertical: 10,
-                    borderTopLeftRadius: 8,
+                    borderTopLeftRadius: 4,
                     borderTopRightRadius: 16,
-                    borderBottomLeftRadius: 8,
-                    borderBottomRightRadius: 16,
+                    borderBottomLeftRadius: 0,
+                    borderBottomRightRadius: 0,
                 }}
             >
                 <View
@@ -230,13 +233,13 @@ const Course = ({ data }) => {
     );
 };
 const NextCourse = ({ data }) => {
-    const { courseData, extras } = data;
+    const { courseData, extras, inClass } = data;
     const { colors } = useTheme();
     const resizeBars = !Boolean(extras.find((e) => e?.resizeBars)?.resizeBars);
     return (
         <View
             style={{
-                gap: 7,
+                gap: 3,
                 width: "100%",
                 height: 65,
                 flexDirection: "row",
@@ -249,10 +252,10 @@ const NextCourse = ({ data }) => {
                     alignItems: "center",
                     width: 65,
                     backgroundColor: colors.secondary,
-                    borderTopLeftRadius: 16,
-                    borderTopRightRadius: 8,
+                    borderTopLeftRadius: inClass ? 0 : 16,
+                    borderTopRightRadius: inClass ? 0 : 4,
                     borderBottomLeftRadius: 16,
-                    borderBottomRightRadius: 8,
+                    borderBottomRightRadius: 4,
                     paddingLeft: 14,
                     paddingRight: 12,
                 }}
@@ -280,9 +283,9 @@ const NextCourse = ({ data }) => {
                     paddingRight: 14,
                     flex: 1,
                     backgroundColor: colors.secondary,
-                    borderTopLeftRadius: 8,
-                    borderTopRightRadius: 16,
-                    borderBottomLeftRadius: 8,
+                    borderTopLeftRadius: inClass ? 0 : 4,
+                    borderTopRightRadius: inClass ? 0 : 16,
+                    borderBottomLeftRadius: 4,
                     borderBottomRightRadius: 16,
                     justifyContent: "space-between",
                     flexDirection: "row",

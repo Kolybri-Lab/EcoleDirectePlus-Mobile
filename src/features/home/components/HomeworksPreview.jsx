@@ -107,7 +107,7 @@ const Homework = ({ homework, index, countForDate }) => {
     );
     let borderRadiusStyle = {};
     const BORDER_RADIUS_EXT = 16;
-    const BORDER_RADIUS_INT = 8;
+    const BORDER_RADIUS_INT = 4;
     if (index === 0 && countForDate > 1) {
         borderRadiusStyle = {
             borderTopLeftRadius: BORDER_RADIUS_EXT,
@@ -146,7 +146,7 @@ const Homework = ({ homework, index, countForDate }) => {
                     backgroundColor: homework.isCustom
                         ? "hsl(235, 28%, 30%)"
                         : colors.secondary,
-                    marginVertical: 3.5,
+                    marginVertical: 1.5,
                     alignItems: "center",
                     flexDirection: "row",
                     paddingVertical: 10,
