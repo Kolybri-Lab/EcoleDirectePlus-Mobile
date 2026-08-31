@@ -140,8 +140,11 @@ export default class Discipline {
 
         this.disciplines.forEach((item) => {
             const disciplineObj = new Discipline(item);
+            const calculatedAvg = disciplineObj.getWeightedAverage();
             const userAverage =
-                item.averageDatas?.userAverage ?? disciplineObj.getWeightedAverage();
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : item.averageDatas?.userAverage;
 
             if (
                 userAverage !== null &&
@@ -175,12 +178,28 @@ export default class Discipline {
 
     injectGrade(gradeToInject: FormattedGrade) {
         this.grades = [...this.grades, gradeToInject];
+        const calculatedAvg = this.getWeightedAverage();
+        this.averageDatas = {
+            ...this.averageDatas,
+            userAverage:
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : this.averageDatas?.userAverage,
+        };
     }
 
     removeGrade(gradeToRemove: FormattedGrade) {
         this.grades = this.grades.filter(
             (g) => !objectsEqual(new Grade(g).getGrade(), gradeToRemove)
         );
+        const calculatedAvg = this.getWeightedAverage();
+        this.averageDatas = {
+            ...this.averageDatas,
+            userAverage:
+                calculatedAvg !== null && calculatedAvg !== undefined
+                    ? calculatedAvg
+                    : this.averageDatas?.userAverage,
+        };
     }
 }
 
