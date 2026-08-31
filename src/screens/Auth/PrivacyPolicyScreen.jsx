@@ -5,13 +5,14 @@ import { CopyLeft } from "@/components/svg";
 import { Text } from "@/components/core";
 
 import {
-    CustomTopHeader,
+    GoBackHeader,
     LinkText,
     Separation,
     Subtitle,
     Title,
-} from "../../components";
+} from "@/components";
 import { CONFIG } from "@/constants/config";
+
 const COLABORATORS = {
     main: {
         // "Truite Séchée": "https://github.com/truiteseche",
@@ -55,15 +56,9 @@ export default function PrivacyPolicyScreen() {
 
     return (
         <View style={{ flex: 1, backgroundColor: colors.background.login }}>
-            <CustomTopHeader
-                headerTitle={"Privacy Policy And Terms of Use"}
-                height={38}
-                backgroundColor={
-                    Array.isArray(colors.background.gradient)
-                        ? colors.background.gradient[0]
-                        : colors.background.gradient
-                }
-            />
+            <View style={{ marginHorizontal: 20 }}>
+                <GoBackHeader />
+            </View>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style={styles.scrollview}>
                     <View>
