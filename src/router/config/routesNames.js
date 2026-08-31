@@ -1,7 +1,7 @@
 export const routesNames = {
     auth: {
         login: "auth_login",
-        privacyPolicy: "auth_privacy_pol",
+        privacyPolicy: "auth_privacy_policy",
         settings: "auth_varaible_settings",
     },
     client: {
