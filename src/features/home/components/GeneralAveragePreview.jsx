@@ -34,13 +34,15 @@ export default function GeneralAveragePreview({ gradesData }) {
             style={{
                 width: "100%",
                 backgroundColor: colors.secondary,
-                borderRadius: 16,
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
                 paddingHorizontal: 20,
-                paddingTop: 11,
-                paddingBottom: 13,
+                paddingVertical: 10,
             }}
         >
             <View>

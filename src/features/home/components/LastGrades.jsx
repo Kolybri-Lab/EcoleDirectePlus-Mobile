@@ -21,8 +21,15 @@ export default function LastGrades({ lastGradesObject }) {
     //     itemVisiblePercentThreshold: 50,
     // }).current;
 
+    const count = lastGradesObject?.length || 0;
+
     return (
-        <View style={{ height: 94, marginTop: -19 }}>
+        <View
+            style={{
+                height: 94,
+                marginTop: -23,
+            }}
+        >
             <FlatList
                 // onViewableItemsChanged={onViewableItemsChanged}
                 // viewabilityConfig={viewabilityConfig}
@@ -30,8 +37,8 @@ export default function LastGrades({ lastGradesObject }) {
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 keyExtractor={(item) => item.libelle}
-                contentContainerStyle={{ gap: 7 }}
-                renderItem={({ item }) => (
+                contentContainerStyle={{ gap: 3 }}
+                renderItem={({ item, index }) => (
                     <TouchableOpacity
                         onPress={() => {
                             {
@@ -53,6 +60,8 @@ export default function LastGrades({ lastGradesObject }) {
                             disciplineColor={item.disciplineColor}
                             disciplineName={item.disciplineName}
                             data={item.data}
+                            index={index}
+                            count={count}
                         />
                     </TouchableOpacity>
                 )}
@@ -60,7 +69,7 @@ export default function LastGrades({ lastGradesObject }) {
         </View>
     );
 }
-const GradeCard = ({ disciplineColor, disciplineName, data }) => {
+const GradeCard = ({ disciplineColor, disciplineName, data, index, count }) => {
     const lightColor = useMemo(
         () => blendWithWhite(disciplineColor, 0.35),
         [disciplineColor]
@@ -68,27 +77,45 @@ const GradeCard = ({ disciplineColor, disciplineName, data }) => {
     const { colors } = useTheme();
 
     if (!disciplineName || !data) return null;
+    let borderRadiusStyleLeft = {};
+    let borderRadiusStyleRight = {};
+    if (index === 0) {
+        borderRadiusStyleLeft = {
+            borderTopLeftRadius: 8,
+            borderBottomLeftRadius: 16,
+        };
+    }
+    if (index === count - 1) {
+        borderRadiusStyleRight = {
+            borderBottomLeftRadius: 8,
+            borderBottomRightRadius: 16,
+        };
+    }
 
     return (
         <View
-            style={{
-                backgroundColor: colors.secondary,
-                borderRadius: 16,
-                width: 130,
-                height: 80,
-                paddingHorizontal: 18,
-                paddingVertical: 12,
-                justifyContent: "space-between",
+            style={[
+                {
+                    backgroundColor: colors.secondary,
+                    borderRadius: 4,
+                    width: 120,
+                    height: 70,
+                    paddingHorizontal: 14,
+                    paddingVertical: 10,
+                    justifyContent: "space-between",
 
-                boxShadow: [
-                    {
-                        blurRadius: 6,
-                        offsetY: 6,
-                        spreadDistance: 0,
-                        color: "hsla(0, 0%, 0%, 0.25)",
-                    },
-                ],
-            }}
+                    boxShadow: [
+                        {
+                            blurRadius: 6,
+                            offsetY: 6,
+                            spreadDistance: 0,
+                            color: "hsla(0, 0%, 0%, 0.25)",
+                        },
+                    ],
+                },
+                borderRadiusStyleLeft,
+                borderRadiusStyleRight,
+            ]}
         >
             <Text
                 align="left"
@@ -103,12 +130,12 @@ const GradeCard = ({ disciplineColor, disciplineName, data }) => {
                     flexDirection: "row",
                     alignItems: "flex-start",
                     justifyContent: "center",
-                    marginTop: -2,
+                    marginTop: -5,
                     marginLeft: 5,
                 }}
             >
                 <Text
-                    style={{ fontSize: 26, fontFamily: "Bold" }}
+                    style={{ fontSize: 22, fontFamily: "Bold" }}
                     color={lightColor}
                 >
                     {data.grade.toFixed(2)}
