@@ -33,6 +33,7 @@ export interface ErrorToastProps {
 
 export function ErrorToast({ onPressDismiss }: ErrorToastProps) {
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const isBooting = useAuthStore((state) => state.isBooting);
     const errors = useErrorStore((state) => state.errors);
     const dismissError = useErrorStore((state) => state.dismissError);
 
@@ -44,7 +45,7 @@ export function ErrorToast({ onPressDismiss }: ErrorToastProps) {
         );
     }, [errors]);
 
-    const isVisible = isAuthenticated && toastErrors.length > 0;
+    const isVisible = isAuthenticated && !isBooting && toastErrors.length > 0;
 
     const handleDismissItem = useCallback(
         (id: string) => {

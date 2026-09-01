@@ -4,6 +4,7 @@ import { View, TouchableOpacity, Animated, Text } from "react-native";
 import { useErrorStore } from "@/hooks/useErrorStore";
 import { useNetworkStore } from "@/hooks/useNetworkStore";
 import { useNetwork } from "@/hooks/network";
+import { useAuthStore } from "@/hooks/useAuthStore";
 
 export interface NetworkBannerProps {
     // Props personnalisables si besoin
@@ -11,6 +12,8 @@ export interface NetworkBannerProps {
 }
 
 export function NetworkBanner({ onPressRetry }: NetworkBannerProps) {
+    const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+    const isBooting = useAuthStore((state) => state.isBooting);
     const { isOnline } = useNetwork();
     const errors = useErrorStore((state) => state.errors);
     const hasStaleData = useErrorStore((state) => state.hasStaleData);
@@ -41,7 +44,7 @@ export function NetworkBanner({ onPressRetry }: NetworkBannerProps) {
         prevHadErrorRef.current = hasError;
     }, [isOffline, isStale]);
 
-    const isVisible = isOffline || isStale || isJustResolved;
+    const isVisible = isAuthenticated && !isBooting && (isOffline || isStale || isJustResolved);
 
     let message = "";
     if (isOffline) {
