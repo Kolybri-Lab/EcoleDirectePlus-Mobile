@@ -1,8 +1,8 @@
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { routesNames } from "@/router/config/routesNames";
-import GradeDetails from "./GradeDetails";
-import GradesContent from "./GradesContent2";
 import { GradeProvider } from "@/features/grades/context/GradeContext";
+import { routesNames } from "@/router/config/routesNames";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import GradeDetails from "./GradeDetails";
+import GradesContent from "./GradesContent";
 const NativeStack = createNativeStackNavigator();
 
 export default function GradesScreen() {
