@@ -31,6 +31,7 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
     const hasMeasuredActive = useRef(false);
     const theme = useTheme();
     const indicatorX = useSharedValue(0);
+    const haptics = useHaptic("medium");
 
     const animatedIndicatorStyle = useAnimatedStyle(() => ({
         transform: [{ translateX: indicatorX.value }],
@@ -66,6 +67,7 @@ const NavigationBottomBar = ({ state, descriptors, navigation }) => {
 
     const handleTabPress = useCallback(
         (routeKey, routeName, isFocused) => {
+            haptics();
             const event = navigation.emit({
                 type: "tabPress",
                 target: routeKey,
@@ -151,7 +153,7 @@ const TabButton = memo(
         );
         const pressScale = useSharedValue(1);
 
-        const haptics = useHaptic("warning");
+        const haptics = useHaptic("success");
 
         useEffect(() => {
             iconScale.value = withSpring(

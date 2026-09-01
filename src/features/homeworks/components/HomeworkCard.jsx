@@ -1,14 +1,15 @@
-import { TouchableOpacity, View } from "react-native";
-import Animated, { LinearTransition } from "react-native-reanimated";
-import { serializeHomework } from "@/features/homeworks/utils/homeworks";
-import { formatShortDate } from "@/utils/date";
 import { Text } from "@/components/core";
+import { serializeHomework } from "@/features/homeworks/utils/homeworks";
+import { useCustomDataStore } from "@/hooks/useCustomDataStore";
+import { useHaptic } from "@/hooks/useHaptics";
 import { useTheme } from "@/hooks/useThemeStore";
 import { addOpacity } from "@/utils/colorGenerator";
+import { formatShortDate } from "@/utils/date";
+import { FolderOpen, Maximize2, Trash2 } from "lucide-react-native";
 import { useCallback } from "react";
+import { TouchableOpacity, View } from "react-native";
+import Animated, { LinearTransition } from "react-native-reanimated";
 import AnimatedToggle from "./AnimatedToggle";
-import { Trash2, FolderOpen, Maximize2 } from "lucide-react-native";
-import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -19,6 +20,7 @@ export default function HomeworkCard({
     isExpanded = false,
     onToggleExpand,
 }) {
+    const haptics = useHaptic("success");
     const handlePress = () => {
         dispatch({
             type: "SEE_HOMEWORK_DETAILS",
@@ -29,6 +31,7 @@ export default function HomeworkCard({
         if (homework.loadingState === "loading" || homework.loadingState === "error")
             return;
         const nextIsDoneBoolean = homework.isDone !== "done";
+        haptics();
         dispatch({
             type: "TOGGLE_HOMEWORK",
             payload: {
@@ -45,7 +48,6 @@ export default function HomeworkCard({
 
     const { colors } = useTheme();
 
-    // Fonction de bascule pour l'accordéon
     const handleToggleExpand = useCallback(
         (id = homework?.id) => {
             if (typeof onToggleExpand === "function") {
