@@ -18,7 +18,7 @@ import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
-import { Image, Pressable, ScrollView, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const RADIUS_INT = 5;
@@ -102,6 +102,25 @@ export default function SettingsScreen({}) {
         [profile?.localPhotoUri]
     );
 
+    if (!profile) {
+        return (
+            <ScreenStack
+                horizontalSpacing={30}
+                style={{ backgroundColor: "hsl(230, 30%, 8%)" }}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <ActivityIndicator />
+                </View>
+            </ScreenStack>
+        );
+    }
+
     return (
         <ScreenStack
             horizontalSpacing={30}
@@ -132,7 +151,7 @@ export default function SettingsScreen({}) {
                 </SafeAreaView>
                 <View
                     style={{
-                        backgroundColor: "hsl(231, 21%, 28%)", // hsl(231, 23%, 28%) hsl(230, 21%, 18%) hsl(210, 33%, 50%)
+                        backgroundColor: "hsl(231, 21%, 28%)",
                         padding: 14,
                         borderRadius: 26,
                         marginBottom: 6,
