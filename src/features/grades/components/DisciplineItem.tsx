@@ -119,7 +119,7 @@ export default function DisciplineItem({
 
     const mainColor = colors?.secondary ?? "hsla(240, 11%, 20%, 1.00)";
     const secondaryColor = colors?.secondary ?? "hsl(240, 27%, 16%)";
-    const txt1Color = colors?.txt1 ?? colors?.txt?.txt1 ?? "#FFFFFF";
+    const txt1Color = colors?.contrast ?? colors?.txt?.txt1 ?? "#FFFFFF";
 
     const boxStyle = {
         backgroundColor: addOpacityToCssRgb(mainColor, 0.3),
@@ -201,8 +201,8 @@ export default function DisciplineItem({
                             <Text
                                 oneLine
                                 style={{
-                                    fontFamily: "Lexend-Bold",
-                                    fontSize: 17,
+                                    fontFamily: "Bold",
+                                    fontSize: 18,
                                     color: discipline.color,
                                 }}
                             >
@@ -210,9 +210,13 @@ export default function DisciplineItem({
                             </Text>
                             {teachersText.length > 0 && (
                                 <Text
-                                    style={{ opacity: 0.72 }}
+                                    style={{
+                                        opacity: 0.72,
+                                        fontFamily: "Medium",
+                                        fontSize: 14,
+                                        marginTop: -3,
+                                    }}
                                     oneLine
-                                    preset="label2"
                                 >
                                     {teachersText}
                                 </Text>
@@ -235,10 +239,11 @@ export default function DisciplineItem({
                         }}
                     >
                         <Text
-                            preset="h3"
                             style={{
                                 color: discipline.color,
-                                fontFamily: "Lexend-Bold",
+                                fontFamily: "Bold",
+                                fontSize: 26,
+                                marginTop: -1,
                             }}
                         >
                             {formatGradeText(userAverage)}

@@ -39,16 +39,14 @@ export default function DisciplineGroupItem({
                     justifyContent: "space-between",
                     alignItems: "flex-end",
                     overflow: "hidden",
-                    paddingHorizontal: 4,
-                    marginBottom: 2,
+                    paddingHorizontal: 8,
+
                     paddingVertical: 2,
                 }}
             >
-                <Text preset="h4" style={{ fontWeight: "semibold", fontSize: 18 }}>
-                    {title}
-                </Text>
+                <Text style={{ fontFamily: "SemiBold", fontSize: 20 }}>{title}</Text>
                 {userAverage !== null && userAverage !== undefined && (
-                    <Text preset="h4" style={{ fontWeight: "bold" }}>
+                    <Text style={{ fontFamily: "SemiBold", fontSize: 20 }}>
                         {formatGradeText(userAverage)}
                     </Text>
                 )}

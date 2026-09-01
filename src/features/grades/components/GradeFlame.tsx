@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         color: "#FFFFFF",
     },
     flammeSubText: {
-        fontWeight: "600",
+        fontFamily: "SemiBold",
         color: "#FFFFFF",
     },
 });
