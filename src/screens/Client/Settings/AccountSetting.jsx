@@ -12,21 +12,21 @@ export default function AccountScreen({ route }) {
     const surnameInputRef = useRef(null);
 
     const [profileDatas, setProfileDatas] = useState({
-        name: profile.name,
-        surname: profile.surname,
+        name: profile?.name ?? "",
+        surname: profile?.surname ?? "",
     });
     const [ableToValidate, setAbleToValidate] = useState(false);
 
     useEffect(() => {
         const hasChanged =
-            profileDatas.name !== profile.name ||
-            profileDatas.surname !== profile.surname;
+            profileDatas.name !== (profile?.name ?? "") ||
+            profileDatas.surname !== (profile?.surname ?? "");
 
         const isValid =
             profileDatas.name.trim() !== "" && profileDatas.surname.trim() !== "";
 
         setAbleToValidate(hasChanged && isValid);
-    }, [profileDatas, profile.name, profile.surname]);
+    }, [profileDatas, profile?.name, profile?.surname]);
 
     return (
         <SettingSectionLayout label={label}>
