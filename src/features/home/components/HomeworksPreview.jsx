@@ -89,10 +89,8 @@ const DateHeader = ({ date, meta, countForDate }) => {
             <Text style={{ fontSize: 18, fontFamily: "SemiBold" }}>
                 {(meta?.long ?? `POUR ${formatFrenchDate(date)}`).toUpperCase()}
             </Text>
-            <Text
-                style={{ fontSize: 20, fontFamily: "SemiBold", color: colors.main }}
-            >
-                {countForDate}
+            <Text style={{ fontSize: 18, fontFamily: "Bold", color: colors.main }}>
+                {countForDate} restant{countForDate > 1 ? "s" : null}
             </Text>
         </View>
     );
