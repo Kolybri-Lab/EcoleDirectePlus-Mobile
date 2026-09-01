@@ -436,7 +436,18 @@ const CourseBox = memo(({ course, navigation, theme, timetableViewDims }) => {
                                 justifyContent: "flex-start",
                             }}
                         >
-                            <Text preset="label3">{teacher}</Text>
+                            <Text
+                                style={{
+                                    fontFamily: "Medium",
+                                    fontSize: 14,
+                                    paddingVertical: -2,
+                                    flexShrink: 0,
+                                    position: "absolute",
+                                    bottom: -5,
+                                }}
+                            >
+                                {teacher}
+                            </Text>
                         </View>
                     </View>
                     <View
