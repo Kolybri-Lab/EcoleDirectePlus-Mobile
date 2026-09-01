@@ -40,9 +40,7 @@ export default function HomeScreen() {
     const { data: gradesData } = useGrades(token);
     const { data: homeworksData } = useHomeworks(token);
 
-    const {
-        profile: { localPhotoUri },
-    } = useUserStore();
+    const localPhotoUri = profile?.localPhotoUri;
 
     const customDataStore = useCustomDataStore();
     const currentTime = useCurrentTime();

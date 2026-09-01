@@ -18,7 +18,7 @@ import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
 import { useNavigation } from "@react-navigation/native";
 import { useCallback } from "react";
-import { Pressable, ScrollView, View } from "react-native";
+import { ActivityIndicator, Image, Pressable, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const RADIUS_INT = 5;
@@ -96,11 +96,30 @@ export default function SettingsScreen({}) {
 
     const getProfileImageSource = useCallback(
         () =>
-            profile.localPhotoUri
+            profile?.localPhotoUri
                 ? { uri: profile.localPhotoUri }
                 : require("../../../../assets/custom/default-user-picture.png"),
-        [profile.localPhotoUri]
+        [profile?.localPhotoUri]
     );
+
+    if (!profile) {
+        return (
+            <ScreenStack
+                horizontalSpacing={30}
+                style={{ backgroundColor: "hsl(230, 30%, 8%)" }}
+            >
+                <View
+                    style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <ActivityIndicator />
+                </View>
+            </ScreenStack>
+        );
+    }
 
     return (
         <ScreenStack
@@ -132,7 +151,7 @@ export default function SettingsScreen({}) {
                 </SafeAreaView>
                 <View
                     style={{
-                        backgroundColor: "hsl(231, 21%, 28%)", // hsl(231, 23%, 28%) hsl(230, 21%, 18%) hsl(210, 33%, 50%)
+                        backgroundColor: "hsl(231, 21%, 28%)",
                         padding: 14,
                         borderRadius: 26,
                         marginBottom: 6,
@@ -152,7 +171,7 @@ export default function SettingsScreen({}) {
                             }}
                         >
                             {profile.localPhotoUri == undefined ? (
-                                <Text preset="h4">{profile.name[0]}</Text>
+                                <Text preset="h4">{profile.name?.[0] ?? "?"}</Text>
                             ) : (
                                 <Image
                                     source={getProfileImageSource()}
@@ -224,8 +243,9 @@ export default function SettingsScreen({}) {
                                 <Text style={{ opacity: 0.75 }}>Téléphone</Text>
                             </View>
                             <Text weight="medium">
-                                {formatPhoneNumber(profile.phone) ??
-                                    "Pas de téléphone connu..."}
+                                {profile.phone
+                                    ? formatPhoneNumber(profile.phone)
+                                    : "Pas de téléphone connu..."}
                             </Text>
                         </View>
 
@@ -248,7 +268,7 @@ export default function SettingsScreen({}) {
                                 <Text style={{ opacity: 0.75 }}>Classe</Text>
                             </View>
                             <Text weight="medium">
-                                {profile.class.libelle ?? "Pas de classe connue..."}
+                                {profile.class?.libelle ?? "Pas de classe connue..."}
                             </Text>
                         </View>
                     </View>
