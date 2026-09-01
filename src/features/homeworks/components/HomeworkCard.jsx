@@ -1,18 +1,5 @@
-import { LinearGradient } from "expo-linear-gradient";
 import { TouchableOpacity, View } from "react-native";
-import Animated, {
-    LinearTransition,
-    StretchInX,
-    StretchInY,
-    StretchOutX,
-    StretchOutY,
-    FadeIn,
-    FadeOut,
-    FadeInDown,
-    FadeOutUp,
-    ZoomIn,
-    ZoomOut,
-} from "react-native-reanimated";
+import Animated, { LinearTransition } from "react-native-reanimated";
 import { serializeHomework } from "@/features/homeworks/utils/homeworks";
 import { formatShortDate } from "@/utils/date";
 import { Text } from "@/components/core";
@@ -20,6 +7,8 @@ import { useTheme } from "@/hooks/useThemeStore";
 import { addOpacity } from "@/utils/colorGenerator";
 import { useCallback } from "react";
 import AnimatedToggle from "./AnimatedToggle";
+import { Trash2, FolderOpen, Maximize2 } from "lucide-react-native";
+import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -50,6 +39,10 @@ export default function HomeworkCard({
         });
     };
 
+    const removeCustomHomework = useCustomDataStore(
+        (state) => state.removeCustomHomework
+    );
+
     const { colors } = useTheme();
 
     // Fonction de bascule pour l'accordéon
@@ -61,9 +54,6 @@ export default function HomeworkCard({
         },
         [onToggleExpand, homework?.id]
     );
-
-    const setExtended = handleToggleExpand;
-    const setExpanded = handleToggleExpand;
 
     return (
         <AnimatedTouchableOpacity
@@ -78,7 +68,7 @@ export default function HomeworkCard({
                 overflow: "hidden",
                 paddingTop: 17,
                 paddingHorizontal: 20,
-                borderColor: homework.discipline.color,
+                borderColor: homework.discipline?.color || "grey",
                 borderWidth: isExpanded ? 1 : 0,
             }}
         >
@@ -107,7 +97,7 @@ export default function HomeworkCard({
                             style={{
                                 fontSize: 18,
                                 fontFamily: "Bold",
-                                color: homework.discipline.color,
+                                color: homework.discipline?.color || "grey",
                             }}
                         >
                             {homework.discipline.name}
@@ -165,8 +155,8 @@ export default function HomeworkCard({
             >
                 <View
                     style={{
-                        height: 2,
-                        width: "90%",
+                        height: 1.5,
+                        width: "95%",
                         borderRadius: 2,
                         backgroundColor: addOpacity(colors.contrast, 0.4),
                         marginTop: 12,
@@ -187,8 +177,8 @@ export default function HomeworkCard({
 
                 <View
                     style={{
-                        height: 2,
-                        width: "90%",
+                        height: 1.5,
+                        width: "95%",
                         borderRadius: 2,
                         backgroundColor: addOpacity(colors.contrast, 0.4),
                         marginBottom: 12,
@@ -220,19 +210,33 @@ export default function HomeworkCard({
                 </Text>
                 {isExpanded && (
                     <Animated.View
-                        style={{ flexDirection: "row", justifyContent: "flex-end" }}
+                        style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-end",
+                            gap: 20,
+                        }}
                     >
-                        <TouchableOpacity onPress={handlePress}>
-                            <Text>Ete</Text>
+                        <TouchableOpacity
+                            onPress={handlePress}
+                            style={{ margin: -2 }}
+                            hitSlop={8}
+                        >
+                            <Maximize2 size={20} color={colors.contrast} />
                         </TouchableOpacity>
-                        {homework.homeworksContent.joinedDocuments.length > 0 && (
-                            <TouchableOpacity>
-                                <Text>Files</Text>
+                        {homework.homeworksContent.joinedDocuments?.length > 0 && (
+                            <TouchableOpacity style={{ margin: -2 }} hitSlop={8}>
+                                <FolderOpen size={20} color={colors.contrast} />
                             </TouchableOpacity>
                         )}
-                        <TouchableOpacity>
-                            <Text>Sup</Text>
-                        </TouchableOpacity>
+                        {homework.isCustom && (
+                            <TouchableOpacity
+                                onPress={() => removeCustomHomework(homework.id)}
+                                style={{ margin: -2 }}
+                                hitSlop={8}
+                            >
+                                <Trash2 size={20} color="#F87171" />
+                            </TouchableOpacity>
+                        )}
                     </Animated.View>
                 )}
             </Animated.View>
