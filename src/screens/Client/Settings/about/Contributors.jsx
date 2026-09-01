@@ -2,7 +2,7 @@ import { Section, Text } from "@/components";
 import { Link } from "@/components/svg";
 import { openUrl } from "@/utils/url";
 import { memo, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Image } from "react-native";
+import { ActivityIndicator, Image, View } from "react-native";
 import SettingSectionLayout from "../components/SettingSectionLayout";
 
 export default function ContributorsScreen({ route }) {
@@ -28,18 +28,16 @@ export default function ContributorsScreen({ route }) {
 
     return (
         <SettingSectionLayout label={label}>
-            <FlatList
-                data={contributors}
-                keyExtractor={(item) => String(item.id)}
-                renderItem={({ item, index }) => (
+            <View style={{ gap: 5 }}>
+                {contributors.map((item, index) => (
                     <Contributor
+                        key={item.id}
                         item={item}
                         index={index}
                         totalLength={contributors.length}
                     />
-                )}
-                contentContainerStyle={{ gap: 5 }}
-            />
+                ))}
+            </View>
         </SettingSectionLayout>
     );
 }
