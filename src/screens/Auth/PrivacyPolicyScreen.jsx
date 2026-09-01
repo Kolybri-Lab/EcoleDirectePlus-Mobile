@@ -1,11 +1,12 @@
 import { Text } from "@/components/core";
 import { CopyLeft } from "@/components/svg";
+import { CONFIG } from "@/constants/config";
 import { useTheme } from "@react-navigation/native";
+import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-
-import { CONFIG } from "@/constants/config";
 import { SafeAreaView } from "react-native-safe-area-context";
+import packageJson from "../../../package.json";
 import {
     GoBackHeader,
     LinkText,
@@ -14,25 +15,9 @@ import {
     Subtitle,
     Title,
 } from "../../components";
-const COLABORATORS = {
-    main: {
-        // "Truite Séchée": "https://github.com/truiteseche",
-        // "Saumon Brulé": "https://github.com/saumon-brule",
-        Lostosword: "https://github.com/Lostosword",
-        "As de Pique": "https://github.com/as2pick",
-        Lucilus: "https://github.com/Lucilus78",
-    },
-    other: {
-        // akash02ab: "https://github.com/akash02ab",
-        // OeildeLynx31: "https://github.com/OeildeLynx31",
-        // Fefedu973: "https://github.com/Fefedu973",
-        // "Beta-Way": "https://github.com/Beta-Way",
-        // xav35000: "https://github.com/xav35000",
-        Lostosword: "https://github.com/Lostosword",
-        "As de Pique": "https://github.com/as2pick",
-        Lucilus: "https://github.com/Lucilus78",
-    },
-};
+
+const GITHUB_REPO = "as2pick/EcoleDirectePlus-Mobile";
+const MAIN_DEVS_LOGINS = ["as2pick", "Lucilus78"];
 
 const Paragraph = ({ children }) => {
     return <Text style={styles.paragraph}>{children}</Text>;
@@ -40,7 +25,7 @@ const Paragraph = ({ children }) => {
 
 const Link = ({ href, isPeople = false, children }) => {
     const { colors } = useTheme();
-
+    console.log(packageJson);
     return (
         <LinkText
             href={String(href)}
@@ -51,10 +36,61 @@ const Link = ({ href, isPeople = false, children }) => {
         </LinkText>
     );
 };
+function useContributors(repo) {
+    const [contributors, setContributors] = useState(null);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        let cancelled = false;
+
+        fetch(`https://api.github.com/repos/${repo}/contributors?per_page=100`)
+            .then((res) => {
+                if (!res.ok) throw new Error("Erreur GitHub API");
+                return res.json();
+            })
+            .then((data) => {
+                if (!cancelled) setContributors(data);
+            })
+            .catch((e) => {
+                if (!cancelled) setError(e.message);
+            });
+
+        return () => {
+            cancelled = true;
+        };
+    }, [repo]);
+
+    return { contributors, error };
+}
+
+const ContributorsCredit = ({ title, people }) => {
+    if (people.length === 0) return null;
+
+    return (
+        <Paragraph>
+            {title}
+            {people.map((c) => (
+                <Paragraph key={c.id}>
+                    {"\n- "}
+                    <Link href={c.html_url} isPeople>
+                        {c.login}
+                    </Link>
+                </Paragraph>
+            ))}
+        </Paragraph>
+    );
+};
 
 export default function PrivacyPolicyScreen() {
     const { colors } = useTheme();
+    const { contributors, error } = useContributors(GITHUB_REPO);
 
+    const mainDevs =
+        contributors?.filter((c) => MAIN_DEVS_LOGINS.includes(c.login)) ?? [];
+    const otherContributors =
+        contributors?.filter((c) => !MAIN_DEVS_LOGINS.includes(c.login)) ?? [];
+
+    const dependenciesList = Object.keys(packageJson.dependencies);
     return (
         <ScreenStack
             style={{ backgroundColor: colors.background.login }}
@@ -104,8 +140,7 @@ export default function PrivacyPolicyScreen() {
                         être affichées sur Ecole Directe Plus. Par ailleurs, si les
                         moyennes de l'utilisateur ne sont pas disponibles, elles
                         seront calculées, mais ce de façon locale sur l'appareil du
-                        client, les informations ne sont PAS transmises à nos
-                        serveurs.
+                        client.
                     </Paragraph>
                 </View>
                 <Separation />
@@ -181,32 +216,18 @@ export default function PrivacyPolicyScreen() {
                     et des Libertés si vous vous estimez lésé par le traitement de
                     vos données personnelles par l’établissement scolaire.
                 </Paragraph>
-                <Paragraph>
-                    • L'activation de l'amélioration de l'accessibilité des personnes
-                    déficientes visuelles utilise la police de caractères{" "}
-                    <Link href={"https://luciole-vision.com/"}>Luciole</Link>. Cette
-                    police de caractères est distribuée gratuitement sous Licence
-                    publique{" "}
-                    <Link
-                        href={
-                            "https://creativecommons.org/licenses/by/4.0/legalcode.fr"
-                        }
-                    >
-                        Creative Commons Attribution 4.0 International
-                    </Link>{" "}
-                    : Luciole © Laurent Bourcellier & Jonathan Perez
-                </Paragraph>
+
                 <Separation />
                 <Title>Conditions d'utilisations</Title>
                 <Subtitle>1. Général</Subtitle>
                 <Paragraph>
                     • Les noms et pronoms "Ecole Directe Plus", "EDP", "service",
                     "Nous", "Notre/Nos" renvoient au service Ecole Directe Plus
-                    (non-affilié) proposé par le groupuscule Magic-Fish. L'accès et
-                    l'utilisation du service Ecole Directe Plus est l'objet de ces
-                    présentes conditions d'utilisations. En accédant ou utilisant
-                    n'importe quelle partie de l'application, vous déclarez avoir lu,
-                    compris, et accepté ces présentes mentions légales.
+                    (non-affilié). L'accès et l'utilisation du service Ecole Directe
+                    Plus est l'objet de ces présentes conditions d'utilisations. En
+                    accédant ou utilisant n'importe quelle partie de l'application,
+                    vous déclarez avoir lu, compris, et accepté ces présentes
+                    mentions légales.
                 </Paragraph>
                 <Subtitle>2. Description du site et du service</Subtitle>
                 <Paragraph>
@@ -245,7 +266,7 @@ export default function PrivacyPolicyScreen() {
                     outre, vous êtes le seul responsable de l'usage qu'il est fait de
                     vos données.
                 </Paragraph>
-                <Subtitle>5. Retour utilisateur</Subtitle>
+                {/* <Subtitle>5. Retour utilisateur</Subtitle>
                 <Paragraph>
                     • La page de retour permet aux utilisateurs de signaler des
                     dysfonctionnements, faire des suggestions, partager un retour
@@ -253,8 +274,8 @@ export default function PrivacyPolicyScreen() {
                     d'améliorer notre service, le bénéficiaire étant l'utilisateur
                     final. En soumettant le formulaire de retour, vous acceptez de
                     partager une partie de vos informations avec Ecole Directe Plus.
-                </Paragraph>
-                <Subtitle>6. Liens, sites et services tiers</Subtitle>
+                </Paragraph> */}
+                <Subtitle>5. Liens, sites et services tiers</Subtitle>
                 <Paragraph>
                     • Le service peut contenir des liens vers des sites Web tiers,
                     des services, ou d'autres événements ou activités qui ne sont ni
@@ -269,7 +290,7 @@ export default function PrivacyPolicyScreen() {
                     indirectement, de tout dommage ou perte résultant de votre
                     utilisation de tout site Web, service ou contenu tiers.
                 </Paragraph>
-                <Subtitle>7. Résiliation</Subtitle>
+                <Subtitle>6. Résiliation</Subtitle>
                 <Paragraph>
                     • Ecole Directe Plus peut résilier votre accès et votre
                     utilisation du service à tout moment, pour quelque raison que ce
@@ -281,80 +302,47 @@ export default function PrivacyPolicyScreen() {
 
                 <Separation />
                 <Title>Crédits</Title>
-                <Paragraph>
-                    • Ecole Directe Plus est l'initiative du groupuscule Magic-Fish :
-                </Paragraph>
-                <Paragraph>
-                    Développeurs principaux :
-                    {Object.keys(COLABORATORS.main).map((key, i) => (
-                        <Paragraph key={key}>
-                            {"\n- "}
-                            <Link
-                                href={Object.values(COLABORATORS.main)[i]}
-                                isPeople={true}
-                            >
-                                {key}
-                            </Link>
-                        </Paragraph>
-                    ))}
-                </Paragraph>
-                <Paragraph>
-                    Autres contributeurs :
-                    {Object.keys(COLABORATORS.other).map((key, i) => (
-                        <Paragraph key={key}>
-                            {"\n- "}
-                            <Link
-                                href={Object.values(COLABORATORS.other)[i]}
-                                isPeople={true}
-                            >
-                                {key}
-                            </Link>
-                        </Paragraph>
-                    ))}
-                </Paragraph>
+
+                {error ? (
+                    <Paragraph>
+                        Impossible de charger la liste des contributeurs pour le
+                        moment.
+                    </Paragraph>
+                ) : !contributors ? (
+                    <Paragraph>Chargement des contributeurs...</Paragraph>
+                ) : (
+                    <>
+                        <ContributorsCredit
+                            title="Développeurs principaux :"
+                            people={mainDevs}
+                        />
+                        <ContributorsCredit
+                            title="Autres contributeurs :"
+                            people={otherContributors}
+                        />
+                    </>
+                )}
+
                 <Paragraph>
                     {"APIs et services tiers :\n"}
                     {"- EcoleDirecte\n"}
                 </Paragraph>
                 <Paragraph>
                     {"Dépendances \n"}
-                    {"- EXPO\n"}
-                    {"- Expo Status Bar\n"}
-                    {"- React\n"}
-                    {"- React Native\n"}
-                    {"- React Native ASYNC Storage\n"}
-                    {"- React Native Gesture Handler\n"}
-                    {"- React Native Keychain\n"}
-                    {"- React Native Reanimated\n"}
-                    {"- React Native Safe Area\n"}
-                    {"- React Native Screens\n"}
-                    {"- React Native SVG\n"}
-                    {"- React Navigation\n"}
-                    {"- Base64\n"}
-                    {"- JS-SHA256\n"}
-                    {"- Set-cookie-parser\n"}
-                    {"- Day JS\n"}
-                    {"- Lottie\n"}
+                    {dependenciesList.map((name) => `- ${name}\n`).join("")}
                 </Paragraph>
-                <Paragraph>
-                    {"Testeurs de pré-lancement :\n"}
-                    {"- Thon Humide\n"}
-                    {"- Jackp0t\n"}
-                </Paragraph>
+                <Paragraph>{"Testeurs de pré-lancement :\n"}</Paragraph>
                 <Paragraph>
                     {"Remerciements spéciaux :\n"}
-                    {"- Thon Humide\n"}
-                    {"- Jackp0t\n"}
-                    {"- Nickro_01290\n"}
-                    {"- Cthyllax\n"}
-                    {"- EcoleDirecte Neptunium\n"}-{" "}
                     <Text weight="bold">Internet</Text>
                 </Paragraph>
                 <Paragraph>
                     • Curieux et motivé ? Rejoignez nous et participez au
                     développement d'Ecole Directe Plus Mobile à travers le{" "}
                     <Link
-                        href={"https://github.com/as2pick/EcoleDirectePlus-Mobile"}
+                        href={
+                            "https://github.com/Kolybri-Lab/EcoleDirectePlus-Mobile"
+                        }
                     >
                         dépôt Github
                     </Link>
@@ -386,7 +374,7 @@ export default function PrivacyPolicyScreen() {
                     other dealings in the Software.
                 </Paragraph>
                 <Paragraph>
-                    Dernière révision le 29 mars 2025{"\n"}
+                    Dernière révision le 1 septembre 2026{"\n"}
                     Nous contacter :{" "}
                     <Link href={"mailto:contact@ecole-directe.plus"} isPeople={true}>
                         contact@ecole-directe.plus
@@ -395,7 +383,7 @@ export default function PrivacyPolicyScreen() {
 
                 <SafeAreaView edges={["bottom"]}>
                     <Text style={[styles.copyleft]} align="center">
-                        Copyleft 2025 <CopyLeft size={17} /> Ecole Directe Plus
+                        Copyleft 2026 <CopyLeft size={17} /> Ecole Directe Plus
                     </Text>
                 </SafeAreaView>
             </ScrollView>
