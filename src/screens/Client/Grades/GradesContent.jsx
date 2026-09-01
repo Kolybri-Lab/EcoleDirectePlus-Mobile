@@ -1,20 +1,18 @@
-import { useNavigation, useTheme } from "@react-navigation/native";
-import LottieView from "lottie-react-native";
-import canardman from "assets/lottie/canardman_walking.json";
+import { useTheme } from "@react-navigation/native";
 
 import { useCallback, useEffect, useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 
 import { DropDownMenu } from "@/components";
 import { API } from "@/constants/api/api";
-import Discipline from "@/features/grades/models/Discipline";
-import Period from "@/features/grades/models/Period";
-import AddGradeModal from "@/features/grades/components/SimulateGradeModal";
+import { useGrades } from "@/features/grades";
 import DisciplineGroupItem from "@/features/grades/components/DisciplineGroupItem";
 import GradeFlame from "@/features/grades/components/GradeFlame";
+import AddGradeModal from "@/features/grades/components/SimulateGradeModal";
 import { useGrade } from "@/features/grades/context/GradeContext";
 import { useSimulation } from "@/features/grades/hooks/useSimulation";
-import { useGrades } from "@/features/grades";
+import Period from "@/features/grades/models/Period";
+import { formatGradeText } from "@/features/grades/utils/helpers";
 import { useUserStore } from "@/hooks/useUserStore";
 
 export default function GradesContent() {
@@ -135,19 +133,20 @@ export default function GradesContent() {
                                 setDisplayPeriodeName(value);
                             }}
                             options={periodes}
+                            minWidth="200"
                         />
                     </View>
                 )}
                 <View style={styles.flammesContainer}>
                     <GradeFlame
                         color="orange"
-                        value={globalStreakScore}
+                        value={formatGradeText(globalStreakScore)}
                         label="Streak"
                         width="30%"
                     />
                     <GradeFlame
                         color="violet"
-                        value={generalAverage}
+                        value={formatGradeText(generalAverage)}
                         label="Moyenne"
                         width="30%"
                     />
