@@ -3,6 +3,7 @@ import { File as FileIcon } from "@/components/svg";
 import { useMessageContent } from "@/features/messaging/hooks/useMessaging";
 import { downloadDocument, openDocument } from "@/helpers/documents/documentsHelper";
 import { useTheme } from "@/hooks/useThemeStore";
+import { routesNames } from "@/router/config/routesNames";
 import { formatDate } from "@/utils/date";
 import { memo, useCallback, useState } from "react";
 import { ActivityIndicator, TouchableOpacity, View } from "react-native";
@@ -79,7 +80,7 @@ const File = memo(({ item, progress, colors, onOpen, onDownload }) => {
 });
 
 export default function MessagingDetails({ route }) {
-    const { token, message } = route.params;
+    const { token = "", message = {} } = route?.params || {};
     const {
         id: messageId,
         type: typeOfRecovery,
@@ -93,7 +94,7 @@ export default function MessagingDetails({ route }) {
         sender,
         subject,
         transferred,
-    } = message;
+    } = message || {};
     const recoveryMode = RECOVERY_MODE_BY_TYPE[typeOfRecovery] ?? null;
 
     const {
@@ -150,6 +151,7 @@ export default function MessagingDetails({ route }) {
                 backArrow={{ color: colors.contrast, size: 24 }}
                 height={33}
                 backgroundColor={colors.background.gradient}
+                fallbackRoute={routesNames.client.messaging.content}
             />
             <ScrollView showsVerticalScrollIndicator={false}>
                 <Text preset="h3" style={{ marginBottom: 10, marginTop: 20 }}>

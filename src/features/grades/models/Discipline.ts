@@ -19,26 +19,27 @@ export default class Discipline {
     simulatedGrades: FormattedGrade[];
     color: string;
 
-    constructor(data: any) {
-        this.code = data.code || "";
-        this.libelle = data.libelle || "";
-        this.color = data.color;
-        this.averageDatas = data.averageDatas || {
+    constructor(data?: any) {
+        const safeData = data || {};
+        this.code = safeData.code || "";
+        this.libelle = safeData.libelle || "";
+        this.color = safeData.color || "";
+        this.averageDatas = safeData.averageDatas || {
             classAverage: null,
             minAverage: null,
             maxAverage: null,
             userAverage: null,
         };
-        this.coef = data.coef || 0;
-        this.grades = data.grades || [];
-        this.streakCount = data.streakCount || 0;
-        this.isDisciplineGroup = data.isDisciplineGroup || false;
-        this.workforce = data.workforce || 0;
-        this.rank = data.rank || 0;
-        this.teachers = data.teachers || [];
-        this.disciplines = data.disciplines;
-        this.disciplineCodes = data.disciplineCodes;
-        this.simulatedGrades = data.simulatedGrades || [];
+        this.coef = safeData.coef || 0;
+        this.grades = safeData.grades || [];
+        this.streakCount = safeData.streakCount || 0;
+        this.isDisciplineGroup = safeData.isDisciplineGroup || false;
+        this.workforce = safeData.workforce || 0;
+        this.rank = safeData.rank || 0;
+        this.teachers = safeData.teachers || [];
+        this.disciplines = safeData.disciplines;
+        this.disciplineCodes = safeData.disciplineCodes;
+        this.simulatedGrades = safeData.simulatedGrades || [];
     }
 
     getDiscipline() {

@@ -25,10 +25,11 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import RenderHTML from "react-native-render-html";
+import { routesNames } from "@/router/config/routesNames";
 import { GoBackHeader, Modal } from "../../../components";
 
 export default function HomeworkDetails({ route }) {
-    const { homeworksData } = route.params;
+    const { homeworksData = {} } = route?.params || {};
 
     const { width } = useWindowDimensions();
     const navigation = useNavigation();
@@ -193,7 +194,7 @@ export default function HomeworkDetails({ route }) {
                     marginBottom: 110,
                 }}
             >
-                <GoBackHeader />
+                <GoBackHeader fallbackRoute={routesNames.client.homeworks.content} />
                 <View style={{ flex: 1, gap: 18 }}>
                     <TouchableOpacity
                         activeOpacity={1}

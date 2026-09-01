@@ -15,10 +15,11 @@ import {
     Trash,
 } from "@/components/svg";
 import { toHoursMinutes, toMilliseconds } from "@/utils/time";
+import { routesNames } from "@/router/config/routesNames";
 import { GoBackHeader, SwipeBackWrapper } from "../../../components";
 
 export default function CourseDetails({ route }) {
-    const { courseData } = route.params;
+    const { courseData = {} } = route?.params || {};
     const { colors } = useTheme();
 
     const [now, setNow] = useState(dayjs());
@@ -131,11 +132,11 @@ export default function CourseDetails({ route }) {
         timing = "Erreur lors de la lecture du temps";
     }
     return (
-        <SwipeBackWrapper>
-            <View style={{ flex: 1, backgroundColor: colors.background }}>
-                <View style={{ paddingHorizontal: 15 }}>
-                    <GoBackHeader />
-                </View>
+        <View style={{ flex: 1, backgroundColor: colors.background }}>
+            <View style={{ paddingHorizontal: 15 }}>
+                <GoBackHeader fallbackRoute={routesNames.client.timetable.content} />
+            </View>
+            <SwipeBackWrapper>
                 <View
                     style={{
                         justifyContent: "space-evenly",
@@ -362,7 +363,7 @@ export default function CourseDetails({ route }) {
                     </Pressable>
                 </View> */}
                 </View>
-            </View>
-        </SwipeBackWrapper>
+            </SwipeBackWrapper>
+        </View>
     );
 }

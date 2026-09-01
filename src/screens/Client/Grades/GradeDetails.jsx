@@ -7,11 +7,15 @@ import {
     UpperThanDisciplineAverage,
     UpTheStreak,
 } from "@/components/svg";
+import { useGrades } from "@/features/grades";
 import Discipline from "@/features/grades/models/Discipline";
 import Grade from "@/features/grades/models/Grade";
 import { formatGradeText } from "@/features/grades/utils/helpers";
+import { useUserStore } from "@/hooks/useUserStore";
 import { formatFrenchDate } from "@/utils/date";
+import { useMemo } from "react";
 import { FlatList, View } from "react-native";
+import { routesNames } from "@/router/config/routesNames";
 import { GoBackHeader } from "../../../components";
 
 const UI_BADGES = {
@@ -31,10 +35,55 @@ const SKILLS_COLORS = {
 };
 
 export default function GradeDetails({ route }) {
-    const { gradeData, disciplineData } = route.params;
+    const token = useUserStore((state) => state.token);
+    const { data: gradesData } = useGrades(token);
+    const { gradeData, disciplineData: initialDisciplineData } =
+        route?.params || {};
 
-    const grade = new Grade(gradeData);
-    const discipline = new Discipline(disciplineData);
+    const grade = useMemo(() => new Grade(gradeData), [gradeData]);
+
+    const disciplineData = useMemo(() => {
+        if (
+            initialDisciplineData &&
+            Object.keys(initialDisciplineData).length > 0
+        ) {
+            return initialDisciplineData;
+        }
+
+        // Fallback: chercher dans les périodes de gradesData
+        const periodCode = grade.codes?.period;
+        const disciplineCode = grade.codes?.discipline;
+
+        if (gradesData && periodCode && disciplineCode) {
+            const period = gradesData[periodCode];
+            if (period?.groups) {
+                for (const group of period.groups) {
+                    if (
+                        group.isDisciplineGroup &&
+                        Array.isArray(group.disciplines)
+                    ) {
+                        const found = group.disciplines.find(
+                            (d) => d.code === disciplineCode
+                        );
+                        if (found) return found;
+                    } else if (group.code === disciplineCode) {
+                        return group;
+                    }
+                }
+            }
+        }
+        return initialDisciplineData || {};
+    }, [
+        initialDisciplineData,
+        grade.codes?.period,
+        grade.codes?.discipline,
+        gradesData,
+    ]);
+
+    const discipline = useMemo(
+        () => new Discipline(disciplineData),
+        [disciplineData]
+    );
 
     const renderItem = ({ item }) => (
         <View style={{ minWidth: "90%", marginVertical: 10 }}>
@@ -46,7 +95,7 @@ export default function GradeDetails({ route }) {
                 color={"hsl(240, 40%, 75%)"} // EDIT
                 preset="body1"
             >
-                {item.name}
+                {item?.name}
             </Text>
             <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Text
@@ -57,7 +106,7 @@ export default function GradeDetails({ route }) {
                     color={"hsl(240, 40%, 68%)"} // EDIT
                     preset="body2"
                 >
-                    {item.description}
+                    {item?.description}
                 </Text>
                 <Text
                     style={{
@@ -67,9 +116,9 @@ export default function GradeDetails({ route }) {
                     }}
                     align="right"
                     preset="label2"
-                    color={SKILLS_COLORS[item.value]}
+                    color={SKILLS_COLORS[item?.value]}
                 >
-                    {item.value}
+                    {item?.value}
                 </Text>
             </View>
         </View>
@@ -78,7 +127,7 @@ export default function GradeDetails({ route }) {
     return (
         <View style={{ flex: 1, backgroundColor: "hsl(240, 28%, 10%)" }}>
             <View style={{ marginHorizontal: 22, flex: 1 }}>
-                <GoBackHeader />
+                <GoBackHeader fallbackRoute={routesNames.client.grades.content} />
                 <View
                     style={{
                         backgroundColor: "hsl(240, 27%, 16%)",
@@ -126,7 +175,7 @@ export default function GradeDetails({ route }) {
                 >
                     <Text preset="h2">Informations</Text>
 
-                    {grade.badges.length > 0 && (
+                    {grade.badges?.length > 0 && (
                         <View
                             style={{
                                 flexDirection: "row",
@@ -141,6 +190,7 @@ export default function GradeDetails({ route }) {
                         >
                             {grade.badges.map((badge, i) => {
                                 const BadgeComponent = UI_BADGES[badge];
+                                if (!BadgeComponent) return null;
                                 return (
                                     <BadgeComponent
                                         key={`${badge}-${i}`}
@@ -159,7 +209,7 @@ export default function GradeDetails({ route }) {
                         }}
                     >
                         <Text preset="label2">
-                            · Type d'évaluation : {grade.homeworkType}
+                            · Type d'évaluation : {grade.homeworkType || "Non spécifié"}
                         </Text>
                         <Text preset="label2">
                             · Date : {formatFrenchDate(grade.date)}
@@ -167,18 +217,12 @@ export default function GradeDetails({ route }) {
                     </View>
 
                     <FlatList
-                        data={grade.skills}
+                        data={grade.skills || []}
                         renderItem={renderItem}
                         keyExtractor={(_, i) => i.toString()}
                         showsVerticalScrollIndicator={false}
                         showsHorizontalScrollIndicator={false}
                         style={{ width: "100%" }}
-                        // contentContainerStyle={
-                        //     {
-                        //         paddingBottom: 10,
-                        //         paddingHorizontal: 4,
-                        //     }
-                        // }
                     />
                 </View>
             </View>
@@ -187,8 +231,10 @@ export default function GradeDetails({ route }) {
 }
 
 const Teachers = ({ teachers = [] }) => {
-    if (teachers.length > 1) {
-        return teachers.map((teacher, i) => (
+    const safeTeachers = Array.isArray(teachers) ? teachers : [];
+
+    if (safeTeachers.length > 1) {
+        return safeTeachers.map((teacher, i) => (
             <Text
                 key={i}
                 oneLine
@@ -200,10 +246,10 @@ const Teachers = ({ teachers = [] }) => {
         ));
     }
 
-    if (teachers.length === 1) {
+    if (safeTeachers.length === 1) {
         return (
             <Text oneLine preset="label2" color={"hsl(240, 27%, 76%)"} /* EDIT */>
-                {teachers[0]}
+                {safeTeachers[0]}
             </Text>
         );
     }
@@ -216,7 +262,7 @@ const Teachers = ({ teachers = [] }) => {
 };
 
 const Cards = ({ datas }) => {
-    const { grade, coef, outOf } = datas;
+    const { grade = null, coef = 0, outOf = 20 } = datas || {};
 
     const cards = [
         { label: "Note obtenue", value: formatGradeText(grade) },

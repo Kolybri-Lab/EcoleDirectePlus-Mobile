@@ -11,13 +11,14 @@ export default class Period {
     periodName: string | null;
 
     constructor(
-        data: { groups: (FormattedDiscipline | FormattedDisciplineGroup)[]; globalStreakScore?: number | null; periodName?: string | null },
+        data?: { groups?: (FormattedDiscipline | FormattedDisciplineGroup)[]; globalStreakScore?: number | null; periodName?: string | null } | null,
         periodCode: string = ""
     ) {
-        this.groups = data.groups || [];
+        const safeData = data || {};
+        this.groups = safeData.groups || [];
         this.periodCode = periodCode;
-        this.globalStreakScore = data.globalStreakScore !== undefined ? data.globalStreakScore : null;
-        this.periodName = data.periodName !== undefined ? data.periodName : null;
+        this.globalStreakScore = safeData.globalStreakScore !== undefined ? safeData.globalStreakScore : null;
+        this.periodName = safeData.periodName !== undefined ? safeData.periodName : null;
     }
 
     makeGeneralAverage(): number | null {
