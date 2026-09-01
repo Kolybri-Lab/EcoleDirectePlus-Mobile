@@ -1,5 +1,6 @@
 import { Text } from "@/components";
 import Period from "@/features/grades/models/Period";
+import { formatGradeText } from "@/features/grades/utils/helpers";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
@@ -49,7 +50,7 @@ export default function GeneralAveragePreview({ gradesData }) {
                 <Text
                     style={{ color: colors.main, fontSize: 18, fontFamily: "Bold" }}
                 >
-                    {"Moyenne Générale".toUpperCase() /* j'autorise les jugements */}
+                    {"Moyenne Générale".toUpperCase()}
                 </Text>
                 <View
                     style={{
@@ -76,7 +77,7 @@ export default function GeneralAveragePreview({ gradesData }) {
                 </View>
             </View>
             <Text style={{ fontFamily: "Bold", fontSize: 32, marginTop: 3 }}>
-                {generalAverage}
+                {formatGradeText(generalAverage)}
                 <Text size={16} color="hsla(0, 0%, 100%, 0.55)" fontFamily="Medium">
                     /20
                 </Text>

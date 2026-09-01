@@ -3,8 +3,7 @@ import { ProgressBar } from "@/components/progression/ProgressBar";
 import { BackArrow } from "@/components/svg";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
-import { addOpacity, addOpacityToCssRgb } from "@/utils/colorGenerator";
-import { formatDuration, getTimeInterval } from "@/utils/time";
+import { addOpacityToCssRgb } from "@/utils/colorGenerator";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { TouchableOpacity, View } from "react-native";
 
@@ -17,7 +16,7 @@ export default function ActiveCourseCard({
 }) {
     const { colors } = useTheme();
     const navigation = useNavigation();
-    const haptic = useHaptic("light");
+    const haptic = useHaptic("medium");
 
     const { inClass, nextCourseKnown } = activeStatus || {};
 
@@ -26,7 +25,7 @@ export default function ActiveCourseCard({
     const extras = inClass ? [] : [{ resizeBars: true }];
 
     return (
-        <View style={{ width: "100%", gap: 0 }}>
+        <View style={{ width: "100%" }}>
             {inClass && (
                 <View>
                     <View
@@ -34,8 +33,6 @@ export default function ActiveCourseCard({
                             flexDirection: "row",
                             alignItems: "center",
                             gap: 6,
-                            marginTop: -6,
-                            marginBottom: 0,
                             paddingHorizontal: 6,
                         }}
                     >
@@ -85,9 +82,7 @@ export default function ActiveCourseCard({
                             style={{
                                 flexDirection: "row",
                                 alignItems: "center",
-                                marginTop: -6,
-                                marginBottom: 0,
-                                paddingHorizontal: 6,
+                                marginLeft: 6,
                             }}
                         >
                             <Text
@@ -105,7 +100,7 @@ export default function ActiveCourseCard({
                                 screen: routesNames.client.timetable.content,
                             });
                         }}
-                        style={{ width: "100%", marginTop: inClass ? -10 : 0 }}
+                        style={{ width: "100%" }}
                     >
                         <NextCourse
                             data={{
@@ -130,7 +125,7 @@ const Course = ({ data }) => {
             style={{
                 gap: 3,
                 width: "100%",
-                height: 65,
+                height: 70,
                 flexDirection: "row",
                 flex: 1,
             }}
@@ -145,8 +140,6 @@ const Course = ({ data }) => {
                     borderTopRightRadius: 4,
                     borderBottomLeftRadius: 0,
                     borderBottomRightRadius: 0,
-                    paddingLeft: 14,
-                    paddingRight: 12,
                 }}
             >
                 <Text style={{ flexShrink: 0, fontFamily: "Medium", fontSize: 14 }}>
@@ -168,9 +161,6 @@ const Course = ({ data }) => {
             <View
                 style={{
                     backgroundColor: colors.secondary,
-                    borderColor: colors.main,
-                    //borderWidth: 1,
-                    borderRadius: 22,
                     flex: 1,
                     paddingHorizontal: 18,
                     paddingVertical: 10,
@@ -241,14 +231,14 @@ const NextCourse = ({ data }) => {
             style={{
                 gap: 3,
                 width: "100%",
-                height: 65,
+                height: 70,
                 flexDirection: "row",
                 flex: 1,
             }}
         >
             <View
                 style={{
-                    padding: 10,
+                    paddingVertical: 10,
                     alignItems: "center",
                     width: 65,
                     backgroundColor: colors.secondary,
@@ -256,8 +246,6 @@ const NextCourse = ({ data }) => {
                     borderTopRightRadius: inClass ? 0 : 4,
                     borderBottomLeftRadius: 16,
                     borderBottomRightRadius: 4,
-                    paddingLeft: 14,
-                    paddingRight: 12,
                 }}
             >
                 <Text style={{ flexShrink: 0, fontFamily: "Medium", fontSize: 14 }}>
@@ -304,14 +292,14 @@ const NextCourse = ({ data }) => {
                             flexShrink: 0,
                             flexDirection: "row",
                             justifyContent: "space-between",
-                            marginTop: -3,
                         }}
                     >
                         <Text
                             color="hsla(1, 0%, 100%, .9)"
                             oneLine
                             style={{
-                                fontSize: 12,
+                                fontSize: 15,
+                                opacity: 0.6,
                                 fontFamily: "Medium",
                             }}
                         >
@@ -321,7 +309,8 @@ const NextCourse = ({ data }) => {
                             color="hsla(1, 0%, 100%, .9)"
                             oneLine
                             style={{
-                                fontSize: 12,
+                                fontSize: 15,
+                                opacity: 0.6,
                                 fontFamily: "Medium",
                             }}
                         >
@@ -330,104 +319,6 @@ const NextCourse = ({ data }) => {
                     </View>
                 </View>
             </View>
-            {/*<View
-                style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    marginBottom: 10,
-                    justifyContent: "center",
-                }}
-            >
-                <Text style={{ fontFamily: "Medium", fontSize: 14 }}>
-                    Dans {formatDuration(courseData.timeRemaining)}
-                </Text>
-            </View>
-
-            <View style={{ gap: 7 }}>
-                <View
-                    style={{ flexDirection: "row", justifyContent: "space-between" }}
-                >
-                    <Text
-                        oneLine
-                        style={{ flexShrink: 1, fontSize: 22, fontFamily: "Bold" }}
-                        color="hsla(1, 0%, 100%, .9)"
-                    >
-                        {courseData.course.libelle}
-                    </Text>
-                    <View
-                        style={{
-                            backgroundColor: addOpacityToCssRgb(colors.main, 0.12),
-                            alignSelf: "flex-end",
-                            borderColor: addOpacityToCssRgb(colors.main, 0.2),
-                            borderWidth: 1,
-                            paddingHorizontal: 10,
-                            paddingVertical: 3,
-                            borderRadius: 8,
-                        }}
-                    >
-                        <Text
-                            color={colors.main}
-                            style={{
-                                flexShrink: 1,
-                                fontFamily: "Medium",
-                                fontSize: 13,
-                            }}
-                        >
-                            {courseData.course.room ?? "Aucune salle"}
-                        </Text>
-                    </View>
-                </View>
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "space-between",
-                    }}
-                >
-                    <View
-                        style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            gap: 6,
-                            flexShrink: 1,
-                            maxWidth: "50%",
-                        }}
-                    >
-                        <Text
-                            color="hsla(1, 0%, 100%, .9)"
-                            oneLine
-                            style={{ flexShrink: 1 }}
-                        >
-                            {courseData.course.teacher ?? "Pas de prof."}
-                        </Text>
-                        <View
-                            style={{
-                                width: 6,
-                                height: 6,
-                                backgroundColor: "hsla(0, 0%, 100%, 0.9)",
-                                borderRadius: 12,
-                                flexShrink: 0,
-                            }}
-                        />
-                        <Text color="hsla(1, 0%, 100%, .9)" oneLine>
-                            {formatDuration(
-                                getTimeInterval(
-                                    `${courseData.course.startCourse.date}T${courseData.course.startCourse.time}`,
-                                    `${courseData.course.endCourse.date}T${courseData.course.endCourse.time}`
-                                ),
-                                "short"
-                            )}
-                        </Text>
-                    </View>
-                    <Text
-                        color="hsla(1, 0%, 100%, .9)"
-                        oneLine
-                        style={{ maxWidth: "50%" }}
-                    >
-                        {courseData.course.startCourse.time} /{" "}
-                        {courseData.course.endCourse.time}
-                    </Text>
-                </View>
-            </View>*/}
         </View>
     );
 };

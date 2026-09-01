@@ -11,8 +11,8 @@ import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 import { useSignIn } from "@/hooks/useSignIn";
 import { useUserStore } from "@/hooks/useUserStore";
-import { routesNames } from "@/router/config/routesNames";
 import { GuestTestButtons } from "@/mock/guest/components";
+import { routesNames } from "@/router/config/routesNames";
 import { getTodayDateString } from "@/utils/date";
 import { objectsEqual } from "@/utils/json";
 import {
@@ -23,9 +23,8 @@ import {
     isInInterval,
 } from "@/utils/time";
 import { useNavigation } from "@react-navigation/native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useMemo, useState } from "react";
-import { Image, Pressable, TouchableOpacity, View } from "react-native";
+import { Image, Pressable, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -118,7 +117,6 @@ export default function HomeScreen() {
 
         const isLastCourseOfTheDay = activeCourseIndex === courses.length - 1;
 
-        // --- Détermine dans quelle phase de la journée on se trouve ---
         const isBeforeSchoolDay = isBefore(
             currentTime.time,
             firstCourse.startCourse.time

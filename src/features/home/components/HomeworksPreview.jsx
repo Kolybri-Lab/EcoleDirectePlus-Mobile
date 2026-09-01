@@ -3,8 +3,8 @@ import { injectHomeworksIntoModel } from "@/features/homeworks/utils/homeworks";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
 
-import { formatFrenchDate } from "@/utils/date";
 import { addOpacityToCssRgb } from "@/utils/colorGenerator";
+import { formatFrenchDate } from "@/utils/date";
 import base64Handler from "@/utils/handleBase64";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { useMemo } from "react";

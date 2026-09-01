@@ -1,4 +1,5 @@
 import { Text } from "@/components";
+import { formatGradeText } from "@/features/grades/utils/helpers";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
 import { blendWithWhite } from "@/utils/colorGenerator";
@@ -9,17 +10,6 @@ export default function LastGrades({ lastGradesObject }) {
     const navigation = useNavigation();
     const { colors } = useTheme();
     const haptic = useHaptic("light");
-    // const hapticFeedback = useHaptic("heavy");
-
-    // const onViewableItemsChanged = useRef(({ viewableItems }) => {
-    //     if (viewableItems.length > 0) {
-    //         hapticFeedback(); // the haptics doesn't work, idk why, maybe regenerate dev client ?
-    //     }
-    // }).current;
-
-    // const viewabilityConfig = useRef({
-    //     itemVisiblePercentThreshold: 50,
-    // }).current;
 
     const count = lastGradesObject?.length || 0;
 
@@ -31,8 +21,6 @@ export default function LastGrades({ lastGradesObject }) {
             }}
         >
             <FlatList
-                // onViewableItemsChanged={onViewableItemsChanged}
-                // viewabilityConfig={viewabilityConfig}
                 data={lastGradesObject}
                 horizontal
                 showsHorizontalScrollIndicator={false}
@@ -138,7 +126,7 @@ const GradeCard = ({ disciplineColor, disciplineName, data, index, count }) => {
                     style={{ fontSize: 22, fontFamily: "Bold" }}
                     color={lightColor}
                 >
-                    {data.grade.toFixed(2)}
+                    {formatGradeText(data.grade)}
                     <Text
                         style={{ fontFamily: "Medium", fontSize: 12 }}
                         color="hsla(1, 0%, 100%, .55)"
