@@ -20,7 +20,7 @@ export default function Tabs() {
             screenOptions={{
                 headerShown: false,
                 animation: "fade",
-                lazy: false,
+                lazy: true,
                 tabBarStyle: { backgroundColor: "transparent" },
             }}
         >
