@@ -9,7 +9,7 @@ const GREETINGS = [
     },
     {
         max: 18,
-        messages: ["Bon après-midi,", "Bonne continuation,", "Courage,"],
+        messages: ["Bon après-midi,", "Courage,"],
     },
     {
         max: 22,
