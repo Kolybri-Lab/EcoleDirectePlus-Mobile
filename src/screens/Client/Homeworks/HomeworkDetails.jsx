@@ -275,7 +275,7 @@ export default function HomeworkDetails({ route }) {
                             </View>
                         ) : (
                             <>
-                                {homework.homeworksContent.joinedDocuments.length >
+                                {homework.homeworksContent?.joinedDocuments?.length >
                                     0 && (
                                     <TouchableOpacity
                                         style={{
@@ -367,3 +367,4 @@ const CourseContentModal = ({ visible, setVisible, courseHTML }) => {
         </Modal>
     );
 };
+
