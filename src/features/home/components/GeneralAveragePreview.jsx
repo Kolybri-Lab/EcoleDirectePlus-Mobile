@@ -3,11 +3,12 @@ import Period from "@/features/grades/models/Period";
 import { useCurrentTime } from "@/hooks/useCurrentTime";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useTheme } from "@react-navigation/native";
 import { useMemo } from "react";
 import { TouchableOpacity, View } from "react-native";
 
 export default function GeneralAveragePreview({ gradesData }) {
+    const { colors } = useTheme();
     const navigation = useNavigation();
     const currentTime = useCurrentTime();
     const haptic = useHaptic("light");
@@ -32,20 +33,32 @@ export default function GeneralAveragePreview({ gradesData }) {
             }}
             style={{
                 width: "100%",
-                backgroundColor: "hsl(235, 28%, 15%)",
-                borderRadius: 16,
+                backgroundColor: colors.secondary,
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+                borderBottomLeftRadius: 8,
+                borderBottomRightRadius: 8,
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
-                paddingHorizontal: 19,
-                paddingVertical: 24,
+                paddingHorizontal: 20,
+                paddingVertical: 10,
             }}
         >
-            <View style={{ gap: 5 }}>
-                <Text preset="title1" color="hsl(228, 100%, 69%)">
+            <View>
+                <Text
+                    style={{ color: colors.main, fontSize: 18, fontFamily: "Bold" }}
+                >
                     {"Moyenne Générale".toUpperCase() /* j'autorise les jugements */}
                 </Text>
-                <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 8,
+                        marginTop: -4,
+                    }}
+                >
                     <Text preset="label2" color="hsla(0, 0%, 100%, 0.55)">
                         {gradesData.activePeriod.periodName}
                     </Text>
@@ -62,12 +75,13 @@ export default function GeneralAveragePreview({ gradesData }) {
                     </Text>
                 </View>
             </View>
-            <Text size={34} weight="bold">
+            <Text style={{ fontFamily: "Bold", fontSize: 32, marginTop: 3 }}>
                 {generalAverage}
-                <Text size={16} color="hsla(0, 0%, 100%, 0.55)">
+                <Text size={16} color="hsla(0, 0%, 100%, 0.55)" fontFamily="Medium">
                     /20
                 </Text>
             </Text>
         </TouchableOpacity>
     );
 }
+

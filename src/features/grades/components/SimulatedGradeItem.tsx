@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable, View } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import { Text as CoreText } from "@/components/core";
 const Text = CoreText as any;
 import { formatGradeText } from "@/features/grades/utils/helpers";
@@ -10,19 +10,23 @@ interface SimulatedGradeItemProps {
     dispatch: (action: any) => void;
 }
 
-export default function SimulatedGradeItem({ grade, dispatch }: SimulatedGradeItemProps) {
+export default function SimulatedGradeItem({
+    grade,
+    dispatch,
+}: SimulatedGradeItemProps) {
     return (
-        <Pressable
+        <TouchableOpacity
+            activeOpacity={0.7}
             style={{
                 flexDirection: "row",
                 marginHorizontal: 20,
                 justifyContent: "space-between",
                 alignItems: "center",
-                backgroundColor: "hsl(206, 54%, 28%)",
+                backgroundColor: "hsla(206, 60%, 28%, 0.4)",
                 paddingHorizontal: 14,
                 paddingVertical: 8,
-                borderRadius: 13,
-                borderColor: "hsl(206, 54%, 44%)",
+                borderRadius: 10,
+                borderColor: "hsl(206, 60%, 48%)",
                 borderWidth: 1,
             }}
             onPress={() => {
@@ -36,11 +40,15 @@ export default function SimulatedGradeItem({ grade, dispatch }: SimulatedGradeIt
                 {grade.libelle}
             </Text>
             <Text preset="label1">
-                {formatGradeText(grade.data.grade)}
-                <Text preset="label3">
-                    {grade.data.outOf !== 20 && `/${grade.data.outOf}`}
-                </Text>
+                {formatGradeText(grade.data?.grade)}
+                {grade.data?.outOf !== 20 &&
+                    grade.data?.outOf !== null &&
+                    grade.data?.outOf !== undefined && (
+                        <Text preset="label3">
+                            {`/${grade.data.outOf}`}
+                        </Text>
+                    )}
             </Text>
-        </Pressable>
+        </TouchableOpacity>
     );
 }

@@ -1,14 +1,37 @@
 import { BackArrow } from "@/components/svg";
 import { useNavigation } from "@react-navigation/native";
-import { TouchableOpacity, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function GoBackHeader({}) {
+export default function GoBackHeader({ onPress, fallbackRoute } = {}) {
     const navigation = useNavigation();
 
     const handleGoBack = () => {
+        if (onPress) {
+            onPress();
+            return;
+        }
+
         if (navigation.canGoBack()) {
             navigation.goBack();
+            return;
+        }
+
+        const parent = navigation.getParent();
+        if (parent && parent.canGoBack && parent.canGoBack()) {
+            parent.goBack();
+            return;
+        }
+
+        if (fallbackRoute) {
+            navigation.navigate(fallbackRoute);
+            return;
+        }
+
+        try {
+            navigation.goBack();
+        } catch {
+            // ignore
         }
     };
 
@@ -17,14 +40,17 @@ export default function GoBackHeader({}) {
             style={{
                 alignItems: "center",
                 flexDirection: "row",
+                zIndex: 999,
             }}
         >
-            <TouchableOpacity
-                activeOpacity={0.5}
+            <Pressable
                 onPress={handleGoBack}
-                style={{
+                hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                style={({ pressed }) => ({
                     top: 8,
-                }}
+                    opacity: pressed ? 0.5 : 1,
+                    zIndex: 1000,
+                })}
             >
                 <View
                     style={{
@@ -38,7 +64,7 @@ export default function GoBackHeader({}) {
                 >
                     <BackArrow size={26} />
                 </View>
-            </TouchableOpacity>
+            </Pressable>
         </SafeAreaView>
     );
 }

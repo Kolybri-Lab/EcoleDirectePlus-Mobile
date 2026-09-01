@@ -1,7 +1,7 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { routesNames } from "@/router/config/routesNames";
 import GradeDetails from "./GradeDetails";
-import GradesContent from "./GradesContent";
+import GradesContent from "./GradesContent2";
 import { GradeProvider } from "@/features/grades/context/GradeContext";
 const NativeStack = createNativeStackNavigator();
 

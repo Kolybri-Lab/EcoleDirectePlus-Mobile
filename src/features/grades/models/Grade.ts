@@ -22,14 +22,15 @@ export default class Grade {
     badges: string[];
     isSimulation: boolean;
 
-    constructor(gradeData: Partial<FormattedGrade> & { isSimulation?: boolean }) {
-        this.libelle = gradeData.libelle || "";
-        this.notSignificant = gradeData.notSignificant || false;
-        this.date = gradeData.date || "";
-        this.homeworkType = gradeData.homeworkType || "";
-        this.disciplineName = gradeData.disciplineName || "";
-        this.codes = gradeData.codes || { period: "", discipline: "" };
-        this.data = gradeData.data || {
+    constructor(gradeData?: Partial<FormattedGrade> & { isSimulation?: boolean }) {
+        const safeData = gradeData || {};
+        this.libelle = safeData.libelle || "";
+        this.notSignificant = safeData.notSignificant || false;
+        this.date = safeData.date || "";
+        this.homeworkType = safeData.homeworkType || "";
+        this.disciplineName = safeData.disciplineName || "";
+        this.codes = safeData.codes || { period: "", discipline: "" };
+        this.data = safeData.data || {
             coef: 0,
             classAverage: null,
             outOf: null,
@@ -37,12 +38,12 @@ export default class Grade {
             classMin: null,
             grade: null,
         };
-        this.skills = gradeData.skills || [];
-        this.onlySkills = gradeData.onlySkills || false;
-        this.isExam = gradeData.isExam || false;
-        this.actionOnStreak = gradeData.actionOnStreak || "nothing";
-        this.badges = gradeData.badges || [];
-        this.isSimulation = gradeData.isSimulation || false;
+        this.skills = safeData.skills || [];
+        this.onlySkills = safeData.onlySkills || false;
+        this.isExam = safeData.isExam || false;
+        this.actionOnStreak = safeData.actionOnStreak || "nothing";
+        this.badges = safeData.badges || [];
+        this.isSimulation = safeData.isSimulation || false;
     }
 
     getGrade(): FormattedGrade & { isSimulation: boolean } {

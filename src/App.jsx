@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import RootProviders from "./provider";
 import AuthNavigator from "./router/AuthNavigator";
 
+import { setupDevMenu } from "./mock/guest/setupDevMenu";
+
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
@@ -13,7 +15,18 @@ export default function App() {
         "Lexend-Regular": require("assets/fonts/Lexend-Regular.ttf"),
         "Lexend-Medium": require("assets/fonts/Lexend-Medium.ttf"),
         "Lexend-Bold": require("assets/fonts/Lexend-Bold.ttf"),
+        Regular: require("assets/fonts/Baloo2-Regular.ttf"),
+        Medium: require("assets/fonts/Baloo2-Medium.ttf"),
+        SemiBold: require("assets/fonts/Baloo2-SemiBold.ttf"),
+        Bold: require("assets/fonts/Baloo2-Bold.ttf"),
+        ExtraBold: require("assets/fonts/Baloo2-ExtraBold.ttf"),
     });
+
+    useEffect(() => {
+        if (__DEV__) {
+            setupDevMenu();
+        }
+    }, []);
 
     useEffect(() => {
         if (fontLoaded) {

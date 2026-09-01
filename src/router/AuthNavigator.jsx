@@ -114,9 +114,14 @@ export default function AuthNavigator() {
                         <Auth />
                     )}
                 </NavigationContainer>
-                <NetworkBanner />
-                <ErrorToast />
+                {isAuthenticated && !isBooting && (
+                    <>
+                        <NetworkBanner />
+                        <ErrorToast />
+                    </>
+                )}
             </ErrorBoundary>
         </GestureHandlerRootView>
     );
 }
+

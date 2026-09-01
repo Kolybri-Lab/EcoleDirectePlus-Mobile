@@ -322,10 +322,10 @@ const CourseBox = memo(({ course, navigation, theme, timetableViewDims }) => {
                                   1
                                 : CONFIG.minCourseSize,
                         overflow: "hidden",
-                        backgroundColor: caseColor,
+                        backgroundColor: colors.secondary,
                         borderRadius: 16,
                         borderColor: color,
-                        borderWidth: 1.8,
+                        borderWidth: 1.5,
                         boxShadow: `1px 2px 5px 0px ${shadowColor}`,
                     },
                 ]}
@@ -408,13 +408,11 @@ const CourseBox = memo(({ course, navigation, theme, timetableViewDims }) => {
                         >
                             <Text
                                 style={{
-                                    backgroundColor: color,
-                                    borderRadius: 6,
-                                    paddingHorizontal: 8,
-                                    paddingVertical: 2,
+                                    color: color,
+                                    fontSize: 18,
+                                    fontFamily: "Bold",
                                 }}
-                                color={textColor}
-                                preset="label2"
+
                                 onLayout={handleLibelleLayout}
                             >
                                 {libelle}
@@ -438,7 +436,18 @@ const CourseBox = memo(({ course, navigation, theme, timetableViewDims }) => {
                                 justifyContent: "flex-start",
                             }}
                         >
-                            <Text preset="label3">{teacher}</Text>
+                            <Text
+                                style={{
+                                    fontFamily: "Medium",
+                                    fontSize: 14,
+                                    paddingVertical: -2,
+                                    flexShrink: 0,
+                                    position: "absolute",
+                                    bottom: -5,
+                                }}
+                            >
+                                {teacher}
+                            </Text>
                         </View>
                     </View>
                     <View
@@ -548,3 +557,4 @@ const styles = StyleSheet.create({
         backgroundColor: "rgb(10, 10, 10)",
     },
 });
+

@@ -92,11 +92,10 @@ export default function PrivacyPolicyScreen() {
 
     const dependenciesList = Object.keys(packageJson.dependencies);
     return (
-        <ScreenStack
-            style={{ backgroundColor: colors.background.login }}
-            horizontalSpacing={14}
-        >
-            <GoBackHeader />
+        <ScreenStack style={{ flex: 1, backgroundColor: colors.background.login }}>
+            <View style={{ marginHorizontal: 20 }}>
+                <GoBackHeader />
+            </View>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View>
                     <Title>Politique de confidentialité</Title>
@@ -419,3 +418,4 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
 });
+

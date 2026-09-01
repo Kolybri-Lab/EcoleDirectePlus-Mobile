@@ -25,10 +25,11 @@ import {
 } from "react-native";
 import { FlatList } from "react-native-gesture-handler";
 import RenderHTML from "react-native-render-html";
+import { routesNames } from "@/router/config/routesNames";
 import { GoBackHeader, Modal } from "../../../components";
 
 export default function HomeworkDetails({ route }) {
-    const { homeworksData } = route.params;
+    const { homeworksData = {} } = route?.params || {};
 
     const { width } = useWindowDimensions();
     const navigation = useNavigation();
@@ -55,7 +56,7 @@ export default function HomeworkDetails({ route }) {
 
     const homeworkContent = homework.isCustom
         ? homework.homeworksContent.content
-        : homework.decodedHTMLHomework;
+        : homework.homeworksContent.renderHtml || homework.decodedHTMLHomework;
 
     const [downloadProgress, setDownloadProgress] = useState({});
 
@@ -186,12 +187,14 @@ export default function HomeworkDetails({ route }) {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: colors.background.gradient,
+                    backgroundColor: Array.isArray(colors.background.gradient)
+                        ? colors.background.gradient[0]
+                        : colors.background.gradient,
                     marginHorizontal: 20,
                     marginBottom: 110,
                 }}
             >
-                <GoBackHeader />
+                <GoBackHeader fallbackRoute={routesNames.client.homeworks.content} />
                 <View style={{ flex: 1, gap: 18 }}>
                     <TouchableOpacity
                         activeOpacity={1}
@@ -272,7 +275,7 @@ export default function HomeworkDetails({ route }) {
                             </View>
                         ) : (
                             <>
-                                {homework.homeworksContent.joinedDocuments.length >
+                                {homework.homeworksContent?.joinedDocuments?.length >
                                     0 && (
                                     <TouchableOpacity
                                         style={{
@@ -364,3 +367,4 @@ const CourseContentModal = ({ visible, setVisible, courseHTML }) => {
         </Modal>
     );
 };
+

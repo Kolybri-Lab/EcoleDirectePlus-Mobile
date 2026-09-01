@@ -37,6 +37,7 @@ export const THEMES = {
             pastel: "rgb(222, 222, 250)",
             secondary: "rgb(180, 180, 253)",
             main: "rgb(119, 119, 247)",
+            inactive: "rgb(140, 140, 215)",
             accent: "rgb(62, 62, 221)",
             contrast: "rgb(0, 0, 0)",
             case: "rgb(255, 255, 255)",
@@ -66,7 +67,7 @@ export const THEMES = {
             ...NavigationDefaultTheme.colors,
             // background: "rgb(18, 18, 138)", // default key
             background: {
-                gradient: "rgb(43, 43, 63)", // +20 or +30
+                gradient: ["rgb(35, 20, 130)", "rgb(10, 10, 30)", 0.28], //rgb(10, 10, 30)
                 login: "rgb(19, 19, 34)",
             },
             bg: {
@@ -91,11 +92,12 @@ export const THEMES = {
 
             border: "rgb(92, 113, 250)", // DON'T USE IT
             error: "rgb(240, 90, 90)",
-            fond: "rgb(0, 0, 0)",
+            fond: "#0E101A",
             pastel: "rgb(21, 25, 69)",
-            secondary: "rgb(109, 106, 251)",
-            main: "rgba(166, 166, 240, 1)",
-            accent: "rgb(197, 197, 247)",
+            secondary: "rgb(31, 30, 60)",
+            main: "rgb(97, 129, 255)",
+            inactive: "rgb(118, 125, 211)",
+            accent: "rgb(199, 204, 253)",
             case: "rgb(94, 94, 136)",
             contrast: "rgb(255, 255, 255)",
             theme: "rgba(0, 0, 0, 1)",

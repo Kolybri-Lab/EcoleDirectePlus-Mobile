@@ -97,7 +97,7 @@ export default function SettingsScreen({}) {
     const getProfileImageSource = useCallback(
         () =>
             profile?.localPhotoUri
-                ? { uri: profile.localPhotoUri }
+                ? { uri: profile?.localPhotoUri }
                 : require("../../../../assets/custom/default-user-picture.png"),
         [profile?.localPhotoUri]
     );
@@ -170,8 +170,8 @@ export default function SettingsScreen({}) {
                                 backgroundColor: "hsla(0, 0%, 100%, 0.3)",
                             }}
                         >
-                            {profile.localPhotoUri == undefined ? (
-                                <Text preset="h4">{profile.name?.[0] ?? "?"}</Text>
+                            {profile?.localPhotoUri == undefined ? (
+                                <Text preset="h4">{profile?.name?.[0] ?? ""}</Text>
                             ) : (
                                 <Image
                                     source={getProfileImageSource()}
@@ -184,9 +184,9 @@ export default function SettingsScreen({}) {
                         </View>
                         <View>
                             <Text preset="label1" weight="bold">
-                                {profile.name} {profile.surname}
+                                {profile?.name} {profile?.surname}
                             </Text>
-                            <Text preset="label2">{profile.schoolName}</Text>
+                            <Text preset="label2">{profile?.schoolName}</Text>
                         </View>
                     </View>
 
@@ -218,7 +218,7 @@ export default function SettingsScreen({}) {
                                 <Text style={{ opacity: 0.75 }}>E-mail</Text>
                             </View>
                             <Text weight="medium">
-                                {profile.email ?? "Pas d'e-mail connu..."}
+                                {profile?.email ?? "Pas d'e-mail connu..."}
                             </Text>
                         </View>
 
@@ -243,9 +243,8 @@ export default function SettingsScreen({}) {
                                 <Text style={{ opacity: 0.75 }}>Téléphone</Text>
                             </View>
                             <Text weight="medium">
-                                {profile.phone
-                                    ? formatPhoneNumber(profile.phone)
-                                    : "Pas de téléphone connu..."}
+                                {formatPhoneNumber(profile?.phone || "") ||
+                                    "Pas de téléphone connu..."}
                             </Text>
                         </View>
 
@@ -268,7 +267,7 @@ export default function SettingsScreen({}) {
                                 <Text style={{ opacity: 0.75 }}>Classe</Text>
                             </View>
                             <Text weight="medium">
-                                {profile.class?.libelle ?? "Pas de classe connue..."}
+                                {profile?.class?.libelle ?? "Pas de classe connue..."}
                             </Text>
                         </View>
                     </View>

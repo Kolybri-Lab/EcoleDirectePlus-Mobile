@@ -1,9 +1,9 @@
 import {
-    Dashboard,
-    Grades,
-    Homeworks,
-    Messaging,
-    Timetable,
+    GradesIcon,
+    HomeIcon,
+    HomeworksIcon,
+    MessagingIcon,
+    TimetableIcon,
 } from "@/components/svg/navigation";
 import createScreen from "@/router/helpers/createScreen";
 import GradesScreen from "@/screens/Client/Grades/GradesScreen";
@@ -20,23 +20,23 @@ const {
 const tabClientScreens = [
     createScreen(grades.group, GradesScreen, {
         inNavbar: true,
-        icon: Grades,
+        icon: GradesIcon,
     }),
     createScreen(homeworks.group, HomeworksScreen, {
         inNavbar: true,
-        icon: Homeworks,
+        icon: HomeworksIcon,
     }),
     createScreen(home, HomeScreen, {
         inNavbar: true,
-        icon: Dashboard,
+        icon: HomeIcon,
     }),
     createScreen(timetable.group, TimetableScreen, {
         inNavbar: true,
-        icon: Timetable,
+        icon: TimetableIcon,
     }),
     createScreen(messaging.group, MessagingScreen, {
         inNavbar: true,
-        icon: Messaging,
+        icon: MessagingIcon,
     }),
 ];
 
