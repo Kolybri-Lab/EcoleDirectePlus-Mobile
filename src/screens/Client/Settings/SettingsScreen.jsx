@@ -170,7 +170,7 @@ export default function SettingsScreen({}) {
                                 backgroundColor: "hsla(0, 0%, 100%, 0.3)",
                             }}
                         >
-                            {profile?.localPhotoUri == undefined ? (
+                            {!profile?.localPhotoUri ? (
                                 <Text preset="h4">{profile?.name?.[0] ?? ""}</Text>
                             ) : (
                                 <Image
@@ -178,6 +178,7 @@ export default function SettingsScreen({}) {
                                     style={{
                                         width: 50,
                                         height: 50,
+                                        borderRadius: 50,
                                     }}
                                 />
                             )}
@@ -267,7 +268,8 @@ export default function SettingsScreen({}) {
                                 <Text style={{ opacity: 0.75 }}>Classe</Text>
                             </View>
                             <Text weight="medium">
-                                {profile?.class?.libelle ?? "Pas de classe connue..."}
+                                {profile?.class?.libelle ??
+                                    "Pas de classe connue..."}
                             </Text>
                         </View>
                     </View>

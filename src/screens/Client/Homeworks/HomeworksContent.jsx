@@ -18,6 +18,7 @@ import { useHomeworks } from "@/features/homeworks";
 import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import { objectsEqual } from "@/utils/json";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeworksContent() {
     const token = useUserStore((state) => state.token);
@@ -79,7 +80,11 @@ export default function HomeworksContent() {
     const homeworksDates = mergedHomeworks?.formatedDates;
 
     useEffect(() => {
-        if (!mergedHomeworks?.formatedDates || Object.keys(mergedHomeworks.formatedDates).length === 0) return;
+        if (
+            !mergedHomeworks?.formatedDates ||
+            Object.keys(mergedHomeworks.formatedDates).length === 0
+        )
+            return;
 
         if (!activeDate || !mergedHomeworks.formatedDates[activeDate]) {
             setActiveDate(Object.keys(mergedHomeworks.formatedDates)[0]);
@@ -110,20 +115,20 @@ export default function HomeworksContent() {
         else key = "1";
 
         const sentences = motivationSentences[key];
-        return sentences ? sentences[Math.floor(Math.random() * sentences.length)] : "";
+        return sentences
+            ? sentences[Math.floor(Math.random() * sentences.length)]
+            : "";
     }, [progression]);
 
     return (
         <>
             <NewHomeworkModal visible={modalOpen} />
             <ScreenStack>
-                <View
+                <SafeAreaView
                     style={{
                         position: "absolute",
-                        top: "5%",
-                        right: "5%",
-                        gap: 2,
                         zIndex: 1,
+                        right: 20,
                     }}
                 >
                     <TouchableOpacity
@@ -136,7 +141,7 @@ export default function HomeworksContent() {
                     >
                         <Plus size={36} />
                     </TouchableOpacity>
-                </View>
+                </SafeAreaView>
 
                 <ScrollView
                     showsVerticalScrollIndicator={false}

@@ -14,47 +14,38 @@ export default function LastGrades({ lastGradesObject }) {
     const count = lastGradesObject?.length || 0;
 
     return (
-        <View
-            style={{
-                height: 94,
-                marginTop: -23,
-            }}
-        >
-            <FlatList
-                data={lastGradesObject}
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                keyExtractor={(item) => item.libelle}
-                contentContainerStyle={{ gap: 3 }}
-                renderItem={({ item, index }) => (
-                    <TouchableOpacity
-                        onPress={() => {
-                            {
-                                haptic();
-                                navigation.navigate(
-                                    routesNames.client.grades.group,
-                                    {
-                                        screen: routesNames.client.grades.details,
-                                        params: {
-                                            gradeData: item,
-                                            disciplineData: item.disciplineData,
-                                        },
-                                    }
-                                );
-                            }
-                        }}
-                    >
-                        <GradeCard
-                            disciplineColor={item.disciplineColor}
-                            disciplineName={item.disciplineName}
-                            data={item.data}
-                            index={index}
-                            count={count}
-                        />
-                    </TouchableOpacity>
-                )}
-            />
-        </View>
+        <FlatList
+            data={lastGradesObject}
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={{ height: 70 }}
+            keyExtractor={(item) => item.libelle}
+            contentContainerStyle={{ gap: 3 }}
+            renderItem={({ item, index }) => (
+                <TouchableOpacity
+                    onPress={() => {
+                        {
+                            haptic();
+                            navigation.navigate(routesNames.client.grades.group, {
+                                screen: routesNames.client.grades.details,
+                                params: {
+                                    gradeData: item,
+                                    disciplineData: item.disciplineData,
+                                },
+                            });
+                        }
+                    }}
+                >
+                    <GradeCard
+                        disciplineColor={item.disciplineColor}
+                        disciplineName={item.disciplineName}
+                        data={item.data}
+                        index={index}
+                        count={count}
+                    />
+                </TouchableOpacity>
+            )}
+        />
     );
 }
 const GradeCard = ({ disciplineColor, disciplineName, data, index, count }) => {
@@ -149,4 +140,3 @@ const GradeCard = ({ disciplineColor, disciplineName, data, index, count }) => {
         </View>
     );
 };
-

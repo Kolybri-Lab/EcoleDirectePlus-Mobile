@@ -206,7 +206,6 @@ export default function HomeScreen() {
                     <SafeAreaView
                         style={{
                             marginTop: 10,
-                            alignItems: "flex-start",
                         }}
                     >
                         <Pressable
@@ -260,7 +259,7 @@ export default function HomeScreen() {
                             </View>
                         </View>
                     </SafeAreaView>
-                    <View style={{ alignItems: "center", gap: 26 }}>
+                    <View style={{ gap: 26 }}>
                         <ActiveCourseCard
                             progression={progression}
                             activeCourse={activeCourse}
@@ -268,19 +267,22 @@ export default function HomeScreen() {
                             activeStatus={activeStatus}
                             isLast={isLastCourseOfTheDay}
                         />
-                        <GeneralAveragePreview gradesData={gradesData} />
-                        {gradesData?.lastGrades ? (
-                            <LastGrades lastGradesObject={gradesData.lastGrades} />
-                        ) : null}
+                        <View style={{ gap: 3 }}>
+                            <GeneralAveragePreview gradesData={gradesData} />
+                            {gradesData?.lastGrades?.length >= 1 && (
+                                <LastGrades
+                                    lastGradesObject={gradesData.lastGrades}
+                                />
+                            )}
+                        </View>
                         <HomeworksPreview
                             customHomeworks={customDataStore?.customHomeworks ?? {}}
                             homeworksDatas={homeworksData}
                         />
-                        {token === "guest_token" && <GuestTestButtons />}
                     </View>
+                    {token === "guest_token" && <GuestTestButtons />}
                 </ScrollView>
             </View>
         </ScreenStack>
     );
 }
-

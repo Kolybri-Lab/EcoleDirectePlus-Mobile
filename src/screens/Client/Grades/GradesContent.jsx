@@ -14,6 +14,7 @@ import { useSimulation } from "@/features/grades/hooks/useSimulation";
 import Period from "@/features/grades/models/Period";
 import { formatGradeText } from "@/features/grades/utils/helpers";
 import { useUserStore } from "@/hooks/useUserStore";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function GradesContent() {
     const { colors, shadow } = useTheme();
@@ -111,11 +112,10 @@ export default function GradesContent() {
         <View style={{ flex: 1 }}>
             <ScrollView showsVerticalScrollIndicator={false}>
                 {periodes.length > 0 && (
-                    <View
+                    <SafeAreaView
                         style={{
-                            marginTop: 60,
                             zIndex: 10,
-                            paddingHorizontal: 20,
+                            marginLeft: 20,
                         }}
                     >
                         <DropDownMenu
@@ -135,7 +135,7 @@ export default function GradesContent() {
                             options={periodes}
                             minWidth="200"
                         />
-                    </View>
+                    </SafeAreaView>
                 )}
                 <View style={styles.flammesContainer}>
                     <GradeFlame
@@ -201,9 +201,8 @@ const createStyles = (colors, shadow) =>
         flammesContainer: {
             zIndex: -1,
             marginTop: 20,
-            left: "5%",
             flexDirection: "row",
-            alignItems: "flex-start",
+            alignSelf: "center",
         },
         canardman: {
             position: "absolute",
@@ -215,4 +214,3 @@ const createStyles = (colors, shadow) =>
             zIndex: -1,
         },
     });
-

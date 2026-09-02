@@ -23,7 +23,6 @@ export default function GeneralAveragePreview({ gradesData }) {
     if (!gradesData?.activePeriod) {
         return null;
     }
-
     return (
         <TouchableOpacity
             onPress={() => {
@@ -35,10 +34,14 @@ export default function GeneralAveragePreview({ gradesData }) {
             style={{
                 width: "100%",
                 backgroundColor: colors.secondary,
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16,
-                borderBottomLeftRadius: 8,
-                borderBottomRightRadius: 8,
+                ...(gradesData?.lastGrades.length >= 1
+                    ? {
+                          borderTopLeftRadius: 16,
+                          borderTopRightRadius: 16,
+                          borderBottomLeftRadius: 8,
+                          borderBottomRightRadius: 8,
+                      }
+                    : { borderRadius: 16 }),
                 flexDirection: "row",
                 alignItems: "center",
                 justifyContent: "space-between",
@@ -46,9 +49,13 @@ export default function GeneralAveragePreview({ gradesData }) {
                 paddingVertical: 10,
             }}
         >
-            <View>
+            <View style={{}}>
                 <Text
-                    style={{ color: colors.main, fontSize: 18, fontFamily: "Bold" }}
+                    style={{
+                        color: colors.main,
+                        fontSize: 18,
+                        fontFamily: "Bold",
+                    }}
                 >
                     {"Moyenne Générale".toUpperCase()}
                 </Text>
@@ -57,7 +64,6 @@ export default function GeneralAveragePreview({ gradesData }) {
                         flexDirection: "row",
                         alignItems: "center",
                         gap: 8,
-                        marginTop: -4,
                     }}
                 >
                     <Text preset="label2" color="hsla(0, 0%, 100%, 0.55)">
@@ -85,4 +91,3 @@ export default function GeneralAveragePreview({ gradesData }) {
         </TouchableOpacity>
     );
 }
-
