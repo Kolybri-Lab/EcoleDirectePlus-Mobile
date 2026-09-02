@@ -89,3 +89,5 @@ ios/
 #env
 .env
 
+# builds
+dist/
