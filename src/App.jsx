@@ -5,6 +5,7 @@ import RootProviders from "./provider";
 import AuthNavigator from "./router/AuthNavigator";
 
 import { setupDevMenu } from "./mock/guest/setupDevMenu";
+import { UpdateNotifier } from "./updates/components/UpdateNotifer";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -35,13 +36,10 @@ export default function App() {
     }, [fontLoaded]);
     if (!fontLoaded) return null;
 
-    // useEffect(() => {
-    //     authService.deleteStoredApiDatas();
-    // }, []);
     return (
         <RootProviders>
+            <UpdateNotifier />
             <AuthNavigator />
         </RootProviders>
     );
 }
-
