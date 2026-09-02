@@ -189,21 +189,7 @@ const Homework = ({ homework, index, countForDate }) => {
                             {homework.homeworksContent.content}
                         </Text>
                     ) : (
-                        <RenderHtml
-                            contentWidth={width}
-                            source={{ html: decodedContent }}
-                            systemFonts={systemFonts}
-                            baseStyle={{
-                                color: addOpacityToCssRgb(colors.contrast, 0.55),
-                                fontSize: 14,
-                                fontFamily: "Medium",
-                            }}
-                            defaultTextProps={{
-                                numberOfLines: 1,
-                                ellipsizeMode: "tail",
-                            }}
-                            enableExperimentalMarginCollapsing
-                        />
+                        <Text numberOfLines={2}>{homework.plainText}</Text>
                     )}
                 </View>
             </View>
@@ -237,3 +223,4 @@ const Homework = ({ homework, index, countForDate }) => {
         </View>
     );
 };
+
