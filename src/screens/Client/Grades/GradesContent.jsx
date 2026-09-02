@@ -115,6 +115,7 @@ export default function GradesContent() {
                     <SafeAreaView
                         style={{
                             zIndex: 10,
+                            marginTop: 20,
                             marginLeft: 20,
                         }}
                     >
@@ -200,8 +201,9 @@ const createStyles = (colors, shadow) =>
     StyleSheet.create({
         flammesContainer: {
             zIndex: -1,
-            marginTop: 20,
+            marginTop: 10,
             flexDirection: "row",
+            gap: "8%",
             alignSelf: "center",
         },
         canardman: {
@@ -214,3 +216,4 @@ const createStyles = (colors, shadow) =>
             zIndex: -1,
         },
     });
+
