@@ -5,9 +5,15 @@ import { downloadDocument, openDocument } from "@/helpers/documents/documentsHel
 import { useTheme } from "@/hooks/useThemeStore";
 import { routesNames } from "@/router/config/routesNames";
 import { formatDate } from "@/utils/date";
-import { memo, useCallback, useState } from "react";
-import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+import { memo, useCallback, useMemo, useState } from "react";
+import {
+    ActivityIndicator,
+    TouchableOpacity,
+    useWindowDimensions,
+    View,
+} from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import RenderHTML from "react-native-render-html";
 
 const RECOVERY_MODE_BY_TYPE = {
     received: "recipient",
@@ -17,7 +23,6 @@ const RECOVERY_MODE_BY_TYPE = {
 };
 
 const File = memo(({ item, progress, colors, onOpen, onDownload }) => {
-    console.log(item);
     const { id, libelle, type, taille: size } = item;
     const ext = libelle.slice(libelle.lastIndexOf(".") + 1).toLowerCase();
 
@@ -103,8 +108,40 @@ export default function MessagingDetails({ route }) {
         isError,
     } = useMessageContent(token, messageId, recoveryMode);
     const { colors } = useTheme();
+    const { width } = useWindowDimensions();
 
     const [downloadProgress, setDownloadProgress] = useState({});
+
+    const tagsStyles = useMemo(
+        () => ({
+            u: { textDecorationLine: "underline" },
+            i: { fontStyle: "italic" },
+            a: { textDecorationLine: "underline", color: "hsl(207, 77%, 51%)" },
+            strong: { fontWeight: 700 },
+        }),
+        []
+    );
+
+    const baseStyle = useMemo(
+        () => ({
+            color: colors.contrast,
+        }),
+        [colors.contrast]
+    );
+
+    const MessageHTML = useMemo(
+        () => (
+            <RenderHTML
+                contentWidth={width}
+                defaultTextProps={{ selectable: true }}
+                source={{ html: messageContent?.content ?? "" }}
+                ignoredDomTags={["script", "iframe", "object", "o:p"]}
+                baseStyle={baseStyle}
+                tagsStyles={tagsStyles}
+            />
+        ),
+        [messageContent?.content, baseStyle, tagsStyles, width]
+    );
 
     const handleOpen = useCallback(
         (item) =>
@@ -229,7 +266,8 @@ export default function MessagingDetails({ route }) {
                         }}
                     />
 
-                    <Text preset="body1">{messageContent.content}</Text>
+                    {MessageHTML}
+
                     {files?.length > 0 && (
                         <View style={{ marginTop: 16, gap: 8 }}>
                             {files.map((item) => (

@@ -184,6 +184,10 @@ function formatMessage(
         sender: formatSender(msg.from),
     };
 }
+const formatMode = {
+    recipient: "destinataire",
+    sender: "expediteur",
+};
 
 export async function messageContentResolver({
     token,
@@ -192,12 +196,12 @@ export async function messageContentResolver({
 }: MessageContentResolverParams): Promise<MessageContent | null> {
     try {
         const response = await fetchApi<FetchApiResponse<any>>(
-            `https://api.ecoledirecte.com/v3/eleves/{USER_ID}/messages/${messageId}.awp?verbe=get&mode=${mode}&{API_VERSION}`,
+            `https://api.ecoledirecte.com/v3/eleves/{USER_ID}/messages/${messageId}.awp?verbe=get&mode=${formatMode[mode]}&{API_VERSION}`,
             {
                 headers: { "X-Token": token },
                 method: "POST",
                 body: {
-                    anneeMessages: "",
+                    anneeMessages: "2026-2027",
                 },
             }
         );

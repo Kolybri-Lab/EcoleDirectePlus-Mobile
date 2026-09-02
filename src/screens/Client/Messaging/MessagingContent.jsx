@@ -4,6 +4,7 @@ import { useMessaging } from "@/features/messaging";
 import { useHaptic } from "@/hooks/useHaptics";
 import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
+import dynamicBorderRadius from "@/utils/borderRadius";
 import { formatDate } from "@/utils/date";
 import { dedupeById } from "@/utils/dedupe";
 import { useNavigation } from "@react-navigation/native";
@@ -132,7 +133,7 @@ export default function MessagingContent() {
                 <Animated.View
                     style={[
                         {
-                            backgroundColor: "hsl(235, 28%, 15%)",
+                            backgroundColor: "hsla(0, 0%, 0%, .4)",
                             alignSelf: "center",
                             paddingVertical: 12,
                             paddingHorizontal: 18,
@@ -251,7 +252,7 @@ export default function MessagingContent() {
             <FlatList
                 data={messages}
                 keyExtractor={(item) => item.id.toString()}
-                contentContainerStyle={{ gap: 5 }}
+                contentContainerStyle={{ gap: 4 }}
                 renderItem={renderMessageItem}
                 onEndReached={handleLoadMore}
                 onEndReachedThreshold={0.5}
@@ -274,31 +275,9 @@ export default function MessagingContent() {
 }
 
 const MessageItem = memo(({ item, index, navigation, messages, token }) => {
-    let borderRadiusStyle = {};
     const BORDER_RADIUS_EXT = 28;
     const BORDER_RADIUS_INT = 6;
-    if (index === 0) {
-        borderRadiusStyle = {
-            borderTopLeftRadius: BORDER_RADIUS_EXT,
-            borderTopRightRadius: BORDER_RADIUS_EXT,
-            borderBottomLeftRadius: BORDER_RADIUS_INT,
-            borderBottomRightRadius: BORDER_RADIUS_INT,
-        };
-    } else if (index === messages.length - 1) {
-        borderRadiusStyle = {
-            borderTopLeftRadius: BORDER_RADIUS_INT,
-            borderTopRightRadius: BORDER_RADIUS_INT,
-            borderBottomLeftRadius: BORDER_RADIUS_EXT,
-            borderBottomRightRadius: BORDER_RADIUS_EXT,
-        };
-    } else {
-        borderRadiusStyle = {
-            borderTopLeftRadius: BORDER_RADIUS_INT,
-            borderTopRightRadius: BORDER_RADIUS_INT,
-            borderBottomLeftRadius: BORDER_RADIUS_INT,
-            borderBottomRightRadius: BORDER_RADIUS_INT,
-        };
-    }
+
     return (
         <TouchableOpacity
             onPress={() =>
@@ -308,13 +287,18 @@ const MessageItem = memo(({ item, index, navigation, messages, token }) => {
                 })
             }
             style={{
-                backgroundColor: "hsla(235, 28%, 15%, 1)",
+                backgroundColor: "hsla(0, 0%, 100%, .08)",
                 paddingVertical: 16,
                 paddingHorizontal: 18,
                 flexDirection: "row",
                 alignItems: "center",
                 gap: 12,
-                ...borderRadiusStyle,
+                ...dynamicBorderRadius(
+                    index,
+                    messages.length,
+                    BORDER_RADIUS_INT,
+                    BORDER_RADIUS_EXT
+                ),
             }}
         >
             <View
@@ -377,4 +361,3 @@ const MessageItem = memo(({ item, index, navigation, messages, token }) => {
         </TouchableOpacity>
     );
 });
-
