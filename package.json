@@ -40,6 +40,7 @@
     "expo-splash-screen": "~31.0.10",
     "expo-status-bar": "~3.0.8",
     "expo-system-ui": "~6.0.8",
+    "expo-updates": "~29.0.20",
     "js-sha256": "^0.11.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
