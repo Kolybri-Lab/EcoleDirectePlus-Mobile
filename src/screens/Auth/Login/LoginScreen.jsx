@@ -2,22 +2,22 @@ import { useNavigation, useTheme } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Account, Discord, EDP, Github, Key } from "@/components/svg";
 import {
     A2fSelectableModal,
     CheckBox,
     LinkButton,
     OverLoader,
 } from "@/components/index";
+import { Account, Discord, EDP, Github, Key } from "@/components/svg";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-import MaskedView from "@react-native-masked-view/masked-view";
-import { LinearGradient } from "expo-linear-gradient";
 import { Text } from "@/components/core";
 import { getApiMessage } from "@/constants/api/codes";
 import { useSignIn } from "@/hooks/useSignIn";
 import { routesNames } from "@/router/config/routesNames";
 import { addOpacityToCssRgb } from "@/utils/colorGenerator";
+import MaskedView from "@react-native-masked-view/masked-view";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function LoginScreen() {
     const navigation = useNavigation();
@@ -166,9 +166,9 @@ export default function LoginScreen() {
                                 spellCheck={false}
                                 textAlign="center"
                                 // keyboardType="visible-password"
-                                // secureTextEntry={true}  // ONLY IN PROD ENV
-                                // autoComplete="password" // ONLY IN PROD ENV
-                                // textContentType="password" // ONLY IN PROD ENV
+                                secureTextEntry={true} // ONLY IN PROD ENV
+                                autoComplete="password" // ONLY IN PROD ENV
+                                textContentType="password" // ONLY IN PROD ENV
                                 style={[
                                     styles.input.case,
                                     {
