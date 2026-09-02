@@ -149,7 +149,6 @@ export default function HomeworkCard({
             {/* CONTENT */}
             <View
                 style={{
-                    flex: 1,
                     alignItems: "center",
                     overflow: "hidden",
                     height: isExpanded ? undefined : 0,
@@ -162,7 +161,6 @@ export default function HomeworkCard({
                         borderRadius: 2,
                         backgroundColor: addOpacity(colors.contrast, 0.4),
                         marginTop: 12,
-                        flex: 1,
                     }}
                 />
 
@@ -184,7 +182,6 @@ export default function HomeworkCard({
                         borderRadius: 2,
                         backgroundColor: addOpacity(colors.contrast, 0.4),
                         marginBottom: 12,
-                        flex: 1,
                     }}
                 />
             </View>
@@ -196,8 +193,8 @@ export default function HomeworkCard({
                     paddingTop: 10,
                     paddingBottom: 17,
                     flexDirection: "row",
-                    flex: 1,
                     justifyContent: "space-between",
+                    alignItems: "center",
                     backgroundColor: colors.secondary,
                 }}
             >
