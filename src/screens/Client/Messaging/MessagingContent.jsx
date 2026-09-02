@@ -21,6 +21,7 @@ import {
 import { Pressable } from "react-native-gesture-handler";
 import Animated, {
     interpolate,
+    LinearTransition,
     useAnimatedStyle,
     useSharedValue,
     withSpring,
@@ -86,7 +87,7 @@ export default function MessagingContent() {
     const pressScale = useSharedValue(1);
 
     const containerStyle = useAnimatedStyle(() => ({
-        width: interpolate(transitionProgress.value, [0, 1], [80, 90]) + "%",
+        width: isSearchOpen ? "90%" : undefined,
         borderRadius: interpolate(transitionProgress.value, [0, 1], [30, 10]),
         transform: [{ scale: pressScale.value }],
     }));
@@ -131,6 +132,7 @@ export default function MessagingContent() {
         <ScreenStack horizontalSpacing={16}>
             <SafeAreaView>
                 <Animated.View
+                    layout={LinearTransition.duration(250)}
                     style={[
                         {
                             backgroundColor: "hsla(0, 0%, 0%, .4)",
@@ -148,7 +150,6 @@ export default function MessagingContent() {
                     >
                         <Pressable
                             style={{
-                                width: "100%",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 flexDirection: "row",
@@ -172,7 +173,9 @@ export default function MessagingContent() {
                             }}
                         >
                             <Search size={18} />
-                            <Text preset="label1">Rechercher dans les messages</Text>
+                            <Text preset="label1" oneLine>
+                                Rechercher dans les message
+                            </Text>
                         </Pressable>
                     </Animated.View>
                     {isSearchOpen && (
@@ -361,3 +364,4 @@ const MessageItem = memo(({ item, index, navigation, messages, token }) => {
         </TouchableOpacity>
     );
 });
+
