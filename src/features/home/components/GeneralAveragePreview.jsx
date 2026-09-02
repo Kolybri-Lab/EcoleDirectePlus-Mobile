@@ -24,6 +24,19 @@ export default function GeneralAveragePreview({ gradesData }) {
         return null;
     }
 
+    if (!gradesData.lastGrades.lenght || gradesData.lastGrades.lenght === 0) {
+        borderRadius = {
+            borderRadius: 16,
+        };
+    } else {
+        borderRadius = {
+            borderTopLeftRadius: 16,
+            borderTopRightRadius: 16,
+            borderBottomLeftRadius: 8,
+            borderBottomRightRadius: 8,
+        };
+    }
+
     return (
         <TouchableOpacity
             onPress={() => {
@@ -32,19 +45,18 @@ export default function GeneralAveragePreview({ gradesData }) {
                     screen: routesNames.client.grades.content,
                 });
             }}
-            style={{
-                width: "100%",
-                backgroundColor: colors.secondary,
-                borderTopLeftRadius: 16,
-                borderTopRightRadius: 16,
-                borderBottomLeftRadius: 8,
-                borderBottomRightRadius: 8,
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-            }}
+            style={[
+                {
+                    width: "100%",
+                    backgroundColor: colors.secondary,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    paddingHorizontal: 20,
+                    paddingVertical: 10,
+                },
+                borderRadius,
+            ]}
         >
             <View>
                 <Text
