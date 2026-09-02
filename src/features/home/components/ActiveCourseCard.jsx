@@ -301,6 +301,7 @@ const NextCourse = ({ data }) => {
                                 fontSize: 15,
                                 opacity: 0.6,
                                 fontFamily: "Medium",
+                                lineHeight: 15,
                             }}
                         >
                             {courseData.course.teacher ?? "Pas de prof."}
@@ -312,6 +313,7 @@ const NextCourse = ({ data }) => {
                                 fontSize: 15,
                                 opacity: 0.6,
                                 fontFamily: "Medium",
+                                lineHeight: 15,
                             }}
                         >
                             {courseData.course.room ?? "Aucune salle"}
