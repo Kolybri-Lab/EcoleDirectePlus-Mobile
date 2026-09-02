@@ -8,10 +8,12 @@ import { useMemo } from "react";
 import { FlatList, TouchableOpacity, View } from "react-native";
 export default function LastGrades({ lastGradesObject }) {
     const navigation = useNavigation();
-    const { colors } = useTheme();
     const haptic = useHaptic("light");
 
     const count = lastGradesObject?.length || 0;
+    if (lastGradesObject?.lenght === 0) {
+        return;
+    }
 
     return (
         <FlatList
