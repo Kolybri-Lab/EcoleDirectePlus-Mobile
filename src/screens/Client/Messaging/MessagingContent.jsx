@@ -2,6 +2,7 @@ import { DropDownMenu, ScreenStack, Text } from "@/components";
 import { Search } from "@/components/svg";
 import { useMessaging } from "@/features/messaging";
 import { useHaptic } from "@/hooks/useHaptics";
+import { useTheme } from "@/hooks/useThemeStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import { routesNames } from "@/router/config/routesNames";
 import dynamicBorderRadius from "@/utils/borderRadius";
@@ -281,6 +282,8 @@ const MessageItem = memo(({ item, index, navigation, messages, token }) => {
     const BORDER_RADIUS_EXT = 28;
     const BORDER_RADIUS_INT = 6;
 
+    const { colors } = useTheme();
+
     return (
         <TouchableOpacity
             onPress={() =>
@@ -290,7 +293,7 @@ const MessageItem = memo(({ item, index, navigation, messages, token }) => {
                 })
             }
             style={{
-                backgroundColor: "hsla(0, 0%, 100%, .08)",
+                backgroundColor: colors.secondary,
                 paddingVertical: 16,
                 paddingHorizontal: 18,
                 flexDirection: "row",
