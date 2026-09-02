@@ -169,7 +169,7 @@ export default function HomeworkDetails({ route }) {
     );
 
     return (
-        <>
+        <View style={{ backgroundColor: colors.background.gradient[1], flex: 1 }}>
             <DocumentModal
                 visible={modalsHander.document[0]}
                 setVisible={modalsHander.document[1]}
@@ -187,9 +187,9 @@ export default function HomeworkDetails({ route }) {
             <View
                 style={{
                     flex: 1,
-                    backgroundColor: Array.isArray(colors.background.gradient)
+                    /*backgroundColor: Array.isArray(colors.background.gradient)
                         ? colors.background.gradient[0]
-                        : colors.background.gradient,
+                        : colors.background.gradient,*/
                     marginHorizontal: 20,
                     marginBottom: 110,
                 }}
@@ -198,6 +198,7 @@ export default function HomeworkDetails({ route }) {
                 <View style={{ flex: 1, gap: 18 }}>
                     <TouchableOpacity
                         activeOpacity={1}
+                        style={{ width: "100%" }}
                         onLongPress={() => {
                             if (homework.isCustom) {
                                 dispatch({
@@ -217,19 +218,10 @@ export default function HomeworkDetails({ route }) {
 
                     <View
                         style={{
-                            backgroundColor: colors.bg.bg4,
+                            backgroundColor: colors.secondary,
                             flex: 1,
                             padding: 25,
                             borderRadius: 21,
-                            boxShadow: [
-                                {
-                                    offsetX: 0,
-                                    offsetY: 0,
-                                    blurRadius: 7.5,
-                                    spreadDistance: 6,
-                                    color: "hsla(0, 0%, 0%, 0.25)",
-                                },
-                            ],
                         }}
                     >
                         <Text
@@ -280,7 +272,7 @@ export default function HomeworkDetails({ route }) {
                                     <TouchableOpacity
                                         style={{
                                             flex: 1,
-                                            backgroundColor: colors.bg.bg3,
+                                            backgroundColor: colors.secondary,
                                             borderRadius: 12,
                                             justifyContent: "center",
                                         }}
@@ -305,7 +297,7 @@ export default function HomeworkDetails({ route }) {
                                 <TouchableOpacity
                                     style={{
                                         flex: 1,
-                                        backgroundColor: colors.bg.bg3,
+                                        backgroundColor: colors.secondary,
                                         borderRadius: 12,
                                         justifyContent: "center",
                                     }}
@@ -326,7 +318,7 @@ export default function HomeworkDetails({ route }) {
                     </View>
                 </View>
             </View>
-        </>
+        </View>
     );
 }
 
