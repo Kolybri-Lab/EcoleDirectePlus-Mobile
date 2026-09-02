@@ -20,7 +20,7 @@ export default function Tabs() {
             screenOptions={{
                 headerShown: false,
                 animation: "fade",
-                lazy: true,
+                lazy: false,
                 tabBarStyle: { backgroundColor: "transparent" },
             }}
         >
@@ -28,4 +28,3 @@ export default function Tabs() {
         </Tab.Navigator>
     );
 }
-
