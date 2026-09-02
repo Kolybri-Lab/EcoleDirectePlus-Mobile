@@ -53,6 +53,12 @@ export default {
             "expo-font",
             "expo-splash-screen",
         ],
+        updates: {
+            url: "https://u.expo.dev/9b9101a7-7d93-4cd9-b9ba-d3149e8b3401",
+        },
+        runtimeVersion: {
+            policy: "appVersion",
+        },
 
         version: "1.0.0",
         orientation: "portrait",
@@ -86,4 +92,3 @@ export default {
         githubUrl: "https://github.com/as2pick/EcoleDirectePlus-Mobile",
     },
 };
-
