@@ -2,16 +2,13 @@ import { Text } from "@/components";
 import { injectHomeworksIntoModel } from "@/features/homeworks/utils/homeworks";
 import { useHaptic } from "@/hooks/useHaptics";
 import { routesNames } from "@/router/config/routesNames";
+import dynamicBorderRadius from "@/utils/borderRadius";
 
 import { addOpacityToCssRgb } from "@/utils/colorGenerator";
 import { formatFrenchDate } from "@/utils/date";
-import base64Handler from "@/utils/handleBase64";
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { useMemo } from "react";
 import { TouchableOpacity, View, useWindowDimensions } from "react-native";
-import RenderHtml, { defaultSystemFonts } from "react-native-render-html";
-
-const systemFonts = [...defaultSystemFonts, "Medium"];
 
 export default function HomeworksPreview({ homeworksDatas, customHomeworks }) {
     const navigation = useNavigation();
@@ -96,45 +93,11 @@ const DateHeader = ({ date, meta, countForDate }) => {
     );
 };
 
+const BORDER_RADIUS_EXT = 16;
+const BORDER_RADIUS_INT = 4;
 const Homework = ({ homework, index, countForDate }) => {
     const { colors } = useTheme();
     const { width } = useWindowDimensions();
-    const decodedContent = useMemo(
-        () => base64Handler.decode(homework.homeworksContent.content),
-        [homework.homeworksContent.content]
-    );
-    let borderRadiusStyle = {};
-    const BORDER_RADIUS_EXT = 16;
-    const BORDER_RADIUS_INT = 4;
-    if (index === 0 && countForDate > 1) {
-        borderRadiusStyle = {
-            borderTopLeftRadius: BORDER_RADIUS_EXT,
-            borderTopRightRadius: BORDER_RADIUS_EXT,
-            borderBottomLeftRadius: BORDER_RADIUS_INT,
-            borderBottomRightRadius: BORDER_RADIUS_INT,
-        };
-    } else if (index === countForDate - 1 && countForDate > 1) {
-        borderRadiusStyle = {
-            borderTopLeftRadius: BORDER_RADIUS_INT,
-            borderTopRightRadius: BORDER_RADIUS_INT,
-            borderBottomLeftRadius: BORDER_RADIUS_EXT,
-            borderBottomRightRadius: BORDER_RADIUS_EXT,
-        };
-    } else if (countForDate === 1) {
-        borderRadiusStyle = {
-            borderTopLeftRadius: BORDER_RADIUS_EXT,
-            borderTopRightRadius: BORDER_RADIUS_EXT,
-            borderBottomLeftRadius: BORDER_RADIUS_EXT,
-            borderBottomRightRadius: BORDER_RADIUS_EXT,
-        };
-    } else {
-        borderRadiusStyle = {
-            borderTopLeftRadius: BORDER_RADIUS_INT,
-            borderTopRightRadius: BORDER_RADIUS_INT,
-            borderBottomLeftRadius: BORDER_RADIUS_INT,
-            borderBottomRightRadius: BORDER_RADIUS_INT,
-        };
-    }
 
     return (
         <View
@@ -150,8 +113,13 @@ const Homework = ({ homework, index, countForDate }) => {
                     paddingVertical: 10,
                     paddingHorizontal: 20,
                     gap: 10,
+                    ...dynamicBorderRadius(
+                        index,
+                        countForDate,
+                        BORDER_RADIUS_INT,
+                        BORDER_RADIUS_EXT
+                    ),
                 },
-                borderRadiusStyle,
             ]}
         >
             <View
@@ -182,14 +150,16 @@ const Homework = ({ homework, index, countForDate }) => {
                                 fontSize: 14,
                                 fontFamily: "Medium",
                                 flexShrink: 1,
-                                color: addOpacityToCssRgb(colors.contrast, 0.55),
                             }}
+
                             oneLine
                         >
                             {homework.homeworksContent.content}
                         </Text>
                     ) : (
-                        <Text numberOfLines={2}>{homework.plainText}</Text>
+                        <Text oneLine color="hsla(0, 0%, 100%, .6)">
+                            {homework.plainText}
+                        </Text>
                     )}
                 </View>
             </View>
@@ -213,7 +183,6 @@ const Homework = ({ homework, index, countForDate }) => {
                             color: colors.contrast,
                             fontFamily: "SemiBold",
                             fontSize: 13,
-                            marginBottom: -1,
                         }}
                     >
                         Contrôle
@@ -223,4 +192,3 @@ const Homework = ({ homework, index, countForDate }) => {
         </View>
     );
 };
-
