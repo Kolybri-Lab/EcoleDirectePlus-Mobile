@@ -33,7 +33,7 @@ export const HomeworkDateItem = memo(
         });
 
         return (
-            <View style={{ width: 65, height: 90 }}>
+            <View style={{ width: 65, height: 90, marginBottom: 24 }}>
                 <AnimatedTouchableOpacity
                     style={[
                         {
