@@ -7,7 +7,7 @@ export default function HomeworkProgress({
     completedCount = 0,
     totalCount = 0,
     progression,
-    encouragementSentence = "",
+    encouragementSentence = " ",
     sentence,
     style,
 }) {
@@ -15,8 +15,8 @@ export default function HomeworkProgress({
         progression !== undefined
             ? progression
             : totalCount > 0
-            ? Math.round((completedCount / totalCount) * 100) / 100
-            : 0;
+              ? Math.round((completedCount / totalCount) * 100) / 100
+              : 0;
 
     const textSentence = sentence ?? encouragementSentence;
 
@@ -26,7 +26,7 @@ export default function HomeworkProgress({
                 {
                     minHeight: 160,
                     justifyContent: "space-between",
-                    paddingTop: 14,
+                    paddingTop: 18,
                     paddingBottom: 14,
                     gap: 14,
                 },
@@ -60,3 +60,4 @@ export default function HomeworkProgress({
         </SafeAreaView>
     );
 }
+

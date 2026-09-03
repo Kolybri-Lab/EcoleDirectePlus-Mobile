@@ -136,8 +136,9 @@ const Homework = ({ homework, index, countForDate }) => {
                         flexShrink: 0,
                         fontSize: 18,
                         fontFamily: "SemiBold",
-                        minWidth: 80,
+                        maxWidth: "40%",
                     }}
+                    oneLine
                 >
                     {homework.discipline.name}
                 </Text>

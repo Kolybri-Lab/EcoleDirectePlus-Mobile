@@ -18,7 +18,7 @@ import Animated, {
 import { scheduleOnRN } from "react-native-worklets";
 import { useHomework } from "../context/HomeworkContext";
 
-export default function NewHomeworkModal({ visible }) {
+export default function NewHomeworkModal({ visible, defaultDate }) {
     const { dispatch } = useHomework();
     const [isRendered, setIsRendered] = useState(false);
     const [error, setError] = useState(null);
@@ -48,6 +48,15 @@ export default function NewHomeworkModal({ visible }) {
 
     useEffect(() => {
         if (visible) {
+            const initialDate = defaultDate
+                ? new Date(`${defaultDate}T12:00:00`)
+                : new Date();
+            setDate(initialDate);
+            setHomeworkDatas((prev) => ({
+                ...prev,
+                date: formatDate(initialDate, "ed"),
+            }));
+
             setIsRendered(true);
             translateY.value = withTiming(0, {
                 duration: 450,
@@ -65,7 +74,7 @@ export default function NewHomeworkModal({ visible }) {
             );
             opacity.value = withTiming(0, { duration: 250 });
         }
-    }, [visible]);
+    }, [visible, defaultDate]);
 
     const modalStyle = useAnimatedStyle(() => ({
         transform: [{ translateY: translateY.value }],
@@ -211,7 +220,13 @@ export default function NewHomeworkModal({ visible }) {
                                     mode="date"
                                     display="calendar"
                                     onChange={onChange}
-                                    minimumDate={new Date()}
+                                    minimumDate={
+                                        date < new Date()
+                                            ? date
+                                            : new Date(
+                                                  new Date().setHours(0, 0, 0, 0)
+                                              )
+                                    }
                                     maximumDate={
                                         new Date(
                                             new Date().setFullYear(
