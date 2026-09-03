@@ -19,8 +19,14 @@ import { useCustomDataStore } from "@/hooks/useCustomDataStore";
 import { useUserStore } from "@/hooks/useUserStore";
 import { objectsEqual } from "@/utils/json";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useTheme } from "@/hooks/useThemeStore";
+import { addOpacityToCssRgb } from "@/utils/colorGenerator";
+import Animated, { LinearTransition } from "react-native-reanimated";
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function HomeworksContent() {
+    const { colors } = useTheme();
     const token = useUserStore((state) => state.token);
     const {
         data: homeworksData,
@@ -108,7 +114,7 @@ export default function HomeworksContent() {
 
     const encouragementSentence = useMemo(() => {
         let key;
-        if (progression === 0) return "";
+        if (progression === 0) key = "0";
         else if (progression < 0.25) key = "0.25";
         else if (progression < 0.5) key = "0.5";
         else if (progression < 1) key = "0.75";
@@ -122,27 +128,8 @@ export default function HomeworksContent() {
 
     return (
         <>
-            <NewHomeworkModal visible={modalOpen} />
+            <NewHomeworkModal visible={modalOpen} defaultDate={activeDate} />
             <ScreenStack>
-                <SafeAreaView
-                    style={{
-                        position: "absolute",
-                        zIndex: 1,
-                        right: 20,
-                    }}
-                >
-                    <TouchableOpacity
-                        style={{
-                            paddingHorizontal: 6,
-                            backgroundColor: "hsl(240, 56%, 60%)",
-                            borderRadius: 12,
-                        }}
-                        onPress={() => dispatch({ type: "OPEN_NEW_HOMEWORK_MODAL" })}
-                    >
-                        <Plus size={36} />
-                    </TouchableOpacity>
-                </SafeAreaView>
-
                 <ScrollView
                     showsVerticalScrollIndicator={false}
                     contentContainerStyle={{
@@ -165,10 +152,10 @@ export default function HomeworksContent() {
 
                     <View
                         style={{
-                            paddingTop: 24,
                             paddingHorizontal: 24,
                             gap: 10,
                         }}
+                        key={activeDate}
                     >
                         {objectsEqual({}, homeworksData) && (
                             <Text>
@@ -189,9 +176,29 @@ export default function HomeworksContent() {
                                 onToggleExpand={() => handleItemPress(homework.id)}
                             />
                         ))}
+                        <AnimatedTouchableOpacity
+                            layout={LinearTransition.springify()}
+                            style={{
+                                paddingHorizontal: 6,
+                                backgroundColor: addOpacityToCssRgb(
+                                    colors.main,
+                                    0.7
+                                ),
+                                borderRadius: 12,
+                                width: 55,
+                                alignItems: "center",
+                                alignSelf: "center",
+                            }}
+                            onPress={() =>
+                                dispatch({ type: "OPEN_NEW_HOMEWORK_MODAL" })
+                            }
+                        >
+                            <Plus size={30} />
+                        </AnimatedTouchableOpacity>
                     </View>
                 </ScrollView>
             </ScreenStack>
         </>
     );
 }
+
