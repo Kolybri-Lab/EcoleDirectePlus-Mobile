@@ -255,7 +255,7 @@ export default function HomeScreen() {
                                 <Text size={26} color="hsla(1, 0%, 100%, 0.4)">
                                     {greetingMessage}
                                 </Text>
-                                <Text size={38}>{name}</Text>
+                                <Text size={38}>{name} 👋</Text>
                             </View>
                         </View>
                     </SafeAreaView>

@@ -157,9 +157,11 @@ export default function DataAndConfidentialityScreen({ route }) {
                     <Section
                         index={0}
                         totalLength={1}
-                        label={token}
+                        label={
+                            token.slice(0, Math.ceil(token.length / 2)) + "********"
+                        }
                         icon={<Key fill={"white"} size={26} />}
-                    ></Section>
+                    />
                 </View>
             </View>
         </SettingSectionLayout>

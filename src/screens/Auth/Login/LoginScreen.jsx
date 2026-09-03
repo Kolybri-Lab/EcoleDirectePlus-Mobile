@@ -1,6 +1,12 @@
 import { useNavigation, useTheme } from "@react-navigation/native";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import {
+    Pressable,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 import {
     A2fSelectableModal,
@@ -8,7 +14,7 @@ import {
     LinkButton,
     OverLoader,
 } from "@/components/index";
-import { Account, Discord, EDP, Github, Key } from "@/components/svg";
+import { Account, Discord, EDP, Github } from "@/components/svg";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Text } from "@/components/core";
@@ -18,6 +24,7 @@ import { routesNames } from "@/router/config/routesNames";
 import { addOpacityToCssRgb } from "@/utils/colorGenerator";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
+import { EyeClosedIcon, EyeIcon } from "lucide-react-native";
 
 export default function LoginScreen() {
     const navigation = useNavigation();
@@ -30,6 +37,8 @@ export default function LoginScreen() {
 
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
     const [modalVisible, setModalVisible] = useState(false);
     const [keepConnected, setKeepConnected] = useState(true);
     const [loginStates, setLoginStates] = useState({
@@ -138,6 +147,8 @@ export default function LoginScreen() {
                                 returnKeyType="next"
                                 value={username}
                                 textAlign="center"
+                                autoComplete="username"
+                                textContentType="username"
                                 spellCheck={false}
                                 style={[
                                     styles.input.case,
@@ -166,7 +177,7 @@ export default function LoginScreen() {
                                 spellCheck={false}
                                 textAlign="center"
                                 // keyboardType="visible-password"
-                                secureTextEntry={true} // ONLY IN PROD ENV
+                                secureTextEntry={!passwordVisible} // ONLY IN PROD ENV
                                 autoComplete="password" // ONLY IN PROD ENV
                                 textContentType="password" // ONLY IN PROD ENV
                                 style={[
@@ -178,7 +189,25 @@ export default function LoginScreen() {
                                 ]}
                             />
                             <View style={styles.input.icon}>
-                                <Key />
+                                <Pressable
+                                    onPress={() =>
+                                        setPasswordVisible(!passwordVisible)
+                                    }
+                                >
+                                    {passwordVisible ? (
+                                        <EyeIcon
+                                            size={26}
+
+                                            color="hsl(222, 54%, 75%)"
+                                        />
+                                    ) : (
+                                        <EyeClosedIcon
+                                            size={26}
+                                            color="hsl(222, 54%, 75%)"
+                                        />
+                                    )}
+                                </Pressable>
+                                {/* <Key /> */}
                             </View>
                         </View>
                         <View style={styles.checkBox}>
@@ -317,6 +346,7 @@ const createStyles = (theme, caseColor) =>
             icon: {
                 right: 12,
                 position: "absolute",
+                gap: 6,
             },
         },
 
