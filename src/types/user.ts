@@ -24,6 +24,12 @@ export type AppTheme = "light" | "dark";
 export interface UserPreferences {
     theme: AppTheme;
     isFollowingSystem: boolean;
+    dataPreferences: {
+        sendData: "maximum" | "only_things" | "no";
+        osInfo: boolean;
+        modelInfo: boolean;
+        screenInfo: boolean;
+    };
 }
 
 export interface NetworkInfo {
@@ -33,3 +39,4 @@ export interface NetworkInfo {
     inAirplaneMode: boolean;
     isOnline: boolean;
 }
+
