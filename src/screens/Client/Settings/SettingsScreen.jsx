@@ -168,6 +168,7 @@ export default function SettingsScreen({}) {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 backgroundColor: "hsla(0, 0%, 100%, 0.3)",
+                                overflow: "hidden",
                             }}
                         >
                             {!profile?.localPhotoUri ? (
@@ -179,6 +180,7 @@ export default function SettingsScreen({}) {
                                         width: 50,
                                         height: 50,
                                         borderRadius: 50,
+                                        transform: [{ scale: 1.2 }],
                                     }}
                                 />
                             )}

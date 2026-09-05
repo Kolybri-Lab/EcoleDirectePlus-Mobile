@@ -239,6 +239,7 @@ export default function HomeScreen() {
                                     style={{
                                         width: 46,
                                         height: 46,
+                                        transform: [{ scale: 1.2 }],
                                     }}
                                 />
                             )}
