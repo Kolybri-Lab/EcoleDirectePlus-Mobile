@@ -5,6 +5,10 @@ import RootProviders from "./provider";
 import AuthNavigator from "./router/AuthNavigator";
 
 import { setupDevMenu } from "./mock/guest/setupDevMenu";
+import {
+    initNetworkListeners,
+    teardownNetworkListeners,
+} from "./services/networkListener";
 import { UpdateNotifier } from "./updates/components/UpdateNotifer";
 
 SplashScreen.preventAutoHideAsync();
@@ -22,6 +26,11 @@ export default function App() {
         Bold: require("assets/fonts/Baloo2-Bold.ttf"),
         ExtraBold: require("assets/fonts/Baloo2-ExtraBold.ttf"),
     });
+
+    useEffect(() => {
+        initNetworkListeners();
+        return () => teardownNetworkListeners();
+    }, []);
 
     useEffect(() => {
         if (__DEV__) {

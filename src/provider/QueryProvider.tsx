@@ -1,3 +1,4 @@
+import { useErrorStore } from "@/hooks/useErrorStore";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import {
     defaultShouldDehydrateQuery,
@@ -7,7 +8,6 @@ import {
 } from "@tanstack/react-query";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createMMKV } from "react-native-mmkv";
-import { useErrorStore } from "@/hooks/useErrorStore";
 
 export const queryClient = new QueryClient({
     queryCache: new QueryCache({
@@ -28,12 +28,8 @@ export const queryClient = new QueryClient({
     }),
     defaultOptions: {
         queries: {
-            staleTime: 1000 * 60 * 5, // 5 min
-            gcTime: 1000 * 60 * 60 * 14, // 14 h
-            refetchOnMount: false,
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false,
-            retryOnMount: false,
+            staleTime: 1000 * 60 * 60, // 30 min
+            gcTime: 1000 * 60 * 60 * 24, // 1j
             placeholderData: (previousData) => previousData,
             retry: (failureCount, error: any) => {
                 if (
@@ -85,9 +81,9 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
                     },
                 },
             }}
+            onSuccess={() => queryClient.resumePausedMutations()}
         >
             {children}
         </PersistQueryClientProvider>
     );
 }
-

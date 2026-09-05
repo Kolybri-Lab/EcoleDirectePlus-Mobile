@@ -1,11 +1,12 @@
 import { NavigationContainer } from "@react-navigation/native";
-import * as Network from "expo-network";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import StyleMask from "@/components/display/StyleMask";
+import ErrorBoundary from "@/components/error/ErrorBoundary";
+import ErrorToast from "@/components/error/ErrorToast";
+import NetworkBanner from "@/components/error/NetworkBanner";
 import { useAuthStore } from "@/hooks/useAuthStore";
-import { useNetworkStore } from "@/hooks/useNetworkStore";
 import { useActiveThemeMode } from "@/hooks/useThemeStore";
 import SplashScreen from "@/screens/Splash/SplashScreen";
 import authService from "@/services/login/authService";
@@ -16,17 +17,11 @@ import {
 import { THEMES_ASSOCIATIONS } from "@/themes/themes";
 import Auth from "./display/auth/Auth";
 import Client from "./display/client/Client";
-import NetworkBanner from "@/components/error/NetworkBanner";
-import ErrorToast from "@/components/error/ErrorToast";
-import ErrorBoundary from "@/components/error/ErrorBoundary";
 
 export default function AuthNavigator() {
     const activeMode = useActiveThemeMode();
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
     const isBooting = useAuthStore((state) => state.isBooting);
-    const setActiveNetworkStatus = useNetworkStore(
-        (state) => state.setActiveNetworkStatus
-    );
 
     useEffect(() => {
         const bootstrapAsync = async () => {
@@ -59,47 +54,6 @@ export default function AuthNavigator() {
         bootstrapAsync();
     }, []);
 
-    useEffect(() => {
-        const initializeNetwork = async () => {
-            try {
-                const connectionStatus = await Network.getNetworkStateAsync();
-                const airplaneStatus = await Network.isAirplaneModeEnabledAsync();
-
-                if (
-                    connectionStatus.isConnected &&
-                    connectionStatus.isInternetReachable
-                ) {
-                    console.log("### ONLINE");
-                } else {
-                    console.log("### OFFLINE");
-                }
-
-                setActiveNetworkStatus({
-                    ...connectionStatus,
-                    inAirplaneMode: airplaneStatus,
-                });
-            } catch (error) {
-                console.error("Error when init network:", error);
-            }
-        };
-
-        const subscription = Network.addNetworkStateListener((networkData) => {
-            console.log("Connection change:", networkData);
-            setActiveNetworkStatus((prevState) => ({
-                ...prevState,
-                ...networkData,
-            }));
-        });
-
-        initializeNetwork();
-
-        return () => {
-            if (subscription && subscription.remove) {
-                subscription.remove();
-            }
-        };
-    }, [setActiveNetworkStatus]);
-
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <ErrorBoundary>
@@ -124,4 +78,3 @@ export default function AuthNavigator() {
         </GestureHandlerRootView>
     );
 }
-
