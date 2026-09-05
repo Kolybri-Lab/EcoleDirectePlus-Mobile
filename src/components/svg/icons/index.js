@@ -29,6 +29,6 @@ export { default as RoadFinish } from "./RoadFinish";
 export { default as SafetyShield } from "./SafetyShield";
 export { default as Search } from "./Search";
 export { default as SimpleArrow } from "./SimpleArrow";
+export { default as Star } from "./Star";
 export { default as Sun } from "./Sun";
 export { default as Trash } from "./Trash";
-

@@ -10,6 +10,7 @@ import {
     Phone,
     Power,
     SafetyShield,
+    Star,
     Sun,
 } from "@/components/svg";
 import { useSignIn } from "@/hooks/useSignIn";
@@ -86,6 +87,11 @@ export default function SettingsScreen({}) {
             label: "Notes de version",
             icon: <Merge size={ICON_SIZE} opacity={0.6} />,
             route: routesNames.settings.about_settings.release_notes,
+        },
+        {
+            label: "Donnez votre avis !",
+            icon: <Star size={ICON_SIZE} opacity={0.6} />,
+            route: routesNames.settings.about_settings.feedback,
         },
         {
             label: "À propos",
