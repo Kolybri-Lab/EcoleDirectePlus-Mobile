@@ -11,6 +11,8 @@ const mmkvStorage = createJSONStorage(() => ({
     removeItem: (key) => storage.remove(key),
 }));
 
+type DataPreferenceKey = keyof UserPreferences["dataPreferences"];
+
 interface UserStoreState {
     profile: UserProfile | null;
     preferences: UserPreferences | null;
@@ -18,27 +20,46 @@ interface UserStoreState {
 
     setProfile: (profile: UserProfile | null) => void;
     setToken: (token: string | null) => void;
+
+    setDataPreference: (key: DataPreferenceKey, value: boolean) => void;
+    setPreferences: (preferences: Partial<UserPreferences>) => void;
     reset: () => void;
 }
+const DEFAULT_PREFERENCES: UserPreferences = {
+    theme: "dark",
+    isFollowingSystem: false,
+    dataPreferences: {
+        sendData: "only_things",
+        osInfo: false,
+        modelInfo: false,
+        screenInfo: true,
+    },
+};
 
 export const useUserStore = create<UserStoreState>()(
     persist(
         (set) => ({
             profile: null,
-            preferences: {
-                theme: "dark",
-                isFollowingSystem: false,
-                dataPreferences: {
-                    sendData: "only_things",
-                    osInfo: false,
-                    modelInfo: false,
-                    screenInfo: true,
-                },
-            },
+            preferences: DEFAULT_PREFERENCES,
             token: null,
 
             setProfile: (profile) => set({ profile }),
             setToken: (token) => set({ token }),
+            setDataPreference: (key, value) =>
+                set((state) => ({
+                    preferences: {
+                        ...state.preferences,
+                        dataPreferences: {
+                            ...state.preferences.dataPreferences,
+                            [key]: value,
+                        },
+                    },
+                })),
+
+            setPreferences: (partial) =>
+                set((state) => ({
+                    preferences: { ...state.preferences, ...partial },
+                })),
             reset: () => set({ profile: null, token: null }),
         }),
         {
@@ -46,6 +67,7 @@ export const useUserStore = create<UserStoreState>()(
             storage: mmkvStorage,
             partialize: (state) => ({
                 profile: state.profile,
+                preferences: state.preferences,
             }),
         }
     )
