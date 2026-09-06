@@ -3,6 +3,7 @@ import { useUserStore } from "@/hooks/useUserStore";
 import { sendDevReport } from "@/services/feedbackService";
 import * as Application from "expo-application";
 import * as Device from "expo-device";
+import LottieView from "lottie-react-native";
 import { useEffect, useMemo, useState } from "react";
 import {
     Dimensions,
@@ -14,6 +15,7 @@ import {
     View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import SendingCheckAnimation from "../../../../assets/lottie/Sending Check.json";
 import SettingSectionLayout from "./components/SettingSectionLayout";
 
 const THEMES_OPT = { dark: "Sombre", light: "Clair" };
@@ -52,6 +54,7 @@ export default function FeedbackScreen({ route }) {
 
     const [activeChip, setActiveChip] = useState(FEEDBACK_OPT[0]);
     const [isSending, setIsSending] = useState(false);
+    const [isSent, setIsSent] = useState(false);
     const [formValues, setFormValues] = useState({
         title: "",
         message: "",
@@ -141,10 +144,74 @@ export default function FeedbackScreen({ route }) {
                         message: "",
                         tech: DEFAULT_TECH_SHARING,
                     });
+                    setActiveChip(FEEDBACK_OPT[0]);
+                    setIsSent(true);
                 }
             })
             .finally(() => setIsSending(false));
     };
+
+    if (isSent) {
+        return (
+            <SettingSectionLayout label={label}>
+                <SafeAreaView
+                    edges={["bottom"]}
+                    style={{
+                        flex: 1,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 16,
+                        paddingHorizontal: 24,
+                    }}
+                >
+                    <View
+                        style={{
+                            width: 94,
+                            height: 94,
+                            borderRadius: 90,
+                            backgroundColor: "hsla(140, 60%, 55%, .16)",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            marginBottom: 8,
+                        }}
+                    >
+                        {/* <Text style={{ fontSize: 40 }}>✅</Text> */}
+                        <LottieView
+                            // autoPlay
+                            loop={false}
+                            autoPlay
+                            source={SendingCheckAnimation}
+                            style={{ width: 140, height: 140 }}
+                        />
+                    </View>
+                    <Text preset="title1" align="center">
+                        Merci pour votre retour !
+                    </Text>
+                    <Text
+                        preset="body1"
+                        color="hsla(0, 0%, 100%, .6)"
+                        align="center"
+                    >
+                        Votre message a bien été envoyé à l'équipe. On y jette un œil
+                        très vite.
+                    </Text>
+                    <Pressable
+                        onPress={() => setIsSent(false)}
+                        style={{
+                            backgroundColor: "#7C83EB",
+                            paddingVertical: 14,
+                            paddingHorizontal: 28,
+                            borderRadius: 14,
+                            alignItems: "center",
+                            marginTop: 16,
+                        }}
+                    >
+                        <Text preset="label1">Retour aux paramètres</Text>
+                    </Pressable>
+                </SafeAreaView>
+            </SettingSectionLayout>
+        );
+    }
 
     return (
         <SettingSectionLayout
