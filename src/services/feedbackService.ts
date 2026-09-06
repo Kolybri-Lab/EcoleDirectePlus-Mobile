@@ -1,17 +1,17 @@
 import { WEBHOOK_URL } from "@/constants/config";
 import { useErrorStore } from "@/hooks/useErrorStore";
-import { useUserStore } from "@/hooks/useUserStore";
-import * as Device from "expo-device";
-import * as Updates from "expo-updates";
-import { Dimensions, Platform } from "react-native";
+import { ReportOptions } from "@/types/feedback";
 
 let lastSentTimestamp = 0;
 const RATE_LIMIT_DELAY_MS = 1000 * 30; // 30s
 
-export interface ReportOptions {
-    form?: string;
-    type: "error" | "feedback";
-}
+const TECH_FIELD_LABELS: Record<string, string> = {
+    appVersion: "📦 Version de l'app",
+    modelInfo: "📱 Modèle",
+    osInfo: "⚙️ Système",
+    screenInfo: "🖥️ Écran",
+    theme: "🎨 Thème",
+};
 
 export const sendDevReport = async ({
     form,
@@ -28,38 +28,6 @@ export const sendDevReport = async ({
             message: `Veuillez patienter ${waitSeconds}s avant d'envoyer un autre rapport.`,
         };
     }
-
-    const preferences = useUserStore.getState().preferences;
-
-    const screen = Dimensions.get("screen");
-    const window = Dimensions.get("window");
-    const screenInfo =
-        preferences.dataPreferences.screenInfo === true
-            ? `${Math.round(screen.width)}x${Math.round(screen.height)} px (scale: ${screen.scale}x, fontScale: ${screen.fontScale.toFixed(2)})`
-            : "Données refusées";
-    const windowInfo =
-        preferences.dataPreferences.screenInfo === true
-            ? `Zone utile: ${Math.round(window.width)}x${Math.round(window.height)} px`
-            : "Données refusées";
-
-    const brand =
-        preferences.dataPreferences.osInfo === true
-            ? (Device.brand ?? "Inconnu")
-            : "Données refusées";
-    const modelName =
-        preferences.dataPreferences.osInfo === true
-            ? (Device.modelName ?? "Modèle inconnu")
-            : "Données refusées";
-    const osVersion =
-        preferences.dataPreferences.osInfo === true
-            ? `${Platform.OS.toUpperCase()} ${Platform.Version}`
-            : "Données refusées";
-    const osBuild =
-        preferences.dataPreferences.osInfo === true
-            ? Device.osBuildId
-                ? `(Build: ${Device.osBuildId})`
-                : ""
-            : "Données refusées";
 
     const errors = useErrorStore.getState().errors;
     let formattedError = "Aucune erreur";
@@ -80,44 +48,43 @@ export const sendDevReport = async ({
             .slice(0, 1000);
     }
 
-    const runtimeVersion = Updates.runtimeVersion;
-
     const payload = {
+        username: "Feedback Service",
+        avatar_url:
+            "https://people.com/thmb/ikAfqWriYr0hk_e1UcST5TfWLeI=/4000x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(749x0:751x2)/peggy-the-dog-Deadpool--Wolverine-world-premiere--205-07222024-3b178eb773654f1b9934c982ebd951b7.jpg", // avatar custom
         embeds: [
             {
                 title:
                     type === "error"
                         ? "🚨 Erreur / Crash signalé"
                         : "💬 Retour utilisateur",
+                description: `
+                ## 📢 Titre: "${form.title}"
+                ### Catégorie: *${form.category}*\n`,
+                color: type === "error" ? 0xe74c3c : 0x7c83eb,
                 fields: [
                     {
-                        name: "📱 Appareil",
-                        value: `• **Modèle :** ${brand} ${modelName}\n• **OS :** ${osVersion} ${osBuild}\n• **Écran :** ${screenInfo}\n• **Fenêtre :** ${windowInfo}`,
-                        inline: false,
-                    },
-                    {
-                        name: "📦 Version App",
-                        value: `v${runtimeVersion}`,
+                        name: "📝 Message",
+                        value: `\`\`\`${form.message}\`\`\``,
                         inline: true,
                     },
+
+                    ...Object.entries(form.tech).map(([key, value]) => ({
+                        name: TECH_FIELD_LABELS[key] ?? key,
+                        value: String(value),
+                        inline: false,
+                    })),
                     ...(type === "error"
                         ? [
                               {
                                   name: "⚠️ Détails de l'erreur",
-                                  value: formattedError,
+                                  value: `\`\`\`\n${formattedError}\n\`\`\``, // bloc of code
                                   inline: false,
                               },
                           ]
                         : []),
-                    {
-                        name: "📝 Message",
-                        value:
-                            form && form.trim().length > 0
-                                ? form.slice(0, 1000)
-                                : "*Aucun message*",
-                        inline: false,
-                    },
                 ],
+
                 timestamp: new Date().toISOString(),
             },
         ],
@@ -146,3 +113,4 @@ export const sendDevReport = async ({
         };
     }
 };
+

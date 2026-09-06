@@ -51,7 +51,7 @@ export default function FeedbackScreen({ route }) {
     const [error, setError] = useState("");
 
     const [activeChip, setActiveChip] = useState(FEEDBACK_OPT[0]);
-
+    const [isSending, setIsSending] = useState(false);
     const [formValues, setFormValues] = useState({
         title: "",
         message: "",
@@ -77,40 +77,43 @@ export default function FeedbackScreen({ route }) {
     const isFormValid =
         formValues.title.trim().length > 0 && formValues.message.trim().length > 0;
 
-    const TECH_OPTIONS = [
-        {
-            storeKey: "appVersion",
-            title: "Version de l'application",
-            locked: true,
-            subtitle: Application.nativeApplicationVersion,
-        },
-        {
-            storeKey: "modelInfo",
-            title: "Modèle du téléphone",
-            subtitle: Device.modelName ?? "Modèle inconnu",
-        },
-        {
-            storeKey: "osInfo",
-            title: "Version du système",
-            subtitle:
-                `${Device.osName ?? Platform.OS} ${Device.osVersion ?? ""}`.trim(),
-        },
-        {
-            storeKey: "screenInfo",
-            title: "Dimensions de l'écran",
-            subtitle: `${Math.round(width)} × ${Math.round(height)} px · échelle ${scale}x`,
-        },
-        {
-            storeKey: "theme",
-            title: "Thème utilisé",
-            subtitle: THEMES_OPT[colorScheme] ?? "Inconnu",
-        },
-    ];
+    const TECH_OPTIONS = useMemo(
+        () => [
+            {
+                storeKey: "appVersion",
+                title: "Version de l'application",
+                locked: true,
+                subtitle: Application.nativeApplicationVersion,
+            },
+            {
+                storeKey: "modelInfo",
+                title: "Modèle du téléphone",
+                subtitle: `${Device.brand} ${Device.modelName}` ?? "Modèle inconnu",
+            },
+            {
+                storeKey: "osInfo",
+                title: "Version du système",
+                subtitle:
+                    `${Device.osName ?? Platform.OS} ${Device.osVersion ?? ""} ${Device.osBuildId ?? ""}`.trim(),
+            },
+            {
+                storeKey: "screenInfo",
+                title: "Dimensions de l'écran",
+                subtitle: `${Math.round(width)} × ${Math.round(height)} px · échelle ${scale}x`,
+            },
+            {
+                storeKey: "theme",
+                title: "Thème utilisé",
+                subtitle: THEMES_OPT[colorScheme] ?? "Inconnu",
+            },
+        ],
+        [colorScheme]
+    );
 
     const techPayload = useMemo(() => {
         return TECH_OPTIONS.reduce((acc, option) => {
             const isIncluded = option.locked || formValues.tech[option.storeKey];
-            acc[option.storeKey] = isIncluded ? option.subtitle : null;
+            acc[option.storeKey] = isIncluded ? option.subtitle : "Partage refusé";
             return acc;
         }, {});
     }, [formValues.tech, colorScheme]);
@@ -122,18 +125,25 @@ export default function FeedbackScreen({ route }) {
         tech: techPayload,
     };
 
-    console.log(feedbackPayload);
-
     const sendFeedback = () => {
+        if (isSending) return;
         if (!isFormValid) {
             setError("Veuillez compléter tout les champs requis (*)");
+            return;
         }
-        console.log("poop");
-        sendDevReport({ type: "feedback", form: formValues }).then(
-            ({ sucess, message }) => {
-                console.log(sucess, message); // actually not working
-            }
-        );
+        setIsSending(true);
+        sendDevReport({ type: "feedback", form: feedbackPayload })
+            .then(({ success, message }) => {
+                if (!success && message) setError(message);
+                else if (success) {
+                    setFormValues({
+                        title: "",
+                        message: "",
+                        tech: DEFAULT_TECH_SHARING,
+                    });
+                }
+            })
+            .finally(() => setIsSending(false));
     };
 
     return (
@@ -255,9 +265,20 @@ export default function FeedbackScreen({ route }) {
                             }}
                             placeholderTextColor={"hsla(0, 0%, 100%, .4)"}
                         />
-                        <Text preset="body3" align="right">
-                            {formValues.message.length}/{MESSAGE_MAX_LENGTH}
-                        </Text>
+                        <View style={{ flexDirection: "row" }}>
+                            <Text preset="body3" style={{ flexShrink: 1 }}>
+                                Note: si vous souhaitez un retour de notre part
+                                pensez à indiquer un moyen de contact dans votre
+                                message (Discord, e-mail, etc)
+                            </Text>
+                            <Text
+                                preset="body3"
+                                align="right"
+                                style={{ flexShrink: 0 }}
+                            >
+                                {formValues.message.length}/{MESSAGE_MAX_LENGTH}
+                            </Text>
+                        </View>
                     </View>
                 </View>
 
@@ -307,14 +328,18 @@ export default function FeedbackScreen({ route }) {
                     {error && <Text color="hsl(5, 33%, 52%)">{error}</Text>}
                     <Pressable
                         onPress={sendFeedback}
+                        disabled={isSending}
                         style={{
                             backgroundColor: "#7C83EB",
                             paddingVertical: 14,
                             borderRadius: 14,
                             alignItems: "center",
+                            opacity: isSending ? 0.6 : 1,
                         }}
                     >
-                        <Text preset="label1">Envoyer</Text>
+                        <Text preset="label1">
+                            {isSending ? "En cours d'envoi..." : "Envoyer"}
+                        </Text>
                     </Pressable>
                 </SafeAreaView>
             </ScrollView>
@@ -378,3 +403,4 @@ function Option({
         </View>
     );
 }
+
