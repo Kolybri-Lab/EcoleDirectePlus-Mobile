@@ -4,34 +4,34 @@ const IS_DEV = APP_ENV === "development" || APP_ENV === "dev" || APP_ENV === "bu
 const IS_PREVIEW = APP_ENV === "preview";
 
 const getAppName = () => {
-    if (IS_DEV) return "Ecole Directe Plus (Dev)";
-    if (IS_PREVIEW) return "Ecole Directe Plus (Preview)";
-    return "Ecole Directe Plus";
+    if (IS_DEV) return "Kolybri (Dev)";
+    if (IS_PREVIEW) return "Kolybri (Preview)";
+    return "Kolybri";
 };
 
 const getUniqueIdentifier = () => {
     if (IS_DEV) {
         return {
-            android: "com.as2pick.ecoledirecteplus.dev",
+            android: "org.kolybri.app.dev",
             ios: "com.as2pick.EcoleDirectePlusMobileEPO.dev",
         };
     }
     if (IS_PREVIEW) {
         return {
-            android: "com.as2pick.ecoledirecteplus.preview",
+            android: "org.kolybri.app.preview",
             ios: "com.as2pick.EcoleDirectePlusMobileEPO.preview",
         };
     }
     return {
-        android: "com.as2pick.ecoledirecteplus",
+        android: "org.kolybri.app",
         ios: "com.as2pick.EcoleDirectePlusMobileEPO",
     };
 };
 
 const getScheme = () => {
-    if (IS_DEV) return "ecoledirecteplus-dev";
-    if (IS_PREVIEW) return "ecoledirecteplus-preview";
-    return "ecoledirecteplus";
+    if (IS_DEV) return "kolybri-dev";
+    if (IS_PREVIEW) return "kolybri-preview";
+    return "kolybri";
 };
 
 const identifiers = getUniqueIdentifier();
@@ -39,11 +39,11 @@ const identifiers = getUniqueIdentifier();
 export default {
     expo: {
         name: getAppName(),
-        slug: "ecoledirecteplus-mobile",
+        slug: "kolybri",
         sdkVersion: "54.0.0",
         extra: {
             eas: {
-                projectId: "9b9101a7-7d93-4cd9-b9ba-d3149e8b3401",
+                projectId: "597e7932-e1c1-4c19-a8b9-5b77ea8659f2",
             },
         },
         scheme: getScheme(),
@@ -88,7 +88,8 @@ export default {
             },
         },
 
-        owner: "as2pick",
-        githubUrl: "https://github.com/as2pick/EcoleDirectePlus-Mobile",
+        owner: "kolybrilab",
+        githubUrl: "https://github.com/Kolybri-Lab/EcoleDirectePlus-Mobile",
     },
 };
+
