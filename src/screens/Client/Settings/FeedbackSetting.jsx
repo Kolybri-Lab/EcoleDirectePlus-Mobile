@@ -1,8 +1,9 @@
 import { Switch, Text } from "@/components";
 import { useUserStore } from "@/hooks/useUserStore";
+import { sendDevReport } from "@/services/feedbackService";
 import * as Application from "expo-application";
 import * as Device from "expo-device";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
     Dimensions,
     PixelRatio,
@@ -30,6 +31,13 @@ const FEEDBACK_OPT = [
     },
 ];
 
+const DEFAULT_TECH_SHARING = {
+    modelInfo: true,
+    osInfo: true,
+    screenInfo: true,
+    theme: true,
+};
+
 const { width, height } = Dimensions.get("window");
 const scale = PixelRatio.get();
 
@@ -38,34 +46,40 @@ const TITLE_MAX_LENGTH = 50;
 
 export default function FeedbackScreen({ route }) {
     const { label } = route.params;
-    const dataPreferences = useUserStore((s) => s.preferences.dataPreferences);
-    const preferences = useUserStore((s) => s.preferences);
-    const setDataPreference = useUserStore((s) => s.setDataPreference);
+    const colorScheme = useUserStore((state) => state.preferences.theme);
+
+    const [error, setError] = useState("");
 
     const [activeChip, setActiveChip] = useState(FEEDBACK_OPT[0]);
 
     const [formValues, setFormValues] = useState({
         title: "",
         message: "",
-        tech: {
-            appVersion: "",
-            modelInfo: "",
-            osInfo: "",
-            screenInfo: "",
-            theme: "",
-        },
+        tech: DEFAULT_TECH_SHARING,
     });
 
-    const updateField = (field, value) =>
+    const updateField = (field, value) => {
         setFormValues((prev) => ({ ...prev, [field]: value }));
+        setError("");
+    };
+
+    useEffect(() => {
+        if (error === "") return;
+        setTimeout(() => setError(""), 4000);
+    }, [error]);
+
+    const toggleTechSharing = (key) =>
+        setFormValues((prev) => ({
+            ...prev,
+            tech: { ...prev.tech, [key]: !prev.tech[key] },
+        }));
 
     const isFormValid =
         formValues.title.trim().length > 0 && formValues.message.trim().length > 0;
 
-    console.log(formValues);
     const TECH_OPTIONS = [
         {
-            storeKey: "appVersion", // key in store
+            storeKey: "appVersion",
             title: "Version de l'application",
             locked: true,
             subtitle: Application.nativeApplicationVersion,
@@ -89,9 +103,39 @@ export default function FeedbackScreen({ route }) {
         {
             storeKey: "theme",
             title: "Thème utilisé",
-            subtitle: THEMES_OPT[preferences.theme],
+            subtitle: THEMES_OPT[colorScheme] ?? "Inconnu",
         },
     ];
+
+    const techPayload = useMemo(() => {
+        return TECH_OPTIONS.reduce((acc, option) => {
+            const isIncluded = option.locked || formValues.tech[option.storeKey];
+            acc[option.storeKey] = isIncluded ? option.subtitle : null;
+            return acc;
+        }, {});
+    }, [formValues.tech, colorScheme]);
+
+    const feedbackPayload = {
+        category: activeChip.name,
+        title: formValues.title,
+        message: formValues.message,
+        tech: techPayload,
+    };
+
+    console.log(feedbackPayload);
+
+    const sendFeedback = () => {
+        if (!isFormValid) {
+            setError("Veuillez compléter tout les champs requis (*)");
+        }
+        console.log("poop");
+        sendDevReport({ type: "feedback", form: formValues }).then(
+            ({ sucess, message }) => {
+                console.log(sucess, message); // actually not working
+            }
+        );
+    };
+
     return (
         <SettingSectionLayout
             label={label}
@@ -140,6 +184,7 @@ export default function FeedbackScreen({ route }) {
                         })}
                     </ScrollView>
                 </View>
+
                 <View style={{ gap: 8 }}>
                     <View
                         style={{
@@ -153,22 +198,30 @@ export default function FeedbackScreen({ route }) {
                             *
                         </Text>
                     </View>
-                    <TextInput
-                        placeholder={"Résumez en quelques mots"}
-                        maxLength={TITLE_MAX_LENGTH}
-                        onChangeText={(text) => updateField("title", text)}
-                        autoCapitalize="sentences"
-                        style={{
-                            backgroundColor: "hsla(0, 0%, 100%, .12)",
-                            borderColor: "hsla(0, 0%, 100%, .16)",
-                            borderWidth: 1.5,
-                            borderRadius: 12,
-                            paddingVertical: 13,
-                            paddingHorizontal: 14,
-                        }}
-                        placeholderTextColor={"hsla(0, 0%, 100%, .4)"}
-                    />
+                    <View style={{ gap: 4 }}>
+                        <TextInput
+                            value={formValues.title}
+                            placeholder={"Résumez en quelques mots"}
+                            maxLength={TITLE_MAX_LENGTH}
+                            onChangeText={(text) => updateField("title", text)}
+                            autoCapitalize="sentences"
+                            style={{
+                                backgroundColor: "hsla(0, 0%, 100%, .12)",
+                                borderColor: "hsla(0, 0%, 100%, .16)",
+                                borderWidth: 1.5,
+                                borderRadius: 12,
+                                paddingVertical: 13,
+                                paddingHorizontal: 14,
+                                color: "white",
+                            }}
+                            placeholderTextColor={"hsla(0, 0%, 100%, .4)"}
+                        />
+                        <Text preset="body3" align="right">
+                            {formValues.message.length}/{TITLE_MAX_LENGTH}
+                        </Text>
+                    </View>
                 </View>
+
                 <View style={{ gap: 8 }}>
                     <View
                         style={{
@@ -184,6 +237,7 @@ export default function FeedbackScreen({ route }) {
                     </View>
                     <View style={{ gap: 4 }}>
                         <TextInput
+                            value={formValues.message}
                             placeholder={activeChip.placeHolderMessage}
                             multiline
                             textAlignVertical="top"
@@ -197,6 +251,7 @@ export default function FeedbackScreen({ route }) {
                                 paddingVertical: 13,
                                 paddingHorizontal: 14,
                                 height: 110,
+                                color: "white",
                             }}
                             placeholderTextColor={"hsla(0, 0%, 100%, .4)"}
                         />
@@ -205,6 +260,7 @@ export default function FeedbackScreen({ route }) {
                         </Text>
                     </View>
                 </View>
+
                 <View
                     style={{
                         height: 2,
@@ -212,7 +268,11 @@ export default function FeedbackScreen({ route }) {
                         marginVertical: 10,
                     }}
                 />
-                <SafeAreaView edges={["bottom"]}>
+
+                <SafeAreaView
+                    edges={["bottom"]}
+                    style={{ gap: 16, marginBottom: 24 }}
+                >
                     <View
                         style={{
                             backgroundColor: "hsla(0, 0%, 100%, .09)",
@@ -232,27 +292,36 @@ export default function FeedbackScreen({ route }) {
                                 Choisissez ce que vous partagez.
                             </Text>
                         </View>
-                        {TECH_OPTIONS.map((option) => (
+                        {TECH_OPTIONS.map((option, index) => (
                             <Option
                                 key={option.storeKey}
                                 title={option.title}
                                 subtitle={option.subtitle}
-                                value={dataPreferences[option.storeKey]}
+                                value={formValues.tech[option.storeKey]}
                                 locked={option.locked}
-                                onToggle={() =>
-                                    setDataPreference(
-                                        option.storeKey,
-                                        !dataPreferences[option.storeKey]
-                                    )
-                                }
+                                isFirst={index === 0}
+                                onToggle={() => toggleTechSharing(option.storeKey)}
                             />
                         ))}
                     </View>
+                    {error && <Text color="hsl(5, 33%, 52%)">{error}</Text>}
+                    <Pressable
+                        onPress={sendFeedback}
+                        style={{
+                            backgroundColor: "#7C83EB",
+                            paddingVertical: 14,
+                            borderRadius: 14,
+                            alignItems: "center",
+                        }}
+                    >
+                        <Text preset="label1">Envoyer</Text>
+                    </Pressable>
                 </SafeAreaView>
             </ScrollView>
         </SettingSectionLayout>
     );
 }
+
 function Option({
     title,
     subtitle,

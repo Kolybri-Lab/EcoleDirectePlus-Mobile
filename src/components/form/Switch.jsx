@@ -31,7 +31,7 @@ export default function Switch({ value, onValueChange }) {
     }));
 
     return (
-        <Pressable onPress={() => onValueChange(!value)}>
+        <Pressable onPress={() => onValueChange(!value)} hitSlop={8}>
             <Animated.View
                 style={[
                     {

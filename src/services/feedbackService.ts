@@ -9,12 +9,12 @@ let lastSentTimestamp = 0;
 const RATE_LIMIT_DELAY_MS = 1000 * 30; // 30s
 
 export interface ReportOptions {
-    userMessage?: string;
+    form?: string;
     type: "error" | "feedback";
 }
 
 export const sendDevReport = async ({
-    userMessage,
+    form,
     type = "feedback",
 }: ReportOptions): Promise<{ success: boolean; message?: string }> => {
     // Anti-spam
@@ -112,8 +112,8 @@ export const sendDevReport = async ({
                     {
                         name: "📝 Message",
                         value:
-                            userMessage && userMessage.trim().length > 0
-                                ? userMessage.slice(0, 1000)
+                            form && form.trim().length > 0
+                                ? form.slice(0, 1000)
                                 : "*Aucun message*",
                         inline: false,
                     },
