@@ -54,7 +54,7 @@ export default {
             "expo-splash-screen",
         ],
         updates: {
-            url: "https://u.expo.dev/9b9101a7-7d93-4cd9-b9ba-d3149e8b3401",
+            url: "https://u.expo.dev/597e7932-e1c1-4c19-a8b9-5b77ea8659f2",
         },
         runtimeVersion: {
             policy: "appVersion",
@@ -87,9 +87,7 @@ export default {
                 predictiveBackGestureEnabled: true,
             },
         },
-
         owner: "kolybrilab",
         githubUrl: "https://github.com/Kolybri-Lab/EcoleDirectePlus-Mobile",
     },
 };
-
