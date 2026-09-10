@@ -37,57 +37,55 @@ const getScheme = () => {
 const identifiers = getUniqueIdentifier();
 
 export default {
-    expo: {
-        name: getAppName(),
-        slug: "kolybri",
-        sdkVersion: "54.0.0",
-        extra: {
-            eas: {
-                projectId: "597e7932-e1c1-4c19-a8b9-5b77ea8659f2",
-            },
+    name: getAppName(),
+    slug: "kolybri",
+    sdkVersion: "54.0.0",
+    extra: {
+        eas: {
+            projectId: "597e7932-e1c1-4c19-a8b9-5b77ea8659f2",
         },
-        scheme: getScheme(),
-        plugins: [
-            "expo-dev-client",
-            "expo-secure-store",
-            "expo-font",
-            "expo-splash-screen",
-        ],
-        updates: {
-            url: "https://u.expo.dev/597e7932-e1c1-4c19-a8b9-5b77ea8659f2",
-        },
-        runtimeVersion: {
-            policy: "appVersion",
-        },
-
-        version: "1.0.0",
-        orientation: "portrait",
-        icon: "./assets/icons/icon.png",
-        userInterfaceStyle: "automatic",
-        newArchEnabled: true,
-        platforms: ["android", "ios"],
-        splash: {
-            image: "./assets/icons/splash-icon.png",
-            resizeMode: "contain",
-            backgroundColor: "#181829",
-        },
-        ios: {
-            supportsTablet: true,
-            bundleIdentifier: identifiers.ios,
-            infoPlist: {
-                ITSAppUsesNonExemptEncryption: false,
-            },
-        },
-        android: {
-            package: identifiers.android,
-            adaptiveIcon: {
-                foregroundImage: "./assets/icons/colored-icon.png",
-                monochromeImage: "./assets/icons/monochromatic-icon.png",
-                backgroundColor: "#181829",
-                predictiveBackGestureEnabled: true,
-            },
-        },
-        owner: "kolybrilab",
-        githubUrl: "https://github.com/Kolybri-Lab/EcoleDirectePlus-Mobile",
     },
+    scheme: getScheme(),
+    plugins: [
+        "expo-dev-client",
+        "expo-secure-store",
+        "expo-font",
+        "expo-splash-screen",
+    ],
+    updates: {
+        url: "https://u.expo.dev/597e7932-e1c1-4c19-a8b9-5b77ea8659f2",
+    },
+    runtimeVersion: {
+        policy: "appVersion",
+    },
+
+    version: "1.0.0",
+    orientation: "portrait",
+    icon: "./assets/icons/icon.png",
+    userInterfaceStyle: "automatic",
+    newArchEnabled: true,
+    platforms: ["android", "ios"],
+    splash: {
+        image: "./assets/icons/splash-icon.png",
+        resizeMode: "contain",
+        backgroundColor: "#181829",
+    },
+    ios: {
+        supportsTablet: true,
+        bundleIdentifier: identifiers.ios,
+        infoPlist: {
+            ITSAppUsesNonExemptEncryption: false,
+        },
+    },
+    android: {
+        package: identifiers.android,
+        adaptiveIcon: {
+            foregroundImage: "./assets/icons/colored-icon.png",
+            monochromeImage: "./assets/icons/monochromatic-icon.png",
+            backgroundColor: "#181829",
+            predictiveBackGestureEnabled: true,
+        },
+    },
+    owner: "kolybrilab",
+    githubUrl: "https://github.com/Kolybri-Lab/EcoleDirectePlus-Mobile",
 };

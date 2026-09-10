@@ -8,6 +8,7 @@
             "node": "22.11.0",
             "developmentClient": true,
             "distribution": "internal",
+            "channel": "development",
             "env": {
                 "APP_ENV": "development"
             }
@@ -15,6 +16,7 @@
         "preview": {
             "node": "22.11.0",
             "distribution": "internal",
+            "channel": "preview",
             "android": {
                 "buildType": "apk"
             },
@@ -25,6 +27,7 @@
         "production": {
             "node": "22.11.0",
             "autoIncrement": true,
+            "channel": "production",
             "env": {
                 "APP_ENV": "production"
             }
@@ -34,4 +37,3 @@
         "production": {}
     }
 }
-
