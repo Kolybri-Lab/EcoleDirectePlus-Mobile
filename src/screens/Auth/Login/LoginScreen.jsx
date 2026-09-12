@@ -115,7 +115,9 @@ export default function LoginScreen() {
 
             <View style={styles.form}>
                 <View style={styles.logo.box}>
-                    <EDP size={88} />
+                    <View style={{ opacity: 0 }}>
+                        <EDP size={88} />
+                    </View>
                     <MaskedView maskElement={<Text preset="h1">Kolybri</Text>}>
                         <LinearGradient
                             colors={theme.colors.edptext}
@@ -237,7 +239,14 @@ export default function LoginScreen() {
                     {apiError}
                 </Text>
             )}
-            <View style={styles.infos}>
+
+            <View
+                style={{
+                    flex: 1,
+                    justifyContent: "flex-end",
+                    marginBottom: 8,
+                }}
+            >
                 <TouchableOpacity
                     onPress={() => {
                         navigation.navigate(routesNames.auth.privacyPolicy);
@@ -253,6 +262,7 @@ export default function LoginScreen() {
                     </Text>
                 </TouchableOpacity>
             </View>
+
             <View>
                 <A2fSelectableModal
                     visible={modalVisible}
@@ -364,10 +374,6 @@ const createStyles = (theme, caseColor) =>
             transform: [{ scale: 1.2 }],
         },
 
-        infos: {
-            position: "absolute",
-            bottom: 20,
-        },
         privacyPolicy: {
             maxWidth: 210,
         },
@@ -385,3 +391,4 @@ const createStyles = (theme, caseColor) =>
             alignItems: "center",
         },
     });
+

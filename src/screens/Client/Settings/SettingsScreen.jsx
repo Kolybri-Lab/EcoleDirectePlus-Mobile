@@ -207,6 +207,7 @@ export default function SettingsScreen({}) {
                                 justifyContent: "space-between",
                                 paddingVertical: 10,
                                 borderBottomWidth: 1,
+                                overflow: "hidden",
                                 borderBottomColor: "hsla(0, 0%, 100%, .25)",
                             }}
                         >
@@ -215,12 +216,13 @@ export default function SettingsScreen({}) {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     gap: 12,
+                                    // maxWidth: "100%",
                                 }}
                             >
                                 <At opacity={0.75} size={20} />
                                 <Text style={{ opacity: 0.75 }}>E-mail</Text>
                             </View>
-                            <Text weight="medium">
+                            <Text weight="medium" oneLine align="right">
                                 {profile?.email ?? "Pas d'e-mail connu..."}
                             </Text>
                         </View>
@@ -332,3 +334,4 @@ export default function SettingsScreen({}) {
         </ScreenStack>
     );
 }
+

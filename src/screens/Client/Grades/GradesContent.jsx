@@ -141,7 +141,7 @@ export default function GradesContent() {
                 <View style={styles.flammesContainer}>
                     <GradeFlame
                         color="orange"
-                        value={formatGradeText(globalStreakScore)}
+                        value={globalStreakScore}
                         label="Streak"
                         width="30%"
                     />
