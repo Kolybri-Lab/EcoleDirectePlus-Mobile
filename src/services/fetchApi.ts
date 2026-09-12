@@ -1,7 +1,8 @@
 import { API } from "@/constants/api/api";
 import { useUserStore } from "@/hooks/useUserStore";
-import { convertApiResponse } from "./responseUtils";
+import { fetch } from "expo/fetch";
 import { errorNormalizer } from "./errorNormalizer";
+import { convertApiResponse } from "./responseUtils";
 
 export default async function fetchApi<T>(
     url: string,
@@ -92,4 +93,3 @@ export default async function fetchApi<T>(
         throw normalizedError || error;
     }
 }
-

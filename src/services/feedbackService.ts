@@ -1,9 +1,10 @@
-import { Dimensions, Platform } from "react-native";
+import { WEBHOOK_URL } from "@/constants/config";
 import { useErrorStore } from "@/hooks/useErrorStore";
+import { useUserStore } from "@/hooks/useUserStore";
 import * as Device from "expo-device";
 import * as Updates from "expo-updates";
-import { useUserStore } from "@/hooks/useUserStore";
-import { WEBHOOK_URL } from "@/constants/config";
+import { fetch } from "expo/fetch";
+import { Dimensions, Platform } from "react-native";
 
 let lastSentTimestamp = 0;
 const RATE_LIMIT_DELAY_MS = 10000;
@@ -146,4 +147,3 @@ export const sendDevReport = async ({
         };
     }
 };
-

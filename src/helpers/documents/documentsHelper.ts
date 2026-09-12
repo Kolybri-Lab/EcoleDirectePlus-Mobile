@@ -1,6 +1,7 @@
 import { API } from "@/constants/api/api";
 import * as FileSystem from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
+import { fetch } from "expo/fetch";
 import { Alert } from "react-native";
 import {
     DocumentActionResult,
@@ -214,4 +215,3 @@ export const assignUnit = (size: number): string => {
         return size.toString();
     }
 };
-

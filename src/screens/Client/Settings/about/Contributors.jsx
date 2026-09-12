@@ -1,6 +1,7 @@
 import { Section, Text } from "@/components";
 import { Link } from "@/components/svg";
 import { openUrl } from "@/utils/url";
+import { fetch } from "expo/fetch";
 import { memo, useEffect, useState } from "react";
 import { ActivityIndicator, Image, View } from "react-native";
 import SettingSectionLayout from "../components/SettingSectionLayout";

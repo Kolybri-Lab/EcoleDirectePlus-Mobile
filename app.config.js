@@ -39,7 +39,6 @@ const identifiers = getUniqueIdentifier();
 export default {
     name: getAppName(),
     slug: "kolybri",
-    sdkVersion: "54.0.0",
     extra: {
         eas: {
             projectId: "597e7932-e1c1-4c19-a8b9-5b77ea8659f2",
@@ -51,6 +50,19 @@ export default {
         "expo-secure-store",
         "expo-font",
         "expo-splash-screen",
+        "@react-native-community/datetimepicker",
+        [
+            "expo-build-properties",
+            {
+                android: {
+                    enableProguardInReleaseBuilds: true,
+                    enableShrinkResourcesInReleaseBuilds: true,
+                    extraProguardRules:
+                        "-keep class com.facebook.hermes.unicode.** { *; }",
+                    enable16KbPageSizes: true,
+                },
+            },
+        ],
     ],
     updates: {
         url: "https://u.expo.dev/597e7932-e1c1-4c19-a8b9-5b77ea8659f2",

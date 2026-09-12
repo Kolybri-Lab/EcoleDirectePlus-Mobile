@@ -1,7 +1,8 @@
+import { API } from "@/constants/api/api";
 import * as FileSystem from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
+import { fetch } from "expo/fetch";
 import { Alert } from "react-native";
-import { API } from "@/constants/api/api";
 
 const getMimeType = (fileName) => {
     const ext = fileName.slice(fileName.lastIndexOf(".") + 1).toLowerCase();
@@ -190,4 +191,3 @@ export const downloadDocument = async (
         return { sucess: false, message: error };
     }
 };
-
