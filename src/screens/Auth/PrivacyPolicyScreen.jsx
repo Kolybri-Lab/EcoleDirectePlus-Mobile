@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { logger } from "@/utils/logger";
 import packageJson from "../../../package.json";
 import {
     GoBackHeader,
@@ -43,8 +44,10 @@ function useContributors(repo) {
 
     useEffect(() => {
         let cancelled = false;
+        const url = `https://api.github.com/repos/${repo}/contributors?per_page=100`;
+        logger.log(`[FETCH] GET ${url}`);
 
-        fetch(`https://api.github.com/repos/${repo}/contributors?per_page=100`)
+        fetch(url)
             .then((res) => {
                 if (!res.ok) throw new Error("Erreur GitHub API");
                 return res.json();

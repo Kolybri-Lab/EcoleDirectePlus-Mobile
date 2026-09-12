@@ -3,6 +3,7 @@ import * as FileSystem from "expo-file-system/legacy";
 import * as IntentLauncher from "expo-intent-launcher";
 import { fetch } from "expo/fetch";
 import { Alert } from "react-native";
+import { logger } from "@/utils/logger";
 
 const getMimeType = (fileName) => {
     const ext = fileName.slice(fileName.lastIndexOf(".") + 1).toLowerCase();
@@ -30,8 +31,10 @@ const fetchAndConvertToBase64 = async (
     userAccesToken,
     onProgress
 ) => {
+    const url = `https://api.ecoledirecte.com/v3/telechargement.awp?verbe=get&fichierId=${fileId}&leTypeDeFichier=${fileType}&v=${API.API_VERSION}`;
+    logger.log(`[FETCH] POST ${url}`);
     const response = await fetch(
-        `https://api.ecoledirecte.com/v3/telechargement.awp?verbe=get&fichierId=${fileId}&leTypeDeFichier=${fileType}&v=${API.API_VERSION}`,
+        url,
         {
             method: "POST",
             headers: {

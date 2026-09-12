@@ -5,6 +5,7 @@ import * as Device from "expo-device";
 import * as Updates from "expo-updates";
 import { fetch } from "expo/fetch";
 import { Dimensions, Platform } from "react-native";
+import { logger } from "@/utils/logger";
 
 let lastSentTimestamp = 0;
 const RATE_LIMIT_DELAY_MS = 10000;
@@ -125,6 +126,7 @@ export const sendDevReport = async ({
     };
 
     try {
+        logger.log("[FETCH] POST Discord Webhook");
         const res = await fetch(WEBHOOK_URL, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
