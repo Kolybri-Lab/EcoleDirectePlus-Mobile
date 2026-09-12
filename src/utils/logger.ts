@@ -1,37 +1,52 @@
-export const isDev =
-    typeof __DEV__ !== "undefined" ? __DEV__ : process.env.NODE_ENV !== "production";
+const originalConsoleLog = console.log;
+const originalConsoleInfo = console.info;
+const originalConsoleWarn = console.warn;
+const originalConsoleDebug = console.debug;
+
+let logsEnabled = false;
+
+export const isLogsEnabled = (): boolean => logsEnabled;
+
+export const setLogsEnabled = (enabled: boolean): void => {
+    logsEnabled = enabled;
+};
+
+export const toggleLogs = (): boolean => {
+    logsEnabled = !logsEnabled;
+    return logsEnabled;
+};
 
 export const logger = {
     log: (...args: any[]) => {
-        if (isDev) {
-            console.log(...args);
+        if (logsEnabled) {
+            originalConsoleLog(...args);
         }
     },
     info: (...args: any[]) => {
-        if (isDev) {
-            console.info(...args);
+        if (logsEnabled) {
+            originalConsoleInfo(...args);
         }
     },
     warn: (...args: any[]) => {
-        if (isDev) {
-            console.warn(...args);
+        if (logsEnabled) {
+            originalConsoleWarn(...args);
         }
     },
     error: (...args: any[]) => {
         console.error(...args);
     },
     debug: (...args: any[]) => {
-        if (isDev) {
-            console.debug(...args);
+        if (logsEnabled) {
+            originalConsoleDebug(...args);
         }
     },
 };
 
-/**
- * Neutralise globalement console.log, console.debug et console.info en production
- * afin d'éviter toute fuite de données ou impact sur les performances.
- */
-export function initLogger() {
+export function initLogger(): void {
+    const isDev =
+        typeof __DEV__ !== "undefined"
+            ? __DEV__
+            : process.env.NODE_ENV !== "production";
     if (!isDev) {
         console.log = () => {};
         console.debug = () => {};
