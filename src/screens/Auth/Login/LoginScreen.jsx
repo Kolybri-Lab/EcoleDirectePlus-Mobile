@@ -116,16 +116,14 @@ export default function LoginScreen() {
             <View style={styles.form}>
                 <View style={styles.logo.box}>
                     <EDP size={88} />
-                    <MaskedView
-                        maskElement={<Text preset="h1">Ecole Directe Plus</Text>}
-                    >
+                    <MaskedView maskElement={<Text preset="h1">Kolybri</Text>}>
                         <LinearGradient
                             colors={theme.colors.edptext}
                             start={{ x: 1, y: 0 }}
                             end={{ x: 0, y: 0 }}
                         >
                             <Text preset="h1" style={{ opacity: 0 }}>
-                                Ecole Directe Plus
+                                Kolybri
                             </Text>
                         </LinearGradient>
                     </MaskedView>
