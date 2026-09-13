@@ -171,6 +171,7 @@ export default function GradesContent() {
                         />
                     ))}
                 </View>
+                <View style={{ height: 25 }} />
             </ScrollView>
 
             <AddGradeModal

@@ -59,7 +59,7 @@ export default function MessagingContent() {
     const inputRef = useRef(null);
 
     const messages = useMemo(() => {
-        const flat = data?.pages.flatMap((page) => page.received) ?? [];
+        const flat = data?.pages.flatMap((page) => page[displayGroup.id]) ?? [];
         const deduped = dedupeById(flat);
 
         const query = searchQuery.trim().toLowerCase();
@@ -282,7 +282,12 @@ export default function MessagingContent() {
                     </View>
                 }
                 ListFooterComponent={
-                    isFetchingNextPage ? <ActivityIndicator size="small" /> : null
+                    <View>
+                        {isFetchingNextPage ? (
+                            <ActivityIndicator size="small" />
+                        ) : null}
+                        <View style={{ height: 25 }} />
+                    </View>
                 }
             />
         </ScreenStack>
